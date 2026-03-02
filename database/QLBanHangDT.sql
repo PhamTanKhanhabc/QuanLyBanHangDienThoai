@@ -1,0 +1,350 @@
+CREATE DATABASE QLBanHangDT;
+GO
+USE QLBanHangDT;
+GO
+
+CREATE TABLE HangSanXuat (
+    MaHang INT NOT NULL,
+    TenHang NVARCHAR(255) NOT NULL,
+    DiaChi NVARCHAR(255)
+);
+INSERT INTO HangSanXuat (MaHang, TenHang, DiaChi) VALUES
+(1, N'Apple', N'Mỹ'),
+(2, N'Samsung', N'Hàn Quốc'),
+(3, N'Xiaomi', N'Trung Quốc'),
+(4, N'Oppo', N'Trung Quốc'),
+(5, N'Sony', N'Nhật Bản'),
+(6, N'Asus', N'Đài Loan'),
+(7, N'Lenovo', N'Trung Quốc'),
+(8, N'Huawei', N'Trung Quốc'),
+(9, N'Vivo', N'Trung Quốc'),
+(10, N'Nokia', N'Phần Lan'),
+(11, N'Realme', N'Trung Quốc'),
+(12, N'Vsmart', N'Việt Nam'),
+(13, N'Bphone', N'Việt Nam');
+
+CREATE TABLE LoaiSanPham (
+    MaLoai INT NOT NULL,
+    TenLoai NVARCHAR(255) NOT NULL
+);
+INSERT INTO LoaiSanPham (MaLoai, TenLoai) VALUES
+(1, N'Điện thoại'),
+(2, N'Đồng hồ thông minh'),
+(3, N'Máy tính bảng'),
+(4, N'Phụ Kiện');
+
+CREATE TABLE VaiTro (
+    MaVaiTro VARCHAR(20) NOT NULL,
+    TenVaiTro NVARCHAR(50)
+);
+INSERT INTO VaiTro VALUES
+('VT01', N'Quản lý'),
+('VT02', N'Nhân viên'),
+('VT03', N'Kế toán');
+
+CREATE TABLE NhanVien (
+    MaNV VARCHAR(20) NOT NULL,
+    Ho NVARCHAR(50),
+    Ten NVARCHAR(20),
+    NgaySinh DATE,
+    DiaChi NVARCHAR(100),
+    DienThoai NVARCHAR(10),
+    LuongThang DECIMAL(18, 2)
+);
+INSERT INTO NhanVien VALUES
+('NV01', N'Nguyễn Văn', N'An', '1998-05-12', N'Hà Nội', '0901234567', 12000000),
+('NV02', N'Trần Minh', N'Bình', '1995-08-20', N'Hồ Chí Minh', '0912345678', 15000000),
+('NV03', N'Lê Thị Ngọc', N'Chi', '2000-03-15', N'Đà Nẵng', '0923456789', 10000000);
+
+CREATE TABLE KhachHang(
+	MaKH varchar(20) NOT NULL,
+	Ho NVARCHAR(50),
+	Ten NVARCHAR(50),
+	DiaChi NVARCHAR(200)
+);
+INSERT INTO KhachHang (MaKH, Ho, Ten, DiaChi)
+VALUES 
+('KH001', N'Nguyễn Hoàng', N'Nam', N'Quận 1, TP.HCM'),
+('KH002', N'Lê Thị Ngọc', N'Mai', N'Quận 3, TP.HCM'),
+('KH003', N'Trần Anh', N'Tuấn', N'Quận Tân Bình, TP.HCM'),
+('KH004', N'Phạm Minh', N'Đức', N'Quận Đống Đa, Hà Nội'),
+('KH005', N'Vũ Thị', N'Lan', N'Quận Hai Bà Trưng, Hà Nội');
+
+CREATE TABLE NhaCungCap(
+	maNCC INT NOT NULL,
+    tenNCC NVARCHAR(50),
+    sdt VARCHAR(20),
+    diachi NVARCHAR(255)
+);
+INSERT INTO NhaCungCap (maNCC, tenNCC, sdt, diachi) VALUES 
+(1, N'Công Ty Samsung Vina', '02839157310', N'Số 2, Hải Triều, Q.1, TP.HCM'),
+(2, N'Apple Việt Nam LLC', '18001127', N'Deutsches Haus, Lê Duẩn, Q.1, TP.HCM'),
+(3, N'Nhà Phân Phối Digiworld', '02839290059', N'195 Điện Biên Phủ, Q.3, TP.HCM'),
+(4, N'OPPO Việt Nam', '1800577776', N'Tòa nhà E-Town, Tân Bình, TP.HCM'),
+(5, N'Phân Phối FPT Trading', '02473006666', N'Duy Tân, Cầu Giấy, Hà Nội');
+
+CREATE TABLE SanPham (
+    MaSp VARCHAR(20) NOT NULL,
+    TenSp NVARCHAR(255) NOT NULL,
+    SoLuongTon INT DEFAULT 0,
+    DonGia DECIMAL(18,2) NOT NULL,
+    DonViTinh NVARCHAR(50),
+    MaLoai INT NOT NULL,
+    MaHang INT NOT NULL
+);
+INSERT INTO SanPham (MaSp, TenSp, SoLuongTon, DonGia, DonViTinh, MaLoai, MaHang) VALUES
+('SP001', N'iPhone 14 Pro Max', 15, 29990000, N'Chiếc', 1, 1),
+('SP002', N'Samsung Galaxy S23 Ultra', 20, 26990000, N'Chiếc', 1, 2),
+('SP003', N'Xiaomi Redmi Note 13', 35, 5990000, N'Chiếc', 1, 3),
+('SP004', N'Oppo Reno 10', 25, 8990000, N'Chiếc', 1, 4),
+('SP005', N'Apple Watch Series 9', 18, 11990000, N'Chiếc', 2, 1),
+('SP006', N'Samsung Galaxy Watch 6', 22, 7990000, N'Chiếc', 2, 2),
+('SP007', N'iPad Pro M2 11 inch', 12, 23990000, N'Chiếc', 3, 1),
+('SP008', N'Samsung Galaxy Tab S9', 15, 18990000, N'Chiếc', 3, 2),
+('SP009', N'Tai nghe AirPods Pro 2', 40, 5990000, N'Chiếc', 4, 1),
+('SP010', N'Sạc nhanh Samsung 25W', 50, 690000, N'Chiếc', 4, 2);
+
+CREATE TABLE TaiKhoan (
+    MaTK VARCHAR(20) NOT NULL,
+    TenDangNhap VARCHAR(50) NOT NULL,
+    MatKhau VARCHAR(50) NOT NULL,
+    MaNV VARCHAR(20) NOT NULL,
+    MaVaiTro VARCHAR(20) NOT NULL
+);
+INSERT INTO TaiKhoan VALUES
+('TK01', 'admin', '123456', 'NV01', 'VT01'),
+('TK02', 'nhanvien1', '123456', 'NV02', 'VT02'),
+('TK03', 'ketoan1', '123456', 'NV03', 'VT03');
+
+CREATE TABLE ChuongTrinhKhuyenMai (
+    MaCTKM        VARCHAR(20) NOT NULL,
+    TenCTKM       NVARCHAR(255),
+    LoaiKhuyenMai NVARCHAR(50),
+    MoTa          NVARCHAR(500),
+    NgayBatDau    DATE,
+    NgayKetThuc   DATE,
+    TrangThai     INT
+);
+INSERT INTO ChuongTrinhKhuyenMai
+VALUES
+('CTKM01', 'Khuyến mãi Tết 2026', 'HoaDon', 'Giảm giá hóa đơn dịp Tết', '2026-01-01', '2026-01-31', 1),
+('CTKM02', 'Sale iPhone', 'SanPham', 'Giảm giá các dòng iPhone', '2026-01-05', '2026-02-05', 1),
+('CTKM03', 'Sale Samsung', 'SanPham', 'Ưu đãi Samsung Galaxy', '2026-01-10', '2026-02-10', 1);
+
+CREATE TABLE ChiTietKhuyenMaiHoaDon (
+    MaCTKM         VARCHAR(20) NOT NULL,
+    GiaTriToiThieu DECIMAL(15,2) NOT NULL,
+    PhanTramGiam   DECIMAL(5,2),
+    SoTienGiam     DECIMAL(15,2),
+    GiamToiDa      DECIMAL(15,2)
+);
+INSERT INTO ChiTietKhuyenMaiHoaDon
+VALUES
+('CTKM01', 10000000, 5,  NULL, 1000000),
+('CTKM01', 20000000, 10, NULL, 2000000);
+
+CREATE TABLE ChiTietKhuyenMaiSanPham (
+    MaCTKM        VARCHAR(20) NOT NULL,
+    MaSanPham     VARCHAR(20) NOT NULL,
+    PhanTramGiam  DECIMAL(5,2),
+    SoTienGiam    DECIMAL(15,2),
+    SoLuongToiDa  INT
+);
+INSERT INTO ChiTietKhuyenMaiSanPham
+VALUES
+('CTKM02', 'SP001', 8,  NULL, 100),
+('CTKM03', 'SP002', 12, NULL, 200),
+('CTKM03', 'SP003', NULL, 500000, 300);
+
+
+CREATE TABLE PhieuNhap (
+	maPHN INT NOT NULL,
+    maNV VARCHAR(20) NOT NULL,
+    maNCC INT NOT NULL,
+    ngay DATETIME,
+    tongtien DECIMAL(18,2)
+);
+INSERT INTO PhieuNhap (maPHN, maNV, maNCC, ngay, tongtien) VALUES 
+(101, 'NV01', 2, '2023-10-01 08:30:00', 660000000.00), 
+(102, 'NV02', 1, '2023-10-02 09:15:00', 450000000.00),
+(103, 'NV01', 3, '2023-10-05 14:20:00', 85000000.00), 
+(104, 'NV03', 2, '2023-10-10 10:00:00', 320000000.00),
+(105, 'NV02', 4, '2023-10-12 16:45:00', 150000000.00); 
+
+CREATE TABLE ChiTietPhieuNhap (
+	maPHN INT NOT NULL,
+    maSP VARCHAR(20) NOT NULL,
+    dongia DECIMAL(18,2),
+    thanhtien DECIMAL(18,2)
+);
+INSERT INTO ChiTietPhieuNhap (maPHN, maSP, dongia, thanhtien) VALUES 
+(101, 'SP001', 30000000.00, 600000000.00), 
+(101, 'SP005', 12000000.00, 60000000.00), 
+(102, 'SP002', 25000000.00, 250000000.00), 
+(102, 'SP006', 10000000.00, 200000000.00), 
+(103, 'SP003', 4500000.00, 45000000.00),  
+(103, 'SP004', 8000000.00, 40000000.00),  
+(104, 'SP007', 16000000.00, 320000000.00),
+(105, 'SP008', 7500000.00, 150000000.00);
+
+
+CREATE TABLE HoaDon (
+    MaHD VARCHAR(20) NOT NULL,
+    MaNV VARCHAR(20) NOT NULL,      
+    MaKH VARCHAR(20) NOT NULL,      
+    NgayLapHD DATETIME,    
+    TongTien DECIMAL(18, 2)
+);
+INSERT INTO HoaDon (MaHD, MaNV, MaKH, NgayLapHD, TongTien)
+VALUES 
+('HD001', 'NV01', 'KH001', '2026-01-10 09:00:00', 600000), 
+('HD002', 'NV01', 'KH002', '2026-01-11 14:30:00', 1200000), 
+('HD003', 'NV02', 'KH003', '2026-01-12 10:15:00', 450000);
+
+CREATE TABLE ChiTietHoaDon(
+    MaHD VARCHAR(20) NOT NULL,
+    MaSP VARCHAR(20) NOT NULL,
+    SL INT,               
+    DG_Ban DECIMAL(18, 2), 
+    ThanhTien DECIMAL(18, 2)
+);
+INSERT INTO ChiTietHoaDon (MaHD, MaSP, SL, DG_Ban, ThanhTien)
+VALUES 
+('HD001', 'SP001', 2, 150000, 300000), 
+('HD001', 'SP002', 1, 300000, 300000);
+CREATE TABLE BaoHanh (
+    MaBH VARCHAR(20) NOT NULL,
+    TenBH NVARCHAR(255) NOT NULL,
+    MaHD VARCHAR(20) NOT NULL,
+    MaSP VARCHAR(20) NOT NULL,
+    ThoiHan INT,
+    NgayBatDau DATE,
+    NgayKetThuc DATE
+);
+INSERT INTO BaoHanh (MaBH, TenBH, MaHD, MaSP, ThoiHan, NgayBatDau, NgayKetThuc)
+VALUES
+('BH001', N'Bảo hành iPhone 14 Pro Max 12 tháng', 'HD001', 'SP001', 12, '2026-01-10', '2027-01-10'),
+('BH002', N'Bảo hành Samsung Galaxy S23 Ultra 6 tháng', 'HD001', 'SP002', 6,  '2026-01-10', '2026-07-10');
+
+/* ================== PRIMARY KEY ================== */
+
+ALTER TABLE HangSanXuat
+ADD CONSTRAINT PK_HangSanXuat PRIMARY KEY (MaHang);
+
+ALTER TABLE LoaiSanPham
+ADD CONSTRAINT PK_LoaiSanPham PRIMARY KEY (MaLoai);
+
+ALTER TABLE VaiTro
+ADD CONSTRAINT PK_VaiTro PRIMARY KEY (MaVaiTro);
+
+ALTER TABLE NhanVien
+ADD CONSTRAINT PK_NhanVien PRIMARY KEY (MaNV);
+
+ALTER TABLE KhachHang
+ADD CONSTRAINT PK_KhachHang PRIMARY KEY (MaKH);
+
+ALTER TABLE NhaCungCap
+ADD CONSTRAINT PK_NhaCungCap PRIMARY KEY (maNCC);
+
+ALTER TABLE SanPham
+ADD CONSTRAINT PK_SanPham PRIMARY KEY (MaSp);
+
+ALTER TABLE TaiKhoan
+ADD CONSTRAINT PK_TaiKhoan PRIMARY KEY (MaTK);
+
+ALTER TABLE ChuongTrinhKhuyenMai
+ADD CONSTRAINT PK_CTKM PRIMARY KEY (MaCTKM);
+
+ALTER TABLE PhieuNhap
+ADD CONSTRAINT PK_PhieuNhap PRIMARY KEY (maPHN);
+
+ALTER TABLE HoaDon
+ADD CONSTRAINT PK_HoaDon PRIMARY KEY (MaHD);
+
+ALTER TABLE BaoHanh
+ADD CONSTRAINT PK_BaoHanh PRIMARY KEY (MaBH);
+
+
+/* ================== COMPOSITE PRIMARY KEY ================== */
+
+ALTER TABLE ChiTietKhuyenMaiHoaDon
+ADD CONSTRAINT PK_CTKM_HoaDon PRIMARY KEY (MaCTKM, GiaTriToiThieu);
+
+ALTER TABLE ChiTietKhuyenMaiSanPham
+ADD CONSTRAINT PK_CTKM_SanPham PRIMARY KEY (MaCTKM, MaSanPham);
+
+ALTER TABLE ChiTietPhieuNhap
+ADD CONSTRAINT PK_ChiTietPhieuNhap PRIMARY KEY (maPHN, maSP);
+
+ALTER TABLE ChiTietHoaDon
+ADD CONSTRAINT PK_ChiTietHoaDon PRIMARY KEY (MaHD, MaSP);
+
+/* ================== FOREIGN KEY ================== */
+
+ALTER TABLE SanPham
+ADD CONSTRAINT FK_SanPham_Loai
+FOREIGN KEY (MaLoai) REFERENCES LoaiSanPham(MaLoai);
+
+ALTER TABLE SanPham
+ADD CONSTRAINT FK_SanPham_Hang
+FOREIGN KEY (MaHang) REFERENCES HangSanXuat(MaHang);
+
+ALTER TABLE TaiKhoan
+ADD CONSTRAINT FK_TaiKhoan_NhanVien
+FOREIGN KEY (MaNV) REFERENCES NhanVien(MaNV);
+
+ALTER TABLE TaiKhoan
+ADD CONSTRAINT FK_TaiKhoan_VaiTro
+FOREIGN KEY (MaVaiTro) REFERENCES VaiTro(MaVaiTro);
+
+ALTER TABLE PhieuNhap
+ADD CONSTRAINT FK_PhieuNhap_NhanVien
+FOREIGN KEY (maNV) REFERENCES NhanVien(MaNV);
+
+ALTER TABLE PhieuNhap
+ADD CONSTRAINT FK_PhieuNhap_NhaCungCap
+FOREIGN KEY (maNCC) REFERENCES NhaCungCap(maNCC);
+
+ALTER TABLE ChiTietPhieuNhap
+ADD CONSTRAINT FK_CTPN_PhieuNhap
+FOREIGN KEY (maPHN) REFERENCES PhieuNhap(maPHN);
+
+ALTER TABLE ChiTietPhieuNhap
+ADD CONSTRAINT FK_CTPN_SanPham
+FOREIGN KEY (maSP) REFERENCES SanPham(MaSp);
+
+ALTER TABLE ChiTietKhuyenMaiHoaDon
+ADD CONSTRAINT FK_CTKMHD_CTKM
+FOREIGN KEY (MaCTKM) REFERENCES ChuongTrinhKhuyenMai(MaCTKM);
+
+ALTER TABLE ChiTietKhuyenMaiSanPham
+ADD CONSTRAINT FK_CTKMSP_CTKM
+FOREIGN KEY (MaCTKM) REFERENCES ChuongTrinhKhuyenMai(MaCTKM);
+
+ALTER TABLE ChiTietKhuyenMaiSanPham
+ADD CONSTRAINT FK_CTKMSP_SanPham
+FOREIGN KEY (MaSanPham) REFERENCES SanPham(MaSp);
+
+ALTER TABLE HoaDon
+ADD CONSTRAINT FK_HoaDon_NhanVien
+FOREIGN KEY (MaNV) REFERENCES NhanVien(MaNV);
+
+ALTER TABLE HoaDon
+ADD CONSTRAINT FK_HoaDon_KhachHang
+FOREIGN KEY (MaKH) REFERENCES KhachHang(MaKH);
+
+ALTER TABLE ChiTietHoaDon
+ADD CONSTRAINT FK_CTHD_HoaDon
+FOREIGN KEY (MaHD) REFERENCES HoaDon(MaHD);
+
+ALTER TABLE ChiTietHoaDon
+ADD CONSTRAINT FK_CTHD_SanPham
+FOREIGN KEY (MaSP) REFERENCES SanPham(MaSp);
+
+ALTER TABLE BaoHanh
+ADD CONSTRAINT FK_BaoHanh_HoaDon
+FOREIGN KEY (MaHD) REFERENCES HoaDon(MaHD);
+
+ALTER TABLE BaoHanh
+ADD CONSTRAINT FK_BaoHanh_SanPham
+FOREIGN KEY (MaSP) REFERENCES SanPham(MaSp);
