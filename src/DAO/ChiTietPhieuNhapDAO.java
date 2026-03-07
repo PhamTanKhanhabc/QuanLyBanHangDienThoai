@@ -118,4 +118,34 @@ public class ChiTietPhieuNhapDAO implements ChiTietInterface<ChiTietPhieuNhapDTO
         }
         return ketQua;
     }
+
+    public ArrayList<ChiTietPhieuNhapDTO> selectAll() {
+        ArrayList<ChiTietPhieuNhapDTO> ketQua = new ArrayList<>();
+        try {
+            Connection con = SQLServerConnect.getConnection();
+
+            String sql = "SELECT * FROM ChiTietPhieuNhap";
+            PreparedStatement pst = con.prepareStatement(sql);
+
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                int maPHN = rs.getInt("maPHN");
+                String maSP = rs.getString("maSP");
+                double donGia = rs.getDouble("dongia");
+                double thanhTien = rs.getDouble("thanhtien");
+
+                ChiTietPhieuNhapDTO ctpn = new ChiTietPhieuNhapDTO(maPHN, maSP, donGia, thanhTien);
+                ketQua.add(ctpn);
+            }
+
+            rs.close();
+            pst.close();
+            con.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ketQua;
+    }
 }

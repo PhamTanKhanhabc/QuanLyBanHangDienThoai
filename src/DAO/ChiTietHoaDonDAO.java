@@ -134,5 +134,37 @@ public class ChiTietHoaDonDAO implements ChiTietInterface<ChiTietHoaDonDTO> {
         }
         return ketQua;
     }
+    public ArrayList<ChiTietHoaDonDTO> selectAll() {
+        ArrayList<ChiTietHoaDonDTO> ketQua = new ArrayList<>();
+        try {
+            Connection con = SQLServerConnect.getConnection();
+
+            String sql = "SELECT * FROM ChiTietHoaDon";
+            PreparedStatement pst = con.prepareStatement(sql);
+
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                String maHD = rs.getString("MaHD");
+                String maSP = rs.getString("MaSP");
+                int sl = rs.getInt("SL");
+                double dgBan = rs.getDouble("DG_Ban");
+                double thanhTien = rs.getDouble("ThanhTien");
+
+                ChiTietHoaDonDTO ct = new ChiTietHoaDonDTO(
+                        maHD, maSP, sl, dgBan, thanhTien);
+
+                ketQua.add(ct);
+            }
+
+            rs.close();
+            pst.close();
+            SQLServerConnect.closeConnection(con);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return ketQua;
+    }
 }
 
