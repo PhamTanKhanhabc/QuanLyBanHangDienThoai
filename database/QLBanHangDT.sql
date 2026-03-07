@@ -6,41 +6,44 @@ GO
 CREATE TABLE HangSanXuat (
     MaHang INT NOT NULL,
     TenHang NVARCHAR(255) NOT NULL,
-    DiaChi NVARCHAR(255)
+    DiaChi NVARCHAR(255),
+    TrangThai BIT DEFAULT 1
 );
-INSERT INTO HangSanXuat (MaHang, TenHang, DiaChi) VALUES
-(1, N'Apple', N'Mỹ'),
-(2, N'Samsung', N'Hàn Quốc'),
-(3, N'Xiaomi', N'Trung Quốc'),
-(4, N'Oppo', N'Trung Quốc'),
-(5, N'Sony', N'Nhật Bản'),
-(6, N'Asus', N'Đài Loan'),
-(7, N'Lenovo', N'Trung Quốc'),
-(8, N'Huawei', N'Trung Quốc'),
-(9, N'Vivo', N'Trung Quốc'),
-(10, N'Nokia', N'Phần Lan'),
-(11, N'Realme', N'Trung Quốc'),
-(12, N'Vsmart', N'Việt Nam'),
-(13, N'Bphone', N'Việt Nam');
+INSERT INTO HangSanXuat (MaHang, TenHang, DiaChi, TrangThai) VALUES
+(1, N'Apple', N'Mỹ', 1),
+(2, N'Samsung', N'Hàn Quốc', 1),
+(3, N'Xiaomi', N'Trung Quốc', 1),
+(4, N'Oppo', N'Trung Quốc', 1),
+(5, N'Sony', N'Nhật Bản', 1),
+(6, N'Asus', N'Đài Loan', 1),
+(7, N'Lenovo', N'Trung Quốc', 1),
+(8, N'Huawei', N'Trung Quốc', 1),
+(9, N'Vivo', N'Trung Quốc', 1),
+(10, N'Nokia', N'Phần Lan', 1),
+(11, N'Realme', N'Trung Quốc', 1),
+(12, N'Vsmart', N'Việt Nam', 1),
+(13, N'Bphone', N'Việt Nam', 1);
 
 CREATE TABLE LoaiSanPham (
     MaLoai INT NOT NULL,
-    TenLoai NVARCHAR(255) NOT NULL
+    TenLoai NVARCHAR(255) NOT NULL,
+    TrangThai BIT DEFAULT 1
 );
-INSERT INTO LoaiSanPham (MaLoai, TenLoai) VALUES
-(1, N'Điện thoại'),
-(2, N'Đồng hồ thông minh'),
-(3, N'Máy tính bảng'),
-(4, N'Phụ Kiện');
+INSERT INTO LoaiSanPham (MaLoai, TenLoai, TrangThai) VALUES
+(1, N'Điện thoại', 1),
+(2, N'Đồng hồ thông minh', 1),
+(3, N'Máy tính bảng', 1),
+(4, N'Phụ Kiện', 1);
 
 CREATE TABLE VaiTro (
     MaVaiTro VARCHAR(20) NOT NULL,
-    TenVaiTro NVARCHAR(50)
+    TenVaiTro NVARCHAR(50),
+    TrangThai BIT DEFAULT 1
 );
-INSERT INTO VaiTro VALUES
-('VT01', N'Quản lý'),
-('VT02', N'Nhân viên'),
-('VT03', N'Kế toán');
+INSERT INTO VaiTro (MaVaiTro, TenVaiTro, TrangThai) VALUES
+('VT01', N'Quản lý', 1),
+('VT02', N'Nhân viên', 1),
+('VT03', N'Kế toán', 1);
 
 CREATE TABLE NhanVien (
     MaNV VARCHAR(20) NOT NULL,
@@ -49,39 +52,44 @@ CREATE TABLE NhanVien (
     NgaySinh DATE,
     DiaChi NVARCHAR(100),
     DienThoai NVARCHAR(10),
-    LuongThang DECIMAL(18, 2)
+    LuongThang DECIMAL(18, 2),
+    TrangThai BIT DEFAULT 1
 );
-INSERT INTO NhanVien VALUES
-('NV01', N'Nguyễn Văn', N'An', '1998-05-12', N'Hà Nội', '0901234567', 12000000),
-('NV02', N'Trần Minh', N'Bình', '1995-08-20', N'Hồ Chí Minh', '0912345678', 15000000),
-('NV03', N'Lê Thị Ngọc', N'Chi', '2000-03-15', N'Đà Nẵng', '0923456789', 10000000);
+INSERT INTO NhanVien 
+(MaNV, Ho, Ten, NgaySinh, DiaChi, DienThoai, LuongThang, TrangThai) 
+VALUES
+('NV01', N'Nguyễn Văn', N'An', '1998-05-12', N'Hà Nội', '0901234567', 12000000, 1),
+('NV02', N'Trần Minh', N'Bình', '1995-08-20', N'Hồ Chí Minh', '0912345678', 15000000, 1),
+('NV03', N'Lê Thị Ngọc', N'Chi', '2000-03-15', N'Đà Nẵng', '0923456789', 10000000, 1);
 
 CREATE TABLE KhachHang(
 	MaKH varchar(20) NOT NULL,
 	Ho NVARCHAR(50),
 	Ten NVARCHAR(50),
-	DiaChi NVARCHAR(200)
+	DiaChi NVARCHAR(200),
+    TrangThai BIT DEFAULT 1
 );
-INSERT INTO KhachHang (MaKH, Ho, Ten, DiaChi)
+INSERT INTO KhachHang (MaKH, Ho, Ten, DiaChi, TrangThai)
 VALUES 
-('KH001', N'Nguyễn Hoàng', N'Nam', N'Quận 1, TP.HCM'),
-('KH002', N'Lê Thị Ngọc', N'Mai', N'Quận 3, TP.HCM'),
-('KH003', N'Trần Anh', N'Tuấn', N'Quận Tân Bình, TP.HCM'),
-('KH004', N'Phạm Minh', N'Đức', N'Quận Đống Đa, Hà Nội'),
-('KH005', N'Vũ Thị', N'Lan', N'Quận Hai Bà Trưng, Hà Nội');
+('KH001', N'Nguyễn Hoàng', N'Nam', N'Quận 1, TP.HCM', 1),
+('KH002', N'Lê Thị Ngọc', N'Mai', N'Quận 3, TP.HCM', 1),
+('KH003', N'Trần Anh', N'Tuấn', N'Quận Tân Bình, TP.HCM', 1),
+('KH004', N'Phạm Minh', N'Đức', N'Quận Đống Đa, Hà Nội', 1),
+('KH005', N'Vũ Thị', N'Lan', N'Quận Hai Bà Trưng, Hà Nội', 1);
 
 CREATE TABLE NhaCungCap(
 	maNCC INT NOT NULL,
     tenNCC NVARCHAR(50),
     sdt VARCHAR(20),
-    diachi NVARCHAR(255)
+    diachi NVARCHAR(255),
+    TrangThai BIT DEFAULT 1
 );
-INSERT INTO NhaCungCap (maNCC, tenNCC, sdt, diachi) VALUES 
-(1, N'Công Ty Samsung Vina', '02839157310', N'Số 2, Hải Triều, Q.1, TP.HCM'),
-(2, N'Apple Việt Nam LLC', '18001127', N'Deutsches Haus, Lê Duẩn, Q.1, TP.HCM'),
-(3, N'Nhà Phân Phối Digiworld', '02839290059', N'195 Điện Biên Phủ, Q.3, TP.HCM'),
-(4, N'OPPO Việt Nam', '1800577776', N'Tòa nhà E-Town, Tân Bình, TP.HCM'),
-(5, N'Phân Phối FPT Trading', '02473006666', N'Duy Tân, Cầu Giấy, Hà Nội');
+INSERT INTO NhaCungCap (maNCC, tenNCC, sdt, diachi, TrangThai) VALUES 
+(1, N'Công Ty Samsung Vina', '02839157310', N'Số 2, Hải Triều, Q.1, TP.HCM', 1),
+(2, N'Apple Việt Nam LLC', '18001127', N'Deutsches Haus, Lê Duẩn, Q.1, TP.HCM', 1),
+(3, N'Nhà Phân Phối Digiworld', '02839290059', N'195 Điện Biên Phủ, Q.3, TP.HCM', 1),
+(4, N'OPPO Việt Nam', '1800577776', N'Tòa nhà E-Town, Tân Bình, TP.HCM', 1),
+(5, N'Phân Phối FPT Trading', '02473006666', N'Duy Tân, Cầu Giấy, Hà Nội', 1);
 
 CREATE TABLE SanPham (
     MaSp VARCHAR(20) NOT NULL,
@@ -90,31 +98,34 @@ CREATE TABLE SanPham (
     DonGia DECIMAL(18,2) NOT NULL,
     DonViTinh NVARCHAR(50),
     MaLoai INT NOT NULL,
-    MaHang INT NOT NULL
+    MaHang INT NOT NULL,
+    TrangThai BIT DEFAULT 1
 );
-INSERT INTO SanPham (MaSp, TenSp, SoLuongTon, DonGia, DonViTinh, MaLoai, MaHang) VALUES
-('SP001', N'iPhone 14 Pro Max', 15, 29990000, N'Chiếc', 1, 1),
-('SP002', N'Samsung Galaxy S23 Ultra', 20, 26990000, N'Chiếc', 1, 2),
-('SP003', N'Xiaomi Redmi Note 13', 35, 5990000, N'Chiếc', 1, 3),
-('SP004', N'Oppo Reno 10', 25, 8990000, N'Chiếc', 1, 4),
-('SP005', N'Apple Watch Series 9', 18, 11990000, N'Chiếc', 2, 1),
-('SP006', N'Samsung Galaxy Watch 6', 22, 7990000, N'Chiếc', 2, 2),
-('SP007', N'iPad Pro M2 11 inch', 12, 23990000, N'Chiếc', 3, 1),
-('SP008', N'Samsung Galaxy Tab S9', 15, 18990000, N'Chiếc', 3, 2),
-('SP009', N'Tai nghe AirPods Pro 2', 40, 5990000, N'Chiếc', 4, 1),
-('SP010', N'Sạc nhanh Samsung 25W', 50, 690000, N'Chiếc', 4, 2);
+INSERT INTO SanPham (MaSp, TenSp, SoLuongTon, DonGia, DonViTinh, MaLoai, MaHang, TrangThai) VALUES
+('SP001', N'iPhone 14 Pro Max', 15, 29990000, N'Chiếc', 1, 1, 1),
+('SP002', N'Samsung Galaxy S23 Ultra', 20, 26990000, N'Chiếc', 1, 2, 1),
+('SP003', N'Xiaomi Redmi Note 13', 35, 5990000, N'Chiếc', 1, 3, 1),
+('SP004', N'Oppo Reno 10', 25, 8990000, N'Chiếc', 1, 4, 1),
+('SP005', N'Apple Watch Series 9', 18, 11990000, N'Chiếc', 2, 1, 1),
+('SP006', N'Samsung Galaxy Watch 6', 22, 7990000, N'Chiếc', 2, 2, 1),
+('SP007', N'iPad Pro M2 11 inch', 12, 23990000, N'Chiếc', 3, 1, 1),
+('SP008', N'Samsung Galaxy Tab S9', 15, 18990000, N'Chiếc', 3, 2, 1),
+('SP009', N'Tai nghe AirPods Pro 2', 40, 5990000, N'Chiếc', 4, 1, 1),
+('SP010', N'Sạc nhanh Samsung 25W', 50, 690000, N'Chiếc', 4, 2, 1);
 
 CREATE TABLE TaiKhoan (
     MaTK VARCHAR(20) NOT NULL,
     TenDangNhap VARCHAR(50) NOT NULL,
     MatKhau VARCHAR(50) NOT NULL,
     MaNV VARCHAR(20) NOT NULL,
-    MaVaiTro VARCHAR(20) NOT NULL
+    MaVaiTro VARCHAR(20) NOT NULL,
+    TrangThai BIT DEFAULT 1
 );
-INSERT INTO TaiKhoan VALUES
-('TK01', 'admin', '123456', 'NV01', 'VT01'),
-('TK02', 'nhanvien1', '123456', 'NV02', 'VT02'),
-('TK03', 'ketoan1', '123456', 'NV03', 'VT03');
+INSERT INTO TaiKhoan (MaTK, TenDangNhap, MatKhau, MaNV, MaVaiTro, TrangThai)
+VALUES
+('TK01', 'admin', '123456', 'NV01', 'VT01', 1),
+('TK02', 'nhanvien1', '123456', 'NV02', 'VT02', 1),
+('TK03', 'ketoan1', '123456', 'NV03', 'VT03', 1);
 
 CREATE TABLE ChuongTrinhKhuyenMai (
     MaCTKM        VARCHAR(20) NOT NULL,
@@ -123,13 +134,14 @@ CREATE TABLE ChuongTrinhKhuyenMai (
     MoTa          NVARCHAR(500),
     NgayBatDau    DATE,
     NgayKetThuc   DATE,
-    TrangThai     INT
+    TrangThai BIT DEFAULT 1
 );
-INSERT INTO ChuongTrinhKhuyenMai
+INSERT INTO ChuongTrinhKhuyenMai 
+(MaCTKM, TenCTKM, LoaiKhuyenMai, MoTa, NgayBatDau, NgayKetThuc, TrangThai)
 VALUES
-('CTKM01', 'Khuyến mãi Tết 2026', 'HoaDon', 'Giảm giá hóa đơn dịp Tết', '2026-01-01', '2026-01-31', 1),
-('CTKM02', 'Sale iPhone', 'SanPham', 'Giảm giá các dòng iPhone', '2026-01-05', '2026-02-05', 1),
-('CTKM03', 'Sale Samsung', 'SanPham', 'Ưu đãi Samsung Galaxy', '2026-01-10', '2026-02-10', 1);
+('CTKM01', N'Khuyến mãi Tết 2026', N'HoaDon', N'Giảm giá hóa đơn dịp Tết', '2026-01-01', '2026-01-31', 1),
+('CTKM02', N'Sale iPhone', N'SanPham', N'Giảm giá các dòng iPhone', '2026-01-05', '2026-02-05', 1),
+('CTKM03', N'Sale Samsung', N'SanPham', N'Ưu đãi Samsung Galaxy', '2026-01-10', '2026-02-10', 1);
 
 CREATE TABLE ChiTietKhuyenMaiHoaDon (
     MaCTKM         VARCHAR(20) NOT NULL,
@@ -162,14 +174,15 @@ CREATE TABLE PhieuNhap (
     maNV VARCHAR(20) NOT NULL,
     maNCC INT NOT NULL,
     ngay DATETIME,
-    tongtien DECIMAL(18,2)
+    tongtien DECIMAL(18,2),
+    TrangThai BIT DEFAULT 1
 );
-INSERT INTO PhieuNhap (maPHN, maNV, maNCC, ngay, tongtien) VALUES 
-(101, 'NV01', 2, '2023-10-01 08:30:00', 660000000.00), 
-(102, 'NV02', 1, '2023-10-02 09:15:00', 450000000.00),
-(103, 'NV01', 3, '2023-10-05 14:20:00', 85000000.00), 
-(104, 'NV03', 2, '2023-10-10 10:00:00', 320000000.00),
-(105, 'NV02', 4, '2023-10-12 16:45:00', 150000000.00); 
+INSERT INTO PhieuNhap (maPHN, maNV, maNCC, ngay, tongtien, TrangThai) VALUES 
+(101, 'NV01', 2, '2023-10-01 08:30:00', 660000000.00, 1), 
+(102, 'NV02', 1, '2023-10-02 09:15:00', 450000000.00, 1),
+(103, 'NV01', 3, '2023-10-05 14:20:00', 85000000.00, 1), 
+(104, 'NV03', 2, '2023-10-10 10:00:00', 320000000.00, 1),
+(105, 'NV02', 4, '2023-10-12 16:45:00', 150000000.00, 1);
 
 CREATE TABLE ChiTietPhieuNhap (
 	maPHN INT NOT NULL,
@@ -193,13 +206,14 @@ CREATE TABLE HoaDon (
     MaNV VARCHAR(20) NOT NULL,      
     MaKH VARCHAR(20) NOT NULL,      
     NgayLapHD DATETIME,    
-    TongTien DECIMAL(18, 2)
+    TongTien DECIMAL(18, 2),
+    TrangThai BIT DEFAULT 1
 );
-INSERT INTO HoaDon (MaHD, MaNV, MaKH, NgayLapHD, TongTien)
+INSERT INTO HoaDon (MaHD, MaNV, MaKH, NgayLapHD, TongTien, TrangThai)
 VALUES 
-('HD001', 'NV01', 'KH001', '2026-01-10 09:00:00', 600000), 
-('HD002', 'NV01', 'KH002', '2026-01-11 14:30:00', 1200000), 
-('HD003', 'NV02', 'KH003', '2026-01-12 10:15:00', 450000);
+('HD001', 'NV01', 'KH001', '2026-01-10 09:00:00', 600000, 1), 
+('HD002', 'NV01', 'KH002', '2026-01-11 14:30:00', 1200000, 1), 
+('HD003', 'NV02', 'KH003', '2026-01-12 10:15:00', 450000, 1);
 
 CREATE TABLE ChiTietHoaDon(
     MaHD VARCHAR(20) NOT NULL,
@@ -219,12 +233,14 @@ CREATE TABLE BaoHanh (
     MaSP VARCHAR(20) NOT NULL,
     ThoiHan INT,
     NgayBatDau DATE,
-    NgayKetThuc DATE
+    NgayKetThuc DATE,
+    TrangThai BIT DEFAULT 1
 );
-INSERT INTO BaoHanh (MaBH, TenBH, MaHD, MaSP, ThoiHan, NgayBatDau, NgayKetThuc)
+INSERT INTO BaoHanh 
+(MaBH, TenBH, MaHD, MaSP, ThoiHan, NgayBatDau, NgayKetThuc, TrangThai)
 VALUES
-('BH001', N'Bảo hành iPhone 14 Pro Max 12 tháng', 'HD001', 'SP001', 12, '2026-01-10', '2027-01-10'),
-('BH002', N'Bảo hành Samsung Galaxy S23 Ultra 6 tháng', 'HD001', 'SP002', 6,  '2026-01-10', '2026-07-10');
+('BH001', N'Bảo hành iPhone 14 Pro Max 12 tháng', 'HD001', 'SP001', 12, '2026-01-10', '2027-01-10', 1),
+('BH002', N'Bảo hành Samsung Galaxy S23 Ultra 6 tháng', 'HD001', 'SP002', 6, '2026-01-10', '2026-07-10', 1);
 
 /* ================== PRIMARY KEY ================== */
 
