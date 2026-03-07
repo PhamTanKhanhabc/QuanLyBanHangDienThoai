@@ -8,6 +8,7 @@ import java.awt.FlowLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import GUI.Component.ButtonToolBar;
+import GUI.TestIcon;
 /**
  *
  * @author user
@@ -30,7 +31,7 @@ public class ActionPanel extends JPanel {
         btnInfo = new ButtonToolBar("INFO", "./icon/info.svg", 75, 75, 13, "info");
         btnImport = new ButtonToolBar("IMPORT", "./icon/import.svg", 85, 75, 13, "import");
         btnExport = new ButtonToolBar("EXPORT", "./icon/export.svg", 85, 75, 13, "export");
-        btnThuocTinh = new ButtonToolBar("THUỘC TÍNH", "./icon/menu.svg", 100, 90, 10, "attribute");
+        btnThuocTinh = new ButtonToolBar("THUỘC TÍNH", "./icon/attribute.svg", 100, 90, 10, "attribute");
         
         add(btnAdd);
         add(btnUpdate);

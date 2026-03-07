@@ -47,7 +47,7 @@ public class HeaderRightPanel extends JPanel {
         txtSearch.setSelectionColor(new Color(230,245,245));
         add(txtSearch);
 
-        btnReload.setIcon(new FlatSVGIcon("./icon/reload.svg"));
+        btnReload.setIcon(new FlatSVGIcon("./icon/reload.svg", 24, 24));
         btnReload.setToolTipText("Làm mới");//
         btnReload.setBorder(null);
         btnReload.setBorderPainted(false);
@@ -68,7 +68,7 @@ public class HeaderRightPanel extends JPanel {
 
         txtSearch.putClientProperty(
                 FlatClientProperties.TEXT_FIELD_LEADING_ICON,
-                new FlatSVGIcon("./icon/search.svg")
+                new FlatSVGIcon("./icon/search.svg", 24, 24)
         );
 
         String[] searchType = {"Tất cả","Mã","Tên"};

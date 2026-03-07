@@ -30,7 +30,7 @@ public class ButtonToolBar extends JButton {
     private void initComponent(String text, String iconPath, int width, int height, int fontSize) {
 
         setFont(new Font("Roboto", Font.BOLD, fontSize));
-        setIcon(new FlatSVGIcon(iconPath));
+        setIcon(new FlatSVGIcon(iconPath, 24, 24));
         setText(text);
 
         setBorder(null);
