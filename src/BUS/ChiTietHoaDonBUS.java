@@ -10,7 +10,7 @@ public class ChiTietHoaDonBUS {
     private ArrayList<ChiTietHoaDonDTO> listCTHD = new ArrayList<>();
 
     public ChiTietHoaDonBUS() {
-        listCTHD = cthdDAO.selectALL();
+        listCTHD = cthdDAO.selectAll();
     }
 
     public ArrayList<ChiTietHoaDonDTO> getAll() {
