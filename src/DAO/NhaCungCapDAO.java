@@ -18,11 +18,11 @@ public class NhaCungCapDAO implements DAOInterface<NhaCungCapDTO> {
         int ketQua = 0;
         try {
             Connection con = SQLServerConnect.getConnection();
-            
-            String sql = "INSERT INTO NhaCungCap (maNCC, tenNCC, sdt, diachi) VALUES (?, ?, ?, ?)";
-            
+
+            String sql = "INSERT INTO NhaCungCap (maNCC, tenNCC, sdt, diachi, TrangThai) VALUES (?, ?, ?, ?, 1)";
+
             PreparedStatement pst = con.prepareStatement(sql);
-            
+
             pst.setInt(1, t.getMaNCC());
             pst.setString(2, t.getTenNCC());
             pst.setString(3, t.getSDT());
@@ -31,7 +31,7 @@ public class NhaCungCapDAO implements DAOInterface<NhaCungCapDTO> {
             ketQua = pst.executeUpdate();
 
             pst.close();
-            con.close();
+            SQLServerConnect.closeConnection(con);
 
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -44,8 +44,9 @@ public class NhaCungCapDAO implements DAOInterface<NhaCungCapDTO> {
         int ketQua = 0;
         try {
             Connection con = SQLServerConnect.getConnection();
-            
-            String sql = "UPDATE NhaCungCap SET tenNCC = ?, sdt = ?, diachi = ? WHERE maNCC = ?";
+
+            String sql = "UPDATE NhaCungCap SET tenNCC = ?, sdt = ?, diachi = ? WHERE maNCC = ? AND TrangThai = 1";
+
             PreparedStatement pst = con.prepareStatement(sql);
 
             pst.setString(1, t.getTenNCC());
@@ -54,9 +55,9 @@ public class NhaCungCapDAO implements DAOInterface<NhaCungCapDTO> {
             pst.setInt(4, t.getMaNCC());
 
             ketQua = pst.executeUpdate();
-            
+
             pst.close();
-            con.close();
+            SQLServerConnect.closeConnection(con);
 
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -69,16 +70,17 @@ public class NhaCungCapDAO implements DAOInterface<NhaCungCapDTO> {
         int ketQua = 0;
         try {
             Connection con = SQLServerConnect.getConnection();
-            
-            String sql = "DELETE FROM NhaCungCap WHERE maNCC = ?";
+
+            String sql = "UPDATE NhaCungCap SET TrangThai = 0 WHERE maNCC = ? AND TrangThai = 1";
+
             PreparedStatement pst = con.prepareStatement(sql);
 
             pst.setInt(1, t.getMaNCC());
 
             ketQua = pst.executeUpdate();
-            
+
             pst.close();
-            con.close();
+            SQLServerConnect.closeConnection(con);
 
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -91,25 +93,28 @@ public class NhaCungCapDAO implements DAOInterface<NhaCungCapDTO> {
         ArrayList<NhaCungCapDTO> ketQua = new ArrayList<>();
         try {
             Connection con = SQLServerConnect.getConnection();
-            
-            String sql = "SELECT * FROM NhaCungCap";
+
+            String sql = "SELECT * FROM NhaCungCap WHERE TrangThai = 1";
+
             PreparedStatement pst = con.prepareStatement(sql);
-            
             ResultSet rs = pst.executeQuery();
 
             while (rs.next()) {
-                int maNCC = rs.getInt("maNCC");
-                String tenNCC = rs.getString("tenNCC");
-                String sdt = rs.getString("sdt");
-                String diachi = rs.getString("diachi");
 
-                NhaCungCapDTO ncc = new NhaCungCapDTO(maNCC, tenNCC, sdt, diachi);
+                NhaCungCapDTO ncc = new NhaCungCapDTO(
+                        rs.getInt("maNCC"),
+                        rs.getString("tenNCC"),
+                        rs.getString("sdt"),
+                        rs.getString("diachi"),
+                        rs.getInt("TrangThai")
+                );
+
                 ketQua.add(ncc);
             }
-            
+
             rs.close();
             pst.close();
-            con.close();
+            SQLServerConnect.closeConnection(con);
 
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -122,8 +127,9 @@ public class NhaCungCapDAO implements DAOInterface<NhaCungCapDTO> {
         NhaCungCapDTO ketQua = null;
         try {
             Connection con = SQLServerConnect.getConnection();
-            
-            String sql = "SELECT * FROM NhaCungCap WHERE maNCC = ?";
+
+            String sql = "SELECT * FROM NhaCungCap WHERE maNCC = ? AND TrangThai = 1";
+
             PreparedStatement pst = con.prepareStatement(sql);
 
             pst.setInt(1, t.getMaNCC());
@@ -131,17 +137,19 @@ public class NhaCungCapDAO implements DAOInterface<NhaCungCapDTO> {
             ResultSet rs = pst.executeQuery();
 
             if (rs.next()) {
-                int maNCC = rs.getInt("maNCC");
-                String tenNCC = rs.getString("tenNCC");
-                String sdt = rs.getString("sdt");
-                String diachi = rs.getString("diachi");
 
-                ketQua = new NhaCungCapDTO(maNCC, tenNCC, sdt, diachi);
+                ketQua = new NhaCungCapDTO(
+                        rs.getInt("maNCC"),
+                        rs.getString("tenNCC"),
+                        rs.getString("sdt"),
+                        rs.getString("diachi"),
+                        rs.getInt("TrangThai")
+                );
             }
-            
+
             rs.close();
             pst.close();
-            con.close();
+            SQLServerConnect.closeConnection(con);
 
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -154,31 +162,35 @@ public class NhaCungCapDAO implements DAOInterface<NhaCungCapDTO> {
         ArrayList<NhaCungCapDTO> ketQua = new ArrayList<>();
         try {
             Connection con = SQLServerConnect.getConnection();
-            
-            String sql = "SELECT * FROM NhaCungCap WHERE " + condition;
-            PreparedStatement pst = con.prepareStatement(sql);
 
+            String sql = "SELECT * FROM NhaCungCap WHERE TrangThai = 1 AND " + condition;
+
+            PreparedStatement pst = con.prepareStatement(sql);
             ResultSet rs = pst.executeQuery();
 
             while (rs.next()) {
-                int maNCC = rs.getInt("maNCC");
-                String tenNCC = rs.getString("tenNCC");
-                String sdt = rs.getString("sdt");
-                String diachi = rs.getString("diachi");
 
-                NhaCungCapDTO ncc = new NhaCungCapDTO(maNCC, tenNCC, sdt, diachi);
+                NhaCungCapDTO ncc = new NhaCungCapDTO(
+                        rs.getInt("maNCC"),
+                        rs.getString("tenNCC"),
+                        rs.getString("sdt"),
+                        rs.getString("diachi"),
+                        rs.getInt("TrangThai")
+                );
+
                 ketQua.add(ncc);
             }
-            
+
             rs.close();
             pst.close();
-            con.close();
+            SQLServerConnect.closeConnection(con);
 
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
         return ketQua;
     }
+
     public int getLastMaNCC() {
         int lastMa = 0;
         try {
@@ -195,12 +207,11 @@ public class NhaCungCapDAO implements DAOInterface<NhaCungCapDTO> {
 
             rs.close();
             pst.close();
-            con.close();
+            SQLServerConnect.closeConnection(con);
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return lastMa;
     }
-
 }

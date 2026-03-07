@@ -17,28 +17,24 @@ public class TaiKhoanDAO implements DAOInterface<TaiKhoanDTO> {
     public int insert(TaiKhoanDTO t) {
         int ketQua = 0;
         try {
-            // Bước 1: Kết nối CSDL
             Connection con = SQLServerConnect.getConnection();
 
-            // Bước 2: SQL
-            String sql = "INSERT INTO TaiKhoan(MaTK, TenDangNhap, MatKhau, MaNV, MaVaiTro) "
-                       + "VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO TaiKhoan(MaTK, TenDangNhap, MatKhau, MaNV, MaVaiTro, TrangThai) "
+                    + "VALUES (?, ?, ?, ?, ?, 1)";
 
-            // Bước 3: PreparedStatement
             PreparedStatement pst = con.prepareStatement(sql);
 
-            // Bước 4: Gán giá trị
             pst.setString(1, t.getMaTaiKhoan());
             pst.setString(2, t.getTenDangNhap());
             pst.setString(3, t.getMatKhau());
             pst.setString(4, t.getMaNhanVien());
             pst.setString(5, t.getMaVaiTro());
 
-            // Bước 5: Thực thi
             ketQua = pst.executeUpdate();
 
-            // Bước 6: Đóng kết nối
+            pst.close();
             SQLServerConnect.closeConnection(con);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -49,29 +45,25 @@ public class TaiKhoanDAO implements DAOInterface<TaiKhoanDTO> {
     public int update(TaiKhoanDTO t) {
         int ketQua = 0;
         try {
-            // Bước 1
             Connection con = SQLServerConnect.getConnection();
 
-            // Bước 2
             String sql = "UPDATE TaiKhoan "
-                       + "SET TenDangNhap = ?, MatKhau = ?, MaNV = ?, MaVaiTro = ? "
-                       + "WHERE MaTK = ?";
+                    + "SET TenDangNhap = ?, MatKhau = ?, MaNV = ?, MaVaiTro = ? "
+                    + "WHERE MaTK = ? AND TrangThai = 1";
 
-            // Bước 3
             PreparedStatement pst = con.prepareStatement(sql);
 
-            // Bước 4
             pst.setString(1, t.getTenDangNhap());
             pst.setString(2, t.getMatKhau());
             pst.setString(3, t.getMaNhanVien());
             pst.setString(4, t.getMaVaiTro());
             pst.setString(5, t.getMaTaiKhoan());
 
-            // Bước 5
             ketQua = pst.executeUpdate();
 
-            // Bước 6
+            pst.close();
             SQLServerConnect.closeConnection(con);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -82,23 +74,19 @@ public class TaiKhoanDAO implements DAOInterface<TaiKhoanDTO> {
     public int delete(TaiKhoanDTO t) {
         int ketQua = 0;
         try {
-            // Bước 1
             Connection con = SQLServerConnect.getConnection();
 
-            // Bước 2
-            String sql = "DELETE FROM TaiKhoan WHERE MaTK = ?";
+            String sql = "UPDATE TaiKhoan SET TrangThai = 0 WHERE MaTK = ? AND TrangThai = 1";
 
-            // Bước 3
             PreparedStatement pst = con.prepareStatement(sql);
 
-            // Bước 4
             pst.setString(1, t.getMaTaiKhoan());
 
-            // Bước 5
             ketQua = pst.executeUpdate();
 
-            // Bước 6
+            pst.close();
             SQLServerConnect.closeConnection(con);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -109,32 +97,31 @@ public class TaiKhoanDAO implements DAOInterface<TaiKhoanDTO> {
     public ArrayList<TaiKhoanDTO> selectALL() {
         ArrayList<TaiKhoanDTO> ketQua = new ArrayList<>();
         try {
-            // Bước 1
             Connection con = SQLServerConnect.getConnection();
 
-            // Bước 2
-            String sql = "SELECT * FROM TaiKhoan";
+            String sql = "SELECT * FROM TaiKhoan WHERE TrangThai = 1";
 
-            // Bước 3
             PreparedStatement pst = con.prepareStatement(sql);
 
-            // Bước 4
             ResultSet rs = pst.executeQuery();
 
-            // Bước 5
             while (rs.next()) {
                 TaiKhoanDTO tk = new TaiKhoanDTO(
                         rs.getString("MaTK"),
                         rs.getString("TenDangNhap"),
                         rs.getString("MatKhau"),
                         rs.getString("MaNV"),
-                        rs.getString("MaVaiTro")
+                        rs.getString("MaVaiTro"),
+                        rs.getInt("TrangThai")
                 );
+
                 ketQua.add(tk);
             }
 
-            // Bước 6
+            rs.close();
+            pst.close();
             SQLServerConnect.closeConnection(con);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -145,19 +132,14 @@ public class TaiKhoanDAO implements DAOInterface<TaiKhoanDTO> {
     public TaiKhoanDTO selectById(TaiKhoanDTO t) {
         TaiKhoanDTO ketQua = null;
         try {
-            // Bước 1
             Connection con = SQLServerConnect.getConnection();
 
-            // Bước 2
-            String sql = "SELECT * FROM TaiKhoan WHERE MaTaiKhoan = ?";
+            String sql = "SELECT * FROM TaiKhoan WHERE MaTK = ? AND TrangThai = 1";
 
-            // Bước 3
             PreparedStatement pst = con.prepareStatement(sql);
 
-            // Bước 4
             pst.setString(1, t.getMaTaiKhoan());
 
-            // Bước 5
             ResultSet rs = pst.executeQuery();
 
             if (rs.next()) {
@@ -166,12 +148,15 @@ public class TaiKhoanDAO implements DAOInterface<TaiKhoanDTO> {
                         rs.getString("TenDangNhap"),
                         rs.getString("MatKhau"),
                         rs.getString("MaNV"),
-                        rs.getString("MaVaiTro")
+                        rs.getString("MaVaiTro"),
+                        rs.getInt("TrangThai")
                 );
             }
 
-            // Bước 6
+            rs.close();
+            pst.close();
             SQLServerConnect.closeConnection(con);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -182,53 +167,48 @@ public class TaiKhoanDAO implements DAOInterface<TaiKhoanDTO> {
     public ArrayList<TaiKhoanDTO> selectByCondition(String condition) {
         ArrayList<TaiKhoanDTO> ketQua = new ArrayList<>();
         try {
-            // Bước 1
             Connection con = SQLServerConnect.getConnection();
 
-            // Bước 2
-            String sql = "SELECT * FROM TaiKhoan WHERE " + condition;
+            String sql = "SELECT * FROM TaiKhoan WHERE TrangThai = 1 AND " + condition;
 
-            // Bước 3
             PreparedStatement pst = con.prepareStatement(sql);
 
-            // Bước 4
             ResultSet rs = pst.executeQuery();
 
-            // Bước 5
             while (rs.next()) {
                 TaiKhoanDTO tk = new TaiKhoanDTO(
                         rs.getString("MaTK"),
                         rs.getString("TenDangNhap"),
                         rs.getString("MatKhau"),
                         rs.getString("MaNV"),
-                        rs.getString("MaVaiTro")
+                        rs.getString("MaVaiTro"),
+                        rs.getInt("TrangThai")
                 );
+
                 ketQua.add(tk);
             }
 
-            // Bước 6
+            rs.close();
+            pst.close();
             SQLServerConnect.closeConnection(con);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return ketQua;
     }
+
     public TaiKhoanDTO selectByUser(String username) {
         TaiKhoanDTO ketQua = null;
         try {
-            // Bước 1: Kết nối
             Connection con = SQLServerConnect.getConnection();
 
-            // Bước 2: Câu lệnh SQL
-            String sql = "SELECT * FROM TaiKhoan WHERE TenDangNhap = ?";
+            String sql = "SELECT * FROM TaiKhoan WHERE TenDangNhap = ? AND TrangThai = 1";
 
-            // Bước 3: PreparedStatement
             PreparedStatement pst = con.prepareStatement(sql);
 
-            // Bước 4: Gán giá trị
             pst.setString(1, username);
 
-            // Bước 5: Thực thi
             ResultSet rs = pst.executeQuery();
 
             if (rs.next()) {
@@ -237,11 +217,13 @@ public class TaiKhoanDAO implements DAOInterface<TaiKhoanDTO> {
                         rs.getString("TenDangNhap"),
                         rs.getString("MatKhau"),
                         rs.getString("MaNV"),
-                        rs.getString("MaVaiTro")
+                        rs.getString("MaVaiTro"),
+                        rs.getInt("TrangThai")
                 );
             }
 
-            // Bước 6: Đóng kết nối
+            rs.close();
+            pst.close();
             SQLServerConnect.closeConnection(con);
 
         } catch (SQLException e) {

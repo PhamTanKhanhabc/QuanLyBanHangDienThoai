@@ -1,13 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package DAO;
-
-/**
- *
- * @author user
- */
 
 import DTO.HoaDonDTO;
 import java.time.LocalDateTime;
@@ -30,8 +21,8 @@ public class HoaDonDAO implements DAOInterface<HoaDonDTO> {
         try {
             Connection con = SQLServerConnect.getConnection();
 
-            String sql = "INSERT INTO HoaDon (MaHD, MaNV, MaKH, NgayLapHD, TongTien) "
-                       + "VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO HoaDon (MaHD, MaNV, MaKH, NgayLapHD, TongTien, TrangThai) "
+                    + "VALUES (?, ?, ?, ?, ?, 1)";
 
             PreparedStatement pst = con.prepareStatement(sql);
 
@@ -43,9 +34,11 @@ public class HoaDonDAO implements DAOInterface<HoaDonDTO> {
 
             ketQua = pst.executeUpdate();
 
+            pst.close();
             SQLServerConnect.closeConnection(con);
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
         return ketQua;
     }
@@ -57,8 +50,8 @@ public class HoaDonDAO implements DAOInterface<HoaDonDTO> {
             Connection con = SQLServerConnect.getConnection();
 
             String sql = "UPDATE HoaDon "
-                       + "SET MaNV = ?, MaKH = ?, NgayLapHD = ?, TongTien = ? "
-                       + "WHERE MaHD = ?";
+                    + "SET MaNV = ?, MaKH = ?, NgayLapHD = ?, TongTien = ? "
+                    + "WHERE MaHD = ? AND TrangThai = 1";
 
             PreparedStatement pst = con.prepareStatement(sql);
 
@@ -70,9 +63,11 @@ public class HoaDonDAO implements DAOInterface<HoaDonDTO> {
 
             ketQua = pst.executeUpdate();
 
+            pst.close();
             SQLServerConnect.closeConnection(con);
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
         return ketQua;
     }
@@ -83,16 +78,18 @@ public class HoaDonDAO implements DAOInterface<HoaDonDTO> {
         try {
             Connection con = SQLServerConnect.getConnection();
 
-            String sql = "DELETE FROM HoaDon WHERE MaHD = ?";
+            String sql = "UPDATE HoaDon SET TrangThai = 0 WHERE MaHD = ? AND TrangThai = 1";
 
             PreparedStatement pst = con.prepareStatement(sql);
             pst.setString(1, t.getMaHD());
 
             ketQua = pst.executeUpdate();
 
+            pst.close();
             SQLServerConnect.closeConnection(con);
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
         return ketQua;
     }
@@ -103,25 +100,31 @@ public class HoaDonDAO implements DAOInterface<HoaDonDTO> {
         try {
             Connection con = SQLServerConnect.getConnection();
 
-            String sql = "SELECT * FROM HoaDon";
+            String sql = "SELECT * FROM HoaDon WHERE TrangThai = 1";
 
             PreparedStatement pst = con.prepareStatement(sql);
             ResultSet rs = pst.executeQuery();
 
             while (rs.next()) {
-                String maHD = rs.getString("MaHD");
-                String maNV = rs.getString("MaNV");
-                String maKH = rs.getString("MaKH");
-                LocalDateTime ngayLapHD = rs.getTimestamp("NgayLapHD").toLocalDateTime();
-                double tongTien = rs.getDouble("TongTien");
 
-                HoaDonDTO hd = new HoaDonDTO(maHD, maNV, maKH, ngayLapHD, tongTien);
+                HoaDonDTO hd = new HoaDonDTO(
+                        rs.getString("MaHD"),
+                        rs.getString("MaNV"),
+                        rs.getString("MaKH"),
+                        rs.getTimestamp("NgayLapHD").toLocalDateTime(),
+                        rs.getDouble("TongTien"),
+                        rs.getInt("TrangThai")
+                );
+
                 ketQua.add(hd);
             }
 
+            rs.close();
+            pst.close();
             SQLServerConnect.closeConnection(con);
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
         return ketQua;
     }
@@ -132,7 +135,7 @@ public class HoaDonDAO implements DAOInterface<HoaDonDTO> {
         try {
             Connection con = SQLServerConnect.getConnection();
 
-            String sql = "SELECT * FROM HoaDon WHERE MaHD = ?";
+            String sql = "SELECT * FROM HoaDon WHERE MaHD = ? AND TrangThai = 1";
 
             PreparedStatement pst = con.prepareStatement(sql);
             pst.setString(1, t.getMaHD());
@@ -140,18 +143,23 @@ public class HoaDonDAO implements DAOInterface<HoaDonDTO> {
             ResultSet rs = pst.executeQuery();
 
             if (rs.next()) {
-                String maHD = rs.getString("MaHD");
-                String maNV = rs.getString("MaNV");
-                String maKH = rs.getString("MaKH");
-                LocalDateTime ngayLapHD = rs.getTimestamp("NgayLapHD").toLocalDateTime();
-                double tongTien = rs.getDouble("TongTien");
 
-                ketQua = new HoaDonDTO(maHD, maNV, maKH, ngayLapHD, tongTien);
+                ketQua = new HoaDonDTO(
+                        rs.getString("MaHD"),
+                        rs.getString("MaNV"),
+                        rs.getString("MaKH"),
+                        rs.getTimestamp("NgayLapHD").toLocalDateTime(),
+                        rs.getDouble("TongTien"),
+                        rs.getInt("TrangThai")
+                );
             }
 
+            rs.close();
+            pst.close();
             SQLServerConnect.closeConnection(con);
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
         return ketQua;
     }
@@ -162,25 +170,31 @@ public class HoaDonDAO implements DAOInterface<HoaDonDTO> {
         try {
             Connection con = SQLServerConnect.getConnection();
 
-            String sql = "SELECT * FROM HoaDon WHERE " + condition;
+            String sql = "SELECT * FROM HoaDon WHERE TrangThai = 1 AND " + condition;
 
             PreparedStatement pst = con.prepareStatement(sql);
             ResultSet rs = pst.executeQuery();
 
             while (rs.next()) {
-                String maHD = rs.getString("MaHD");
-                String maNV = rs.getString("MaNV");
-                String maKH = rs.getString("MaKH");
-                LocalDateTime ngayLapHD = rs.getTimestamp("NgayLapHD").toLocalDateTime();
-                double tongTien = rs.getDouble("TongTien");
 
-                HoaDonDTO hd = new HoaDonDTO(maHD, maNV, maKH, ngayLapHD, tongTien);
+                HoaDonDTO hd = new HoaDonDTO(
+                        rs.getString("MaHD"),
+                        rs.getString("MaNV"),
+                        rs.getString("MaKH"),
+                        rs.getTimestamp("NgayLapHD").toLocalDateTime(),
+                        rs.getDouble("TongTien"),
+                        rs.getInt("TrangThai")
+                );
+
                 ketQua.add(hd);
             }
 
+            rs.close();
+            pst.close();
             SQLServerConnect.closeConnection(con);
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
         return ketQua;
     }
@@ -199,11 +213,13 @@ public class HoaDonDAO implements DAOInterface<HoaDonDTO> {
                 lastMa = rs.getString("MaHD");
             }
 
+            rs.close();
+            pst.close();
             SQLServerConnect.closeConnection(con);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return lastMa;
     }
 }
-

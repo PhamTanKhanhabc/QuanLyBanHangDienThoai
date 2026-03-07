@@ -1,17 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package DAO;
 
-/**
- *
- * @author user
- */
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 import DTO.SanPhamDTO;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -20,10 +8,6 @@ import java.util.ArrayList;
 import java.sql.PreparedStatement;
 import java.util.List;
 
-/**
- *
- * @author user
- */
 public class SanPhamDAO implements DAOInterface<SanPhamDTO> {
 
     public static SanPhamDAO getInstance() {
@@ -34,17 +18,13 @@ public class SanPhamDAO implements DAOInterface<SanPhamDTO> {
     public int insert(SanPhamDTO t) {
         int ketQua = 0;
         try {
-            // Bước 1: Tạo kết nối tới CSDL
             Connection con = SQLServerConnect.getConnection();
 
-            // Bước 2: Viết câu lệnh SQL
-            String sql = "INSERT INTO SanPham(MaSp, TenSp, SoLuongTon, DonGia, DonViTinh, MaLoai, MaHang) "
-                       + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO SanPham(MaSp, TenSp, SoLuongTon, DonGia, DonViTinh, MaLoai, MaHang, TrangThai) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, 1)";
 
-            // Bước 3: Tạo PreparedStatement
             PreparedStatement pst = con.prepareStatement(sql);
 
-            // Bước 4: Gán giá trị cho các dấu ?
             pst.setString(1, t.getMaSp());
             pst.setString(2, t.getTenSp());
             pst.setInt(3, t.getSoLuongTon());
@@ -53,11 +33,11 @@ public class SanPhamDAO implements DAOInterface<SanPhamDTO> {
             pst.setInt(6, t.getMaLoai());
             pst.setInt(7, t.getMaHang());
 
-            // Bước 5: Thực thi
-            ketQua = pst.executeUpdate(); // trả về số dòng bị thay đổi
+            ketQua = pst.executeUpdate();
 
-            // Bước 6: Đóng kết nối
+            pst.close();
             SQLServerConnect.closeConnection(con);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -68,18 +48,14 @@ public class SanPhamDAO implements DAOInterface<SanPhamDTO> {
     public int update(SanPhamDTO t) {
         int ketQua = 0;
         try {
-            // Bước 1: Tạo kết nối tới CSDL
             Connection con = SQLServerConnect.getConnection();
 
-            // Bước 2: Viết câu lệnh SQL
             String sql = "UPDATE SanPham "
-                       + "SET TenSp = ?, SoLuongTon = ?, DonGia = ?, DonViTinh = ?, MaLoai = ?, MaHang = ? "
-                       + "WHERE MaSp = ?";
+                    + "SET TenSp = ?, SoLuongTon = ?, DonGia = ?, DonViTinh = ?, MaLoai = ?, MaHang = ? "
+                    + "WHERE MaSp = ? AND TrangThai = 1";
 
-            // Bước 3: Tạo PreparedStatement
             PreparedStatement pst = con.prepareStatement(sql);
 
-            // Bước 4: Gán giá trị cho các dấu ?
             pst.setString(1, t.getTenSp());
             pst.setInt(2, t.getSoLuongTon());
             pst.setDouble(3, t.getDonGia());
@@ -88,11 +64,11 @@ public class SanPhamDAO implements DAOInterface<SanPhamDTO> {
             pst.setInt(6, t.getMaHang());
             pst.setString(7, t.getMaSp());
 
-            // Bước 5: Thực thi
-            ketQua = pst.executeUpdate(); // số dòng bị thay đổi
+            ketQua = pst.executeUpdate();
 
-            // Bước 6: Đóng kết nối
+            pst.close();
             SQLServerConnect.closeConnection(con);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -103,23 +79,19 @@ public class SanPhamDAO implements DAOInterface<SanPhamDTO> {
     public int delete(SanPhamDTO t) {
         int ketQua = 0;
         try {
-            // Bước 1: Tạo kết nối tới CSDL
             Connection con = SQLServerConnect.getConnection();
 
-            // Bước 2: Viết câu lệnh SQL
-            String sql = "DELETE FROM SanPham WHERE MaSp = ?";
+            String sql = "UPDATE SanPham SET TrangThai = 0 WHERE MaSp = ? AND TrangThai = 1";
 
-            // Bước 3: Tạo PreparedStatement
             PreparedStatement pst = con.prepareStatement(sql);
 
-            // Bước 4: Gán giá trị cho dấu ?
             pst.setString(1, t.getMaSp());
 
-            // Bước 5: Thực thi
-            ketQua = pst.executeUpdate(); // số dòng bị xóa
+            ketQua = pst.executeUpdate();
 
-            // Bước 6: Ngắt kết nối
+            pst.close();
             SQLServerConnect.closeConnection(con);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -130,34 +102,34 @@ public class SanPhamDAO implements DAOInterface<SanPhamDTO> {
     public ArrayList<SanPhamDTO> selectALL() {
         ArrayList<SanPhamDTO> ketQua = new ArrayList<>();
         try {
-            // Bước 1: Tạo kết nối tới CSDL
             Connection con = SQLServerConnect.getConnection();
 
-            // Bước 2: Viết câu lệnh SQL
-            String sql = "SELECT * FROM SanPham";
+            String sql = "SELECT * FROM SanPham WHERE TrangThai = 1";
 
-            // Bước 3: Tạo PreparedStatement
             PreparedStatement pst = con.prepareStatement(sql);
 
-            // Bước 4: Thực thi
             ResultSet rs = pst.executeQuery();
 
-            // Bước 5: Duyệt ResultSet
             while (rs.next()) {
-                String maSp = rs.getString("MaSp");
-                String tenSp = rs.getString("TenSp");
-                int soLuongTon = rs.getInt("SoLuongTon");
-                double donGia = rs.getDouble("DonGia");
-                String donViTinh = rs.getString("DonViTinh");
-                int maLoai = rs.getInt("MaLoai");
-                int maHang = rs.getInt("MaHang");
 
-                SanPhamDTO sp = new SanPhamDTO(maSp, tenSp, soLuongTon, donGia, donViTinh, maLoai, maHang);
+                SanPhamDTO sp = new SanPhamDTO(
+                        rs.getString("MaSp"),
+                        rs.getString("TenSp"),
+                        rs.getInt("SoLuongTon"),
+                        rs.getDouble("DonGia"),
+                        rs.getString("DonViTinh"),
+                        rs.getInt("MaLoai"),
+                        rs.getInt("MaHang"),
+                        rs.getInt("TrangThai")
+                );
+
                 ketQua.add(sp);
             }
 
-            // Bước 6: Ngắt kết nối
+            rs.close();
+            pst.close();
             SQLServerConnect.closeConnection(con);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -168,37 +140,34 @@ public class SanPhamDAO implements DAOInterface<SanPhamDTO> {
     public SanPhamDTO selectById(SanPhamDTO t) {
         SanPhamDTO ketQua = null;
         try {
-            // Bước 1: Tạo kết nối tới CSDL
             Connection con = SQLServerConnect.getConnection();
 
-            // Bước 2: Viết câu lệnh SQL
-            String sql = "SELECT * FROM SanPham WHERE MaSp = ?";
+            String sql = "SELECT * FROM SanPham WHERE MaSp = ? AND TrangThai = 1";
 
-            // Bước 3: Tạo PreparedStatement
             PreparedStatement pst = con.prepareStatement(sql);
 
-            // Bước 4: Gán giá trị cho ?
             pst.setString(1, t.getMaSp());
 
-            // Bước 5: Thực thi
             ResultSet rs = pst.executeQuery();
 
-            // Bước 6: Duyệt ResultSet
             if (rs.next()) {
-                String maSp = rs.getString("MaSp");
-                String tenSp = rs.getString("TenSp");
-                int soLuongTon = rs.getInt("SoLuongTon");
-                double donGia = rs.getDouble("DonGia");
-                String donViTinh = rs.getString("DonViTinh");
-                int maLoai = rs.getInt("MaLoai");
-                int maHang = rs.getInt("MaHang");
 
-                ketQua = new SanPhamDTO(maSp, tenSp, soLuongTon, donGia, donViTinh, maLoai, maHang);
+                ketQua = new SanPhamDTO(
+                        rs.getString("MaSp"),
+                        rs.getString("TenSp"),
+                        rs.getInt("SoLuongTon"),
+                        rs.getDouble("DonGia"),
+                        rs.getString("DonViTinh"),
+                        rs.getInt("MaLoai"),
+                        rs.getInt("MaHang"),
+                        rs.getInt("TrangThai")
+                );
             }
-            
 
-            // Bước 7: Ngắt kết nối
+            rs.close();
+            pst.close();
             SQLServerConnect.closeConnection(con);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -209,67 +178,65 @@ public class SanPhamDAO implements DAOInterface<SanPhamDTO> {
     public ArrayList<SanPhamDTO> selectByCondition(String condition) {
         ArrayList<SanPhamDTO> ketQua = new ArrayList<>();
         try {
-            // Bước 1: Tạo kết nối tới CSDL
             Connection con = SQLServerConnect.getConnection();
 
-            // Bước 2: Viết câu lệnh SQL
-            String sql = "SELECT * FROM SanPham WHERE " + condition;
+            String sql = "SELECT * FROM SanPham WHERE TrangThai = 1 AND " + condition;
 
-            // Bước 3: Tạo PreparedStatement
             PreparedStatement pst = con.prepareStatement(sql);
 
-            // Bước 4: Thực thi
             ResultSet rs = pst.executeQuery();
 
-            // Bước 5: Duyệt ResultSet
             while (rs.next()) {
-                String maSp = rs.getString("MaSp");
-                String tenSp = rs.getString("TenSp");
-                int soLuongTon = rs.getInt("SoLuongTon");
-                double donGia = rs.getDouble("DonGia");
-                String donViTinh = rs.getString("DonViTinh");
-                int maLoai = rs.getInt("MaLoai");
-                int maHang = rs.getInt("MaHang");
 
-                SanPhamDTO sp = new SanPhamDTO(maSp, tenSp, soLuongTon, donGia, donViTinh, maLoai, maHang);
+                SanPhamDTO sp = new SanPhamDTO(
+                        rs.getString("MaSp"),
+                        rs.getString("TenSp"),
+                        rs.getInt("SoLuongTon"),
+                        rs.getDouble("DonGia"),
+                        rs.getString("DonViTinh"),
+                        rs.getInt("MaLoai"),
+                        rs.getInt("MaHang"),
+                        rs.getInt("TrangThai")
+                );
 
                 ketQua.add(sp);
             }
 
-            // Bước 6: Ngắt kết nối CSDL
+            rs.close();
+            pst.close();
             SQLServerConnect.closeConnection(con);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return ketQua;
     }
+
     public String getLastMaSP() {
         String lastMa = null;
         try {
-            // Bước 1: Kết nối CSDL
             Connection con = SQLServerConnect.getConnection();
 
-            // Bước 2: Câu SQL (SQL Server dùng TOP 1)
             String sql = "SELECT TOP 1 MaSp FROM SanPham ORDER BY MaSp DESC";
 
-            // Bước 3: PreparedStatement
             PreparedStatement pst = con.prepareStatement(sql);
 
-            // Bước 4: Thực thi
             ResultSet rs = pst.executeQuery();
 
-            // Bước 5: Lấy kết quả
             if (rs.next()) {
                 lastMa = rs.getString("MaSp");
             }
 
-            // Bước 6: Đóng kết nối
+            rs.close();
+            pst.close();
             SQLServerConnect.closeConnection(con);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return lastMa;
     }
+
     public List<SanPhamDTO> getSearchTable(String text, String searchType) {
         List<SanPhamDTO> result = new ArrayList<>();
 
@@ -304,7 +271,7 @@ public class SanPhamDAO implements DAOInterface<SanPhamDTO> {
                     break;
 
                 default:
-                    result.add(sp); // nếu lỗi thì trả về toàn bộ
+                    result.add(sp);
                     break;
             }
         }
@@ -312,4 +279,3 @@ public class SanPhamDAO implements DAOInterface<SanPhamDTO> {
         return result;
     }
 }
-

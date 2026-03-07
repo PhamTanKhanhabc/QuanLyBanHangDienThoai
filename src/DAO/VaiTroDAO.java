@@ -17,24 +17,20 @@ public class VaiTroDAO implements DAOInterface<VaiTroDTO> {
     public int insert(VaiTroDTO t) {
         int ketQua = 0;
         try {
-            // Bước 1: Kết nối CSDL
             Connection con = SQLServerConnect.getConnection();
 
-            // Bước 2: SQL
-            String sql = "INSERT INTO VaiTro(MaVaiTro, TenVaiTro) VALUES (?, ?)";
+            String sql = "INSERT INTO VaiTro(MaVaiTro, TenVaiTro, TrangThai) VALUES (?, ?, 1)";
 
-            // Bước 3
             PreparedStatement pst = con.prepareStatement(sql);
 
-            // Bước 4
             pst.setString(1, t.getMaVaiTro());
             pst.setString(2, t.getTenVaiTro());
 
-            // Bước 5
             ketQua = pst.executeUpdate();
 
-            // Bước 6
+            pst.close();
             SQLServerConnect.closeConnection(con);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -45,24 +41,20 @@ public class VaiTroDAO implements DAOInterface<VaiTroDTO> {
     public int update(VaiTroDTO t) {
         int ketQua = 0;
         try {
-            // Bước 1
             Connection con = SQLServerConnect.getConnection();
 
-            // Bước 2
-            String sql = "UPDATE VaiTro SET TenVaiTro = ? WHERE MaVaiTro = ?";
+            String sql = "UPDATE VaiTro SET TenVaiTro = ? WHERE MaVaiTro = ? AND TrangThai = 1";
 
-            // Bước 3
             PreparedStatement pst = con.prepareStatement(sql);
 
-            // Bước 4
             pst.setString(1, t.getTenVaiTro());
             pst.setString(2, t.getMaVaiTro());
 
-            // Bước 5
             ketQua = pst.executeUpdate();
 
-            // Bước 6
+            pst.close();
             SQLServerConnect.closeConnection(con);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -73,23 +65,19 @@ public class VaiTroDAO implements DAOInterface<VaiTroDTO> {
     public int delete(VaiTroDTO t) {
         int ketQua = 0;
         try {
-            // Bước 1
             Connection con = SQLServerConnect.getConnection();
 
-            // Bước 2
-            String sql = "DELETE FROM VaiTro WHERE MaVaiTro = ?";
+            String sql = "UPDATE VaiTro SET TrangThai = 0 WHERE MaVaiTro = ? AND TrangThai = 1";
 
-            // Bước 3
             PreparedStatement pst = con.prepareStatement(sql);
 
-            // Bước 4
             pst.setString(1, t.getMaVaiTro());
 
-            // Bước 5
             ketQua = pst.executeUpdate();
 
-            // Bước 6
+            pst.close();
             SQLServerConnect.closeConnection(con);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -100,29 +88,29 @@ public class VaiTroDAO implements DAOInterface<VaiTroDTO> {
     public ArrayList<VaiTroDTO> selectALL() {
         ArrayList<VaiTroDTO> ketQua = new ArrayList<>();
         try {
-            // Bước 1
             Connection con = SQLServerConnect.getConnection();
 
-            // Bước 2
-            String sql = "SELECT * FROM VaiTro";
+            String sql = "SELECT * FROM VaiTro WHERE TrangThai = 1";
 
-            // Bước 3
             PreparedStatement pst = con.prepareStatement(sql);
 
-            // Bước 4
             ResultSet rs = pst.executeQuery();
 
-            // Bước 5
             while (rs.next()) {
-                String maVaiTro = rs.getString("MaVaiTro");
-                String tenVaiTro = rs.getString("TenVaiTro");
 
-                VaiTroDTO vt = new VaiTroDTO(maVaiTro, tenVaiTro);
+                VaiTroDTO vt = new VaiTroDTO(
+                        rs.getString("MaVaiTro"),
+                        rs.getString("TenVaiTro"),
+                        rs.getInt("TrangThai")
+                );
+
                 ketQua.add(vt);
             }
 
-            // Bước 6
+            rs.close();
+            pst.close();
             SQLServerConnect.closeConnection(con);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -133,29 +121,29 @@ public class VaiTroDAO implements DAOInterface<VaiTroDTO> {
     public VaiTroDTO selectById(VaiTroDTO t) {
         VaiTroDTO ketQua = null;
         try {
-            // Bước 1
             Connection con = SQLServerConnect.getConnection();
 
-            // Bước 2
-            String sql = "SELECT * FROM VaiTro WHERE MaVaiTro = ?";
+            String sql = "SELECT * FROM VaiTro WHERE MaVaiTro = ? AND TrangThai = 1";
 
-            // Bước 3
             PreparedStatement pst = con.prepareStatement(sql);
 
-            // Bước 4
             pst.setString(1, t.getMaVaiTro());
 
-            // Bước 5
             ResultSet rs = pst.executeQuery();
+
             if (rs.next()) {
+
                 ketQua = new VaiTroDTO(
                         rs.getString("MaVaiTro"),
-                        rs.getString("TenVaiTro")
+                        rs.getString("TenVaiTro"),
+                        rs.getInt("TrangThai")
                 );
             }
 
-            // Bước 6
+            rs.close();
+            pst.close();
             SQLServerConnect.closeConnection(con);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -166,29 +154,29 @@ public class VaiTroDAO implements DAOInterface<VaiTroDTO> {
     public ArrayList<VaiTroDTO> selectByCondition(String condition) {
         ArrayList<VaiTroDTO> ketQua = new ArrayList<>();
         try {
-            // Bước 1
             Connection con = SQLServerConnect.getConnection();
 
-            // Bước 2
-            String sql = "SELECT * FROM VaiTro WHERE " + condition;
+            String sql = "SELECT * FROM VaiTro WHERE TrangThai = 1 AND " + condition;
 
-            // Bước 3
             PreparedStatement pst = con.prepareStatement(sql);
 
-            // Bước 4
             ResultSet rs = pst.executeQuery();
 
-            // Bước 5
             while (rs.next()) {
+
                 VaiTroDTO vt = new VaiTroDTO(
                         rs.getString("MaVaiTro"),
-                        rs.getString("TenVaiTro")
+                        rs.getString("TenVaiTro"),
+                        rs.getInt("TrangThai")
                 );
+
                 ketQua.add(vt);
             }
 
-            // Bước 6
+            rs.close();
+            pst.close();
             SQLServerConnect.closeConnection(con);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

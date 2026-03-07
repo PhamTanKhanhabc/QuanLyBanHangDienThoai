@@ -19,13 +19,13 @@ public class BaoHanhDAO implements DAOInterface<BaoHanhDTO> {
         try {
             Connection con = SQLServerConnect.getConnection();
 
-            String sql = "INSERT INTO BaoHanh (MaBH, TenBH, MaHD, MaSP, ThoiHan, NgayBatDau, NgayKetThuc) "
-                       + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO BaoHanh (MaBH, TenBH, MaHD, MaSP, ThoiHan, NgayBatDau, NgayKetThuc, TrangThai) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, 1)";
 
             PreparedStatement pst = con.prepareStatement(sql);
 
             pst.setString(1, t.getMaBH());
-            pst.setString(2, t.getTenBH()); // 
+            pst.setString(2, t.getTenBH());
             pst.setString(3, t.getMaHD());
             pst.setString(4, t.getMaSP());
             pst.setInt(5, t.getThoiHan());
@@ -33,9 +33,12 @@ public class BaoHanhDAO implements DAOInterface<BaoHanhDTO> {
             pst.setDate(7, new java.sql.Date(t.getNgayKetThuc().getTime()));
 
             ketQua = pst.executeUpdate();
+
+            pst.close();
             SQLServerConnect.closeConnection(con);
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
         return ketQua;
     }
@@ -47,12 +50,12 @@ public class BaoHanhDAO implements DAOInterface<BaoHanhDTO> {
             Connection con = SQLServerConnect.getConnection();
 
             String sql = "UPDATE BaoHanh "
-                       + "SET TenBH = ?, MaHD = ?, MaSP = ?, ThoiHan = ?, NgayBatDau = ?, NgayKetThuc = ? "
-                       + "WHERE MaBH = ?";
+                    + "SET TenBH = ?, MaHD = ?, MaSP = ?, ThoiHan = ?, NgayBatDau = ?, NgayKetThuc = ? "
+                    + "WHERE MaBH = ? AND TrangThai = 1";
 
             PreparedStatement pst = con.prepareStatement(sql);
 
-            pst.setString(1, t.getTenBH()); // ✅ thêm
+            pst.setString(1, t.getTenBH());
             pst.setString(2, t.getMaHD());
             pst.setString(3, t.getMaSP());
             pst.setInt(4, t.getThoiHan());
@@ -61,9 +64,12 @@ public class BaoHanhDAO implements DAOInterface<BaoHanhDTO> {
             pst.setString(7, t.getMaBH());
 
             ketQua = pst.executeUpdate();
+
+            pst.close();
             SQLServerConnect.closeConnection(con);
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
         return ketQua;
     }
@@ -74,14 +80,18 @@ public class BaoHanhDAO implements DAOInterface<BaoHanhDTO> {
         try {
             Connection con = SQLServerConnect.getConnection();
 
-            String sql = "DELETE FROM BaoHanh WHERE MaBH = ?";
+            String sql = "UPDATE BaoHanh SET TrangThai = 0 WHERE MaBH = ? AND TrangThai = 1";
             PreparedStatement pst = con.prepareStatement(sql);
+
             pst.setString(1, t.getMaBH());
 
             ketQua = pst.executeUpdate();
+
+            pst.close();
             SQLServerConnect.closeConnection(con);
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
         return ketQua;
     }
@@ -92,26 +102,33 @@ public class BaoHanhDAO implements DAOInterface<BaoHanhDTO> {
         try {
             Connection con = SQLServerConnect.getConnection();
 
-            String sql = "SELECT * FROM BaoHanh";
+            String sql = "SELECT * FROM BaoHanh WHERE TrangThai = 1";
             PreparedStatement pst = con.prepareStatement(sql);
+
             ResultSet rs = pst.executeQuery();
 
             while (rs.next()) {
+
                 BaoHanhDTO bh = new BaoHanhDTO(
                         rs.getString("MaBH"),
-                        rs.getString("TenBH"), // ✅ thêm
+                        rs.getString("TenBH"),
                         rs.getString("MaHD"),
                         rs.getString("MaSP"),
                         rs.getInt("ThoiHan"),
                         rs.getDate("NgayBatDau"),
-                        rs.getDate("NgayKetThuc")
+                        rs.getDate("NgayKetThuc"),
+                        rs.getInt("TrangThai")
                 );
+
                 ketQua.add(bh);
             }
 
+            rs.close();
+            pst.close();
             SQLServerConnect.closeConnection(con);
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
         return ketQua;
     }
@@ -122,26 +139,33 @@ public class BaoHanhDAO implements DAOInterface<BaoHanhDTO> {
         try {
             Connection con = SQLServerConnect.getConnection();
 
-            String sql = "SELECT * FROM BaoHanh WHERE MaBH = ?";
+            String sql = "SELECT * FROM BaoHanh WHERE MaBH = ? AND TrangThai = 1";
             PreparedStatement pst = con.prepareStatement(sql);
+
             pst.setString(1, t.getMaBH());
 
             ResultSet rs = pst.executeQuery();
+
             if (rs.next()) {
+
                 ketQua = new BaoHanhDTO(
                         rs.getString("MaBH"),
-                        rs.getString("TenBH"), // ✅ thêm
+                        rs.getString("TenBH"),
                         rs.getString("MaHD"),
                         rs.getString("MaSP"),
                         rs.getInt("ThoiHan"),
                         rs.getDate("NgayBatDau"),
-                        rs.getDate("NgayKetThuc")
+                        rs.getDate("NgayKetThuc"),
+                        rs.getInt("TrangThai")
                 );
             }
 
+            rs.close();
+            pst.close();
             SQLServerConnect.closeConnection(con);
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
         return ketQua;
     }
@@ -152,26 +176,33 @@ public class BaoHanhDAO implements DAOInterface<BaoHanhDTO> {
         try {
             Connection con = SQLServerConnect.getConnection();
 
-            String sql = "SELECT * FROM BaoHanh WHERE " + condition;
+            String sql = "SELECT * FROM BaoHanh WHERE TrangThai = 1 AND " + condition;
             PreparedStatement pst = con.prepareStatement(sql);
+
             ResultSet rs = pst.executeQuery();
 
             while (rs.next()) {
+
                 BaoHanhDTO bh = new BaoHanhDTO(
                         rs.getString("MaBH"),
-                        rs.getString("TenBH"), // ✅ thêm
+                        rs.getString("TenBH"),
                         rs.getString("MaHD"),
                         rs.getString("MaSP"),
                         rs.getInt("ThoiHan"),
                         rs.getDate("NgayBatDau"),
-                        rs.getDate("NgayKetThuc")
+                        rs.getDate("NgayKetThuc"),
+                        rs.getInt("TrangThai")
                 );
+
                 ketQua.add(bh);
             }
 
+            rs.close();
+            pst.close();
             SQLServerConnect.closeConnection(con);
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
         return ketQua;
     }
@@ -183,6 +214,7 @@ public class BaoHanhDAO implements DAOInterface<BaoHanhDTO> {
 
             String sql = "SELECT TOP 1 MaBH FROM BaoHanh ORDER BY MaBH DESC";
             PreparedStatement pst = con.prepareStatement(sql);
+
             ResultSet rs = pst.executeQuery();
 
             if (rs.next()) {
@@ -191,7 +223,8 @@ public class BaoHanhDAO implements DAOInterface<BaoHanhDTO> {
 
             rs.close();
             pst.close();
-            con.close();
+            SQLServerConnect.closeConnection(con);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
