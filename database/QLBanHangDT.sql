@@ -94,6 +94,7 @@ INSERT INTO NhaCungCap (maNCC, tenNCC, sdt, diachi, TrangThai) VALUES
 CREATE TABLE SanPham (
     MaSp VARCHAR(20) NOT NULL,
     TenSp NVARCHAR(255) NOT NULL,
+    HinhAnh VARCHAR(255) DEFAULT NULL,
     SoLuongTon INT DEFAULT 0,
     DonGia DECIMAL(18,2) NOT NULL,
     DonViTinh NVARCHAR(50),
@@ -101,17 +102,19 @@ CREATE TABLE SanPham (
     MaHang INT NOT NULL,
     TrangThai BIT DEFAULT 1
 );
-INSERT INTO SanPham (MaSp, TenSp, SoLuongTon, DonGia, DonViTinh, MaLoai, MaHang, TrangThai) VALUES
-('SP001', N'iPhone 14 Pro Max', 15, 29990000, N'Chiếc', 1, 1, 1),
-('SP002', N'Samsung Galaxy S23 Ultra', 20, 26990000, N'Chiếc', 1, 2, 1),
-('SP003', N'Xiaomi Redmi Note 13', 35, 5990000, N'Chiếc', 1, 3, 1),
-('SP004', N'Oppo Reno 10', 25, 8990000, N'Chiếc', 1, 4, 1),
-('SP005', N'Apple Watch Series 9', 18, 11990000, N'Chiếc', 2, 1, 1),
-('SP006', N'Samsung Galaxy Watch 6', 22, 7990000, N'Chiếc', 2, 2, 1),
-('SP007', N'iPad Pro M2 11 inch', 12, 23990000, N'Chiếc', 3, 1, 1),
-('SP008', N'Samsung Galaxy Tab S9', 15, 18990000, N'Chiếc', 3, 2, 1),
-('SP009', N'Tai nghe AirPods Pro 2', 40, 5990000, N'Chiếc', 4, 1, 1),
-('SP010', N'Sạc nhanh Samsung 25W', 50, 690000, N'Chiếc', 4, 2, 1);
+INSERT INTO SanPham 
+(MaSp, TenSp, HinhAnh, SoLuongTon, DonGia, DonViTinh, MaLoai, MaHang, TrangThai) 
+VALUES
+('SP001', N'iPhone 14 Pro Max', 'iphone14promax.jpg', 15, 29990000, N'Chiếc', 1, 1, 1),
+('SP002', N'Samsung Galaxy S23 Ultra', 's23ultra.jpg', 20, 26990000, N'Chiếc', 1, 2, 1),
+('SP003', N'Xiaomi Redmi Note 13', 'redminote13.jpg', 35, 5990000, N'Chiếc', 1, 3, 1),
+('SP004', N'Oppo Reno 10', 'opporeno10.jpg', 25, 8990000, N'Chiếc', 1, 4, 1),
+('SP005', N'Apple Watch Series 9', 'applewatch9.jpg', 18, 11990000, N'Chiếc', 2, 1, 1),
+('SP006', N'Samsung Galaxy Watch 6', 'galaxywatch6.jpg', 22, 7990000, N'Chiếc', 2, 2, 1),
+('SP007', N'iPad Pro M2 11 inch', 'ipadprom2.jpg', 12, 23990000, N'Chiếc', 3, 1, 1),
+('SP008', N'Samsung Galaxy Tab S9', 'tabs9.jpg', 15, 18990000, N'Chiếc', 3, 2, 1),
+('SP009', N'Tai nghe AirPods Pro 2', 'airpodspro2.jpg', 40, 5990000, N'Chiếc', 4, 1, 1),
+('SP010', N'Sạc nhanh Samsung 25W', 'samsung25w.jpg', 50, 690000, N'Chiếc', 4, 2, 1);
 
 CREATE TABLE TaiKhoan (
     MaTK VARCHAR(20) NOT NULL,
