@@ -162,4 +162,14 @@ public class HoaDonBUS {
 
         return result;
     }
+    public String getTenHoaDon(String maHD) {
+
+        int index = getIndexById(maHD);
+
+        if (index == -1) {
+            return null;
+        }
+
+        return listHD.get(index).getMaHD();
+    }
 }

@@ -298,7 +298,7 @@ public class SanPhamPanel extends JPanel{
         );
 
         if (confirm == JOptionPane.YES_OPTION) {
-
+            sanPhamBUS = new SanPhamBUS(); // reload BUS
             int index = sanPhamBUS.getIndexById(id);
 
             if (index == -1) {
