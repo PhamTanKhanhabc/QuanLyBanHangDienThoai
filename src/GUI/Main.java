@@ -4,6 +4,7 @@
  */
 package GUI;
 
+import GUI.Panel.BaoHanhPanel;
 import GUI.Panel.SanPhamPanel;
 import java.awt.*;
 import javax.swing.*;
@@ -175,7 +176,8 @@ public class Main extends JFrame {
 
         // Bảo hành
         btnBaoHanh.addActionListener(e -> {
-            setPanel(new JLabel("Trang bảo hành", SwingConstants.CENTER));
+            BaoHanhPanel baoHanhPanel = new BaoHanhPanel();
+            setPanel(baoHanhPanel);
             setActive(btnBaoHanh);
         });
 
