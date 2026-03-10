@@ -4,6 +4,7 @@
  */
 package GUI;
 
+import GUI.Panel.KhuyenMaiGUI;
 import GUI.Panel.BaoHanhPanel;
 import GUI.Panel.SanPhamPanel;
 import java.awt.*;
@@ -206,7 +207,8 @@ public class Main extends JFrame {
         });
         // Khuyến mãi
         btnKhuyenMai.addActionListener(e -> {
-            setPanel(new JLabel("Trang khuyến mãi", SwingConstants.CENTER));
+            KhuyenMaiGUI khuyenMaiPanel = new KhuyenMaiGUI();
+            setPanel(khuyenMaiPanel);
             setActive(btnKhuyenMai);
         });
 
@@ -276,3 +278,4 @@ public class Main extends JFrame {
         selectedBtn.setForeground(Color.WHITE);
     }
 }
+
