@@ -143,7 +143,7 @@ public class UpdateSanPhamDialog extends JDialog {
         if (txtTenSanPham.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(
                     this,
-                    "Tên thuốc không được để trống!",
+                    "Tên sản phẩm không được để trống!",
                     "Thông báo",
                     JOptionPane.WARNING_MESSAGE
             );
@@ -164,7 +164,7 @@ public class UpdateSanPhamDialog extends JDialog {
         if (txtSoLuongTon.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(
                     this,
-                    "Số lượng không được để trống!",
+                    "Số lượng tồn không được để trống!",
                     "Thông báo",
                     JOptionPane.WARNING_MESSAGE
             );
@@ -177,7 +177,7 @@ public class UpdateSanPhamDialog extends JDialog {
                 if (sl < 0) {
                     JOptionPane.showMessageDialog(
                             this,
-                            "Số lượng phải >= 0!",
+                            "Số lượng tồn phải >= 0!",
                             "Thông báo",
                             JOptionPane.WARNING_MESSAGE
                     );
@@ -188,7 +188,7 @@ public class UpdateSanPhamDialog extends JDialog {
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(
                         this,
-                        "Số lượng phải là số!",
+                        "Số lượng tồn phải là số!",
                         "Thông báo",
                         JOptionPane.WARNING_MESSAGE
                 );

@@ -78,9 +78,6 @@ public class ChiTietSanPhamDialog extends JDialog {
     private JLabel lblHangSanXuat;
     private JComboBox<String> cboxHangSanXuat;
     
-    private JPanel pnlButton;
-    private JButton btnHuy;
-    private JButton btnAdd;
 
     public ChiTietSanPhamDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -159,11 +156,6 @@ public class ChiTietSanPhamDialog extends JDialog {
         pnlHangSanXuat = new JPanel();
         lblHangSanXuat = new JLabel();
         cboxHangSanXuat = new JComboBox<>();
-
-
-        pnlButton = new JPanel();
-        btnHuy = new JButton();
-        btnAdd = new JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(1100, 650));
