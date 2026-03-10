@@ -162,8 +162,8 @@ public class BaoHanhPanel extends JPanel {
             modal.addRow(new Object[]{
                 stt++,
                 e.getMaBH(),
-                sanPhamBUS.getTenSp(e.getMaSP()),
-                hoaDonBUS.getTenHoaDon(e.getMaHD()),
+                e.getTenBH(),        
+                e.getMaHD(),
                 e.getMaSP(),
                 e.getThoiHan(),
                 sdf.format(e.getNgayBatDau()),
