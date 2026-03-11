@@ -12,20 +12,33 @@ import GUI.Component.HeaderRightPanel;
 import GUI.Component.TablePanel;
 import GUI.Dialog.ChiTietKhuyenMaiDialog;
 import GUI.Dialog.KhuyenMaiFormDialog;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -61,7 +74,7 @@ public class KhuyenMaiGUI extends JPanel {
         setPreferredSize(new Dimension(1130, 800));
 
         actionPanel = new ActionPanel();
-        actionPanel.configButtons(new String[]{"add", "update", "delete", "info"});
+        actionPanel.configButtons(new String[]{"add", "update", "delete", "info", "import", "export"});
 
         headerRightPanel = new HeaderRightPanel();
         headerRightPanel.getCboxSearch().setModel(new DefaultComboBoxModel<>(
@@ -76,15 +89,24 @@ public class KhuyenMaiGUI extends JPanel {
         filterLoai = new FilterItem("Loại khuyến mãi");
         filterTrangThai = new FilterItem("Trạng thái");
 
-        JPanel filterPanel = new JPanel();
-        filterPanel.setLayout(new javax.swing.BoxLayout(filterPanel, javax.swing.BoxLayout.Y_AXIS));
-        filterPanel.setBackground(Color.WHITE);
-        filterPanel.setPreferredSize(new Dimension(220, 0));
-        filterPanel.add(filterLoai);
-        filterPanel.add(filterTrangThai);
+        filterLoai.setAlignmentX(Component.LEFT_ALIGNMENT);
+        filterTrangThai.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JPanel filterBox = new JPanel();
+        filterBox.setLayout(new BoxLayout(filterBox, BoxLayout.Y_AXIS));
+        filterBox.setBackground(Color.WHITE);
+        filterBox.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        filterBox.add(filterLoai);
+        filterBox.add(Box.createVerticalStrut(12));
+        filterBox.add(filterTrangThai);
+
+        JPanel filterWrapper = new JPanel(new BorderLayout());
+        filterWrapper.setBackground(Color.WHITE);
+        filterWrapper.setPreferredSize(new Dimension(220, 0));
+        filterWrapper.add(filterBox, BorderLayout.NORTH);
 
         TablePanel tablePanel = new TablePanel(
-                "Danh sách thông tin khuyến mãi",
+                "DANH SÁCH THÔNG TIN KHUYẾN MÃI",
                 new String[]{"STT", "Mã CTKM", "Tên CTKM", "Loại KM", "Mô tả", "Ngày BD", "Ngày KT", "Trạng thái"}
         );
 
@@ -94,7 +116,7 @@ public class KhuyenMaiGUI extends JPanel {
         table.setRowHeight(38);
 
         add(headerPanel, BorderLayout.NORTH);
-        add(filterPanel, BorderLayout.WEST);
+        add(filterWrapper, BorderLayout.WEST);
         add(tablePanel, BorderLayout.CENTER);
     }
 
@@ -123,6 +145,9 @@ public class KhuyenMaiGUI extends JPanel {
             new ChiTietKhuyenMaiDialog(getParentFrame(), true, current).setVisible(true);
         });
 
+        actionPanel.btnImport.addActionListener(e -> handleImport());
+        actionPanel.btnExport.addActionListener(e -> handleExport());
+
         headerRightPanel.getTxtSearch().addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -134,9 +159,9 @@ public class KhuyenMaiGUI extends JPanel {
 
         headerRightPanel.getBtnReload().addActionListener(e -> {
             headerRightPanel.getTxtSearch().setText("");
-            if (headerRightPanel.getCboxSearch().getItemCount() > 0) {
-                headerRightPanel.getCboxSearch().setSelectedIndex(0);
-            }
+            headerRightPanel.getCboxSearch().setSelectedIndex(0);
+            filterLoai.getComboBox().setSelectedIndex(0);
+            filterTrangThai.getComboBox().setSelectedIndex(0);
             refreshData();
         });
 
@@ -176,6 +201,7 @@ public class KhuyenMaiGUI extends JPanel {
                     loaiSet.add(loai);
                 }
             }
+
             for (String loai : loaiSet) {
                 filterLoai.addItem(loai);
             }
@@ -205,9 +231,11 @@ public class KhuyenMaiGUI extends JPanel {
             if (!matchSearch(km, keyword, searchType)) {
                 continue;
             }
+
             if (!"Tất cả".equals(loai) && !safe(km.getLoaiKhuyenMai()).equalsIgnoreCase(loai)) {
                 continue;
             }
+
             if (!"Tất cả".equals(trangThai) && !getTrangThaiText(km.getTrangThai()).equalsIgnoreCase(trangThai)) {
                 continue;
             }
@@ -274,8 +302,174 @@ public class KhuyenMaiGUI extends JPanel {
             JOptionPane.showMessageDialog(this, "Xóa khuyến mãi thành công!");
             refreshData();
         } else {
-            JOptionPane.showMessageDialog(this, "Xóa thất bại! Có thể dữ liệu đang được liên kết.");
+            JOptionPane.showMessageDialog(this, "Xóa thất bại!");
         }
+    }
+
+    private void handleExport() {
+        if (model.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "Không có dữ liệu để export!");
+            return;
+        }
+
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Chọn nơi lưu file CSV");
+
+        if (chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+
+        File file = chooser.getSelectedFile();
+        if (!file.getName().toLowerCase().endsWith(".csv")) {
+            file = new File(file.getAbsolutePath() + ".csv");
+        }
+
+        try (BufferedWriter writer = Files.newBufferedWriter(file.toPath(), StandardCharsets.UTF_8)) {
+            writer.write("Mã CTKM,Tên CTKM,Loại KM,Mô tả,Ngày BD,Ngày KT,Trạng thái");
+            writer.newLine();
+
+            for (int i = 0; i < model.getRowCount(); i++) {
+                String line = escapeCsv(String.valueOf(model.getValueAt(i, 1))) + ","
+                        + escapeCsv(String.valueOf(model.getValueAt(i, 2))) + ","
+                        + escapeCsv(String.valueOf(model.getValueAt(i, 3))) + ","
+                        + escapeCsv(String.valueOf(model.getValueAt(i, 4))) + ","
+                        + escapeCsv(String.valueOf(model.getValueAt(i, 5))) + ","
+                        + escapeCsv(String.valueOf(model.getValueAt(i, 6))) + ","
+                        + escapeCsv(String.valueOf(model.getValueAt(i, 7)));
+                writer.write(line);
+                writer.newLine();
+            }
+
+            JOptionPane.showMessageDialog(this, "Export thành công!");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Export thất bại!\n" + e.getMessage());
+        }
+    }
+
+    private void handleImport() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Chọn file CSV");
+
+        if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+
+        File file = chooser.getSelectedFile();
+        int success = 0;
+        int fail = 0;
+
+        try (BufferedReader reader = Files.newBufferedReader(file.toPath(), StandardCharsets.UTF_8)) {
+            String line;
+            boolean firstLine = true;
+
+            while ((line = reader.readLine()) != null) {
+                line = line.replace("\uFEFF", "").trim();
+                if (line.isEmpty()) {
+                    continue;
+                }
+
+                if (firstLine) {
+                    firstLine = false;
+                    if (line.toLowerCase().contains("mã ctkm")) {
+                        continue;
+                    }
+                }
+
+                List<String> cols = parseCsvLine(line);
+                if (cols.size() < 7) {
+                    fail++;
+                    continue;
+                }
+
+                try {
+                    ChuongTrinhKhuyenMaiDTO km = new ChuongTrinhKhuyenMaiDTO();
+
+                    // Bỏ qua cột mã vì BUS tự sinh mã mới
+                    km.setTenCTKM(cols.get(1).trim());
+                    km.setLoaiKhuyenMai(cols.get(2).trim());
+                    km.setMoTa(cols.get(3).trim());
+                    km.setNgayBatDau(parseDate(cols.get(4).trim()));
+                    km.setNgayKetThuc(parseDate(cols.get(5).trim()));
+                    km.setTrangThai(parseTrangThai(cols.get(6).trim()));
+
+                    if (km.getTenCTKM().isEmpty() || km.getLoaiKhuyenMai().isEmpty()
+                            || km.getNgayBatDau() == null || km.getNgayKetThuc() == null) {
+                        fail++;
+                        continue;
+                    }
+
+                    if (kmBUS.add(km)) {
+                        success++;
+                    } else {
+                        fail++;
+                    }
+                } catch (Exception ex) {
+                    fail++;
+                }
+            }
+
+            refreshData();
+            JOptionPane.showMessageDialog(this,
+                    "Import hoàn tất!\nThành công: " + success + "\nThất bại: " + fail);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Import thất bại!\n" + e.getMessage());
+        }
+    }
+
+    private List<String> parseCsvLine(String line) {
+        List<String> result = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+        boolean inQuotes = false;
+
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+
+            if (c == '"') {
+                if (inQuotes && i + 1 < line.length() && line.charAt(i + 1) == '"') {
+                    current.append('"');
+                    i++;
+                } else {
+                    inQuotes = !inQuotes;
+                }
+            } else if (c == ',' && !inQuotes) {
+                result.add(current.toString());
+                current.setLength(0);
+            } else {
+                current.append(c);
+            }
+        }
+
+        result.add(current.toString());
+        return result;
+    }
+
+    private String escapeCsv(String value) {
+        if (value == null) {
+            return "";
+        }
+
+        if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+
+        return value;
+    }
+
+    private LocalDate parseDate(String text) {
+        try {
+            return LocalDate.parse(text, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        } catch (DateTimeParseException e) {
+            try {
+                return LocalDate.parse(text);
+            } catch (DateTimeParseException ex) {
+                return null;
+            }
+        }
+    }
+
+    private int parseTrangThai(String text) {
+        String value = text == null ? "" : text.trim().toLowerCase(Locale.ROOT);
+        return value.contains("đang") || value.equals("1") ? 1 : 0;
     }
 
     private ChuongTrinhKhuyenMaiDTO getSelectedKhuyenMai() {
@@ -310,6 +504,7 @@ public class KhuyenMaiGUI extends JPanel {
                 return;
             }
         }
+
         comboBox.setSelectedIndex(0);
     }
 
