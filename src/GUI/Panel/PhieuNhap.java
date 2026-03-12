@@ -1,15 +1,15 @@
 package GUI.Panel;
 
-import GUI.Component.ButtonToolBar; // Nhớ import class này vào nhé
+import GUI.Component.ButtonToolBar;
+import GUI.Component.HeaderRightPanel;
+import GUI.Component.TablePanel;
+
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.Color;
 import com.toedter.calendar.JDateChooser;
 import BUS.PhieuNhapBUS;
-import DAO.PhieuNhapDAO;
 import DTO.PhieuNhapDTO;
-import GUI.Component.*;
 import java.util.ArrayList;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -18,155 +18,137 @@ public class PhieuNhap extends JPanel {
     private TablePanel tblPhieuNhap;
     private PhieuNhapBUS bus = new PhieuNhapBUS();
     
-    public PhieuNhap(){
+    // Khai báo HeaderRightPanel cho thanh tìm kiếm
+    private HeaderRightPanel headerRightPanel;
+    
+    public PhieuNhap() {
         initUI();
         loadData();
     }
     
-    public void initUI(){
-        Color defaultGray = UIManager.getColor("Panel.background");
-        setLayout(new BorderLayout());
+    public void initUI() {
+        // --- 1. SETUP LAYOUT TỔNG THỂ ---
+        setLayout(new BorderLayout(0, 10));
         setBackground(Color.WHITE);
-        setBorder(new EmptyBorder(10,10,10,10));
+        setBorder(new EmptyBorder(10, 10, 10, 10));
         
-        //PANEL
-        JPanel pnlTopBar = new JPanel();
-        pnlTopBar.setLayout(new BorderLayout());
+        // --- 2. HEADER PANEL (Chứa Nút chức năng & Thanh tìm kiếm) ---
+        JPanel pnlTopBar = new JPanel(new BorderLayout());
+        pnlTopBar.setBackground(Color.WHITE);
         
-        JPanel pnlTopBarLeftSub = new JPanel();
-        pnlTopBarLeftSub.setLayout(new FlowLayout());
-
-        JPanel pnlTopBarRightSub = new JPanel();
-        pnlTopBarRightSub.setLayout(new FlowLayout());
+        // Trái: Chứa các nút thao tác tạo thủ công
+        JPanel pnlTopBarLeftSub = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        pnlTopBarLeftSub.setBackground(Color.WHITE);
         
-        JPanel pnlMain = new JPanel();
-        pnlMain.setBackground(Color.WHITE);
-        pnlMain.setBorder(new EmptyBorder(10,0,10,0));
-        pnlMain.setLayout(new BorderLayout(10, 0));
+        ButtonToolBar btnThem = new ButtonToolBar("Thêm", "icon/add.svg", 80, 60, 14, "ADD_PHIEUNHAP");
+        ButtonToolBar btnSua = new ButtonToolBar("Sửa", "icon/update.svg", 80, 60, 14, "EDIT_PHIEUNHAP");
+        ButtonToolBar btnXoa = new ButtonToolBar("Xóa", "icon/delete.svg", 80, 60, 14, "DELETE_PHIEUNHAP");
+        ButtonToolBar btnInfo = new ButtonToolBar("Chi tiết", "icon/info.svg", 80, 60, 14, "INFO_PHIEUNHAP");
+        ButtonToolBar btnImport = new ButtonToolBar("Nhập file", "icon/import.svg", 80, 60, 14, "IMPORT_PHIEUNHAP");
+        ButtonToolBar btnExport = new ButtonToolBar("Xuất file", "icon/export.svg", 80, 60, 14, "EXPORT_PHIEUNHAP");
         
-        JPanel pnlMainContent = new JPanel();
-        JPanel pnlMainRight = new JPanel();
-        pnlMainRight.setPreferredSize(new Dimension(250, 0));
+        btnThem.setBackground(Color.WHITE);
+        btnSua.setBackground(Color.WHITE);
+        btnXoa.setBackground(Color.WHITE);
+        btnInfo.setBackground(Color.WHITE);
+        btnImport.setBackground(Color.WHITE);
+        btnExport.setBackground(Color.WHITE);
+        
+        pnlTopBarLeftSub.add(btnThem);
+        pnlTopBarLeftSub.add(btnSua);
+        pnlTopBarLeftSub.add(btnXoa);
+        pnlTopBarLeftSub.add(btnInfo);
+        pnlTopBarLeftSub.add(btnImport);
+        pnlTopBarLeftSub.add(btnExport);
+        
+        // Phải: Thanh tìm kiếm dùng HeaderRightPanel
+        headerRightPanel = new HeaderRightPanel();
         
         pnlTopBar.add(pnlTopBarLeftSub, BorderLayout.WEST);
-        pnlTopBar.add(pnlTopBarRightSub, BorderLayout.EAST);
-        pnlMain.add(pnlMainRight, BorderLayout.WEST);
-        pnlMain.add(pnlMainContent, BorderLayout.CENTER);
+        pnlTopBar.add(headerRightPanel, BorderLayout.EAST);
         
-        this.add(pnlTopBar, BorderLayout.NORTH); 
-        this.add(pnlMain, BorderLayout.CENTER);
+        // --- 3. MAIN PANEL ---
+        JPanel pnlMain = new JPanel(new BorderLayout(10, 0));
+        pnlMain.setBackground(Color.WHITE);
         
-        // --- TOP BAR PANEL IMPLEMENTS ---
+        // 3.1. PANEL BỘ LỌC BÊN TRÁI (Dùng BorderLayout để nhốt vào NORTH chống giãn)
+        JPanel pnlLeft = new JPanel(new BorderLayout()); 
+        pnlLeft.setPreferredSize(new Dimension(250, 0));
+        pnlLeft.setBackground(Color.WHITE);
         
-        // 1. Left Sub (Thay thế toàn bộ FontIcon và JButton cũ bằng ButtonToolBar)
-        ButtonToolBar btnTopBarThem = new ButtonToolBar("Thêm", "icon/add.svg", 80, 60, 14, "ADD_PHIEUNHAP");
-        ButtonToolBar btnTopBarSua = new ButtonToolBar("Sửa", "icon/update.svg", 80, 60, 14, "EDIT_PHIEUNHAP");
-        ButtonToolBar btnTopBarXoa = new ButtonToolBar("Xóa", "icon/delete.svg", 80, 60, 14, "DELETE_PHIEUNHAP");
-        ButtonToolBar btnTopBarXuatFile = new ButtonToolBar("Xuất file", "icon/export.svg", 80, 60, 14, "EXPORT_PHIEUNHAP");
+        JPanel pnlFilterBox = new JPanel();
+        pnlFilterBox.setLayout(new BoxLayout(pnlFilterBox, BoxLayout.Y_AXIS));
+        pnlFilterBox.setBackground(Color.WHITE);
+        pnlFilterBox.setBorder(new EmptyBorder(20, 10, 10, 10));
         
-        // Đặt màu nền trắng cho các nút ở Top Bar để tiệp với nền của panel chứa chúng
-        btnTopBarThem.setBackground(defaultGray);
-        btnTopBarSua.setBackground(defaultGray);
-        btnTopBarXoa.setBackground(defaultGray);
-        btnTopBarXuatFile.setBackground(defaultGray);
-
-
-        
-        pnlTopBarLeftSub.add(btnTopBarThem);
-        pnlTopBarLeftSub.add(btnTopBarSua);
-        pnlTopBarLeftSub.add(btnTopBarXoa);
-        pnlTopBarLeftSub.add(btnTopBarXuatFile);
-        
-        // 2. Right Sub
-        JTextField txtTopBarTimKiem = new JTextField("Nhập mã phiếu nhập");
-        txtTopBarTimKiem.setPreferredSize(new Dimension(200, 32));
-        
-        ButtonToolBar btnTopBarLamMoi = new ButtonToolBar("", "icon/reload.svg", 80, 60, 14, "VIEW_PHIEUNHAP");
-        btnTopBarLamMoi.setBackground(Color.WHITE);
-        pnlTopBarRightSub.add(txtTopBarTimKiem);
-        pnlTopBarRightSub.add(btnTopBarLamMoi);
-        
-        
-        // --- MAIN PANEL IMPLEMENTS ---
-        
-        // MAIN RIGHT
-        pnlMainRight.setLayout(new BorderLayout());
-        
-        JPanel pnlMainRightFilter = new JPanel();
-        JPanel pnlMainRightInfo = new JPanel();
-
-        // MAIN RIGHT FILTER
-        pnlMainRightFilter.setLayout(new BoxLayout(pnlMainRightFilter,BoxLayout.Y_AXIS));
-        pnlMainRightFilter.setBorder(new EmptyBorder(20,10,10,10));
-        
-        
-        // Nút Lọc
-        ButtonToolBar btnMainFilterLoc = new ButtonToolBar("Lọc", "icon/filter.svg", 80, 60, 14, "VIEW_PHIEUNHAP");
-        btnTopBarLamMoi.setBackground(defaultGray);
-        btnMainFilterLoc.setBackground(defaultGray);
-        Dimension labelSize = new Dimension(65, 30); // Ép nhãn rộng bằng nhau
+        Dimension labelSize = new Dimension(65, 30);
         
         JLabel lblTuNgay = new JLabel("Từ ngày:");
         lblTuNgay.setPreferredSize(labelSize);
         JDateChooser dateTuNgay = new JDateChooser();
         dateTuNgay.setDateFormatString("dd/MM/yyyy");
-        dateTuNgay.setPreferredSize(new Dimension(140,25));
+        dateTuNgay.setPreferredSize(new Dimension(140, 25));
         
         JLabel lblDenNgay = new JLabel("Đến ngày:");
         lblDenNgay.setPreferredSize(labelSize);
         JDateChooser dateDenNgay = new JDateChooser();
         dateDenNgay.setDateFormatString("dd/MM/yyyy");
-        dateDenNgay.setPreferredSize(new Dimension(140,25));
+        dateDenNgay.setPreferredSize(new Dimension(140, 25));
+
+        ButtonToolBar btnLoc = new ButtonToolBar("Lọc", "icon/filter.svg", 80, 60, 14, "VIEW_PHIEUNHAP");
+        btnLoc.setBackground(Color.WHITE);
 
         JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 5));
+        row1.setBackground(Color.WHITE);
         row1.add(lblTuNgay);
         row1.add(dateTuNgay);
 
         JPanel row2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 5));
+        row2.setBackground(Color.WHITE);
         row2.add(lblDenNgay);
         row2.add(dateDenNgay);
         
         JPanel row3 = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 15));
-        row3.add(btnMainFilterLoc);
+        row3.setBackground(Color.WHITE);
+        row3.add(btnLoc);
 
-        pnlMainRightFilter.add(row1);
-        pnlMainRightFilter.add(row2);
-        pnlMainRightFilter.add(row3);
+        pnlFilterBox.add(row1);
+        pnlFilterBox.add(row2);
+        pnlFilterBox.add(row3);
         
-        pnlMainRight.add(pnlMainRightFilter, BorderLayout.NORTH);
-        pnlMainRight.add(pnlMainRightInfo, BorderLayout.CENTER);
-        
-        pnlMainContent.setLayout(new BorderLayout());
-        
-        
-        //MAIN CONTENT
+        pnlLeft.add(pnlFilterBox, BorderLayout.NORTH);
         
         String[] headers = {"Mã phiếu nhập", "Mã nhân viên", "Mã nhà cung cấp", "Ngày lập", "Tổng tiền", "Trạng thái"};
         tblPhieuNhap = new TablePanel("DANH SÁCH PHIẾU NHẬP", headers);
-        pnlMainContent.add(tblPhieuNhap, BorderLayout.CENTER);
+        
+        pnlMain.add(pnlLeft, BorderLayout.WEST);
+        pnlMain.add(tblPhieuNhap, BorderLayout.CENTER);
+        
+        // --- 4. THÊM VÀO PANEL CHÍNH ---
+        this.add(pnlTopBar, BorderLayout.NORTH); 
+        this.add(pnlMain, BorderLayout.CENTER);
     }
     
-    public void loadData(){
+    public void loadData() {
         ArrayList<PhieuNhapDTO> list = bus.getAll();
         
-        Object[][] data = new Object[list.size()][6];
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"); // Định dạng ngày
-        DecimalFormat df = new DecimalFormat("#,###.##"); // Định dạng tiền tệ (VD: 150,000,000)
+        if (list == null) return;
         
-        // 4. Đổ dữ liệu từ List sang mảng
+        Object[][] data = new Object[list.size()][6];
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"); 
+        DecimalFormat df = new DecimalFormat("#,###.##"); 
+        
         for (int i = 0; i < list.size(); i++) {
             PhieuNhapDTO pn = list.get(i);
             
-            data[i][0] = "PN" + pn.getMaPHN();       // Thêm chữ PN cho giống thiết kế của bạn
+            data[i][0] = "PN" + pn.getMaPHN();       
             data[i][1] = pn.getMaNV();
             data[i][2] = pn.getMaNCC();              
-            data[i][3] = sdf.format(pn.getNgay());   // Đổi Timestamp thành chuỗi ngày tháng
-            data[i][4] = df.format(pn.getTongTien());// Đổi Double thành chuỗi tiền tệ
+            data[i][3] = sdf.format(pn.getNgay());   
+            data[i][4] = df.format(pn.getTongTien());
             data[i][5] = pn.getTrangThai() == 1 ? "Hoàn thành" : "Đã hủy";
         }
         
-        // 5. Cập nhật dữ liệu lên bảng
         tblPhieuNhap.setData(data);
     }
-            
 }

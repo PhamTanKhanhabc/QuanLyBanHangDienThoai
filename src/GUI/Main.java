@@ -7,6 +7,8 @@ package GUI;
 import GUI.Panel.KhuyenMaiGUI;
 import GUI.Panel.BaoHanhPanel;
 import GUI.Panel.SanPhamPanel;
+import GUI.Panel.NhaCungCap;
+import GUI.Panel.PhieuNhap;
 import java.awt.*;
 import javax.swing.*;
 import java.util.List;
@@ -184,13 +186,13 @@ public class Main extends JFrame {
 
         // Nhà cung cấp
         btnNhaCungCap.addActionListener(e -> {
-            setPanel(new JLabel("Trang nhà cung cấp", SwingConstants.CENTER));
+            setPanel(new NhaCungCap());
             setActive(btnNhaCungCap);
         });
 
         // Phiếu nhập
         btnPhieuNhap.addActionListener(e -> {
-            setPanel(new JLabel("Trang phiếu nhập", SwingConstants.CENTER));
+            setPanel(new PhieuNhap());
             setActive(btnPhieuNhap);
         });
 
