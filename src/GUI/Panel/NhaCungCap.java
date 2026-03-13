@@ -3,7 +3,7 @@ package GUI.Panel;
 import GUI.Component.ButtonToolBar;
 import GUI.Component.HeaderRightPanel;
 import GUI.Component.TablePanel;
-
+import javax.swing.table.*;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -68,12 +68,22 @@ public class NhaCungCap extends JPanel {
         
         String[] headers = {"Mã nhà cung cấp", "Tên nhà cung cấp", "Số điện thoại", "Địa chỉ"};
         tblNhaCungCap = new TablePanel("DANH SÁCH NHÀ CUNG CẤP", headers);
+        tblNhaCungCap.getTable().getTableHeader().setReorderingAllowed(false);
         
         pnlMain.add(tblNhaCungCap, BorderLayout.CENTER);
         
         // --- 4. THÊM VÀO PANEL CHÍNH ---
         this.add(pnlTopBar, BorderLayout.NORTH);
         this.add(pnlMain, BorderLayout.CENTER);
+        
+        //ACTION
+        btnThem.addActionListener(e -> {
+            GUI.Dialog.ThemNhaCungCapDialog dialog = new GUI.Dialog.ThemNhaCungCapDialog(
+                (JFrame) SwingUtilities.getWindowAncestor(this), 
+                true
+            );
+            dialog.setVisible(true);
+        });
     }
     
     public void loadData() {
@@ -85,16 +95,14 @@ public class NhaCungCap extends JPanel {
         
         for (int i = 0; i < list.size(); i++) {
             NhaCungCapDTO ncc = list.get(i);
-            
-            // LƯU Ý: Sửa các hàm get... dưới đây cho khớp với thuộc tính trong NhaCungCapDTO của bạn
-            /*
+
             data[i][0] = ncc.getMaNCC();       
             data[i][1] = ncc.getTenNCC();
-            data[i][2] = ncc.getSdt();              
+            data[i][2] = ncc.getSDT();              
             data[i][3] = ncc.getDiaChi();
-            */
         }
+        tblNhaCungCap.setData(data);
         
-        // tblNhaCungCap.setData(data); // Bỏ comment dòng này khi đã map đúng dữ liệu
+        
     }
 }

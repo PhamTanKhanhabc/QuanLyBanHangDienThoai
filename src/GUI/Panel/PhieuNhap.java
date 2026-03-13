@@ -44,8 +44,8 @@ public class PhieuNhap extends JPanel {
         ButtonToolBar btnSua = new ButtonToolBar("Sửa", "icon/update.svg", 80, 60, 14, "EDIT_PHIEUNHAP");
         ButtonToolBar btnXoa = new ButtonToolBar("Xóa", "icon/delete.svg", 80, 60, 14, "DELETE_PHIEUNHAP");
         ButtonToolBar btnInfo = new ButtonToolBar("Chi tiết", "icon/info.svg", 80, 60, 14, "INFO_PHIEUNHAP");
-        ButtonToolBar btnImport = new ButtonToolBar("Nhập file", "icon/import.svg", 80, 60, 14, "IMPORT_PHIEUNHAP");
-        ButtonToolBar btnExport = new ButtonToolBar("Xuất file", "icon/export.svg", 80, 60, 14, "EXPORT_PHIEUNHAP");
+        ButtonToolBar btnImport = new ButtonToolBar("Import", "icon/import.svg", 80, 60, 14, "IMPORT_PHIEUNHAP");
+        ButtonToolBar btnExport = new ButtonToolBar("Export", "icon/export.svg", 80, 60, 14, "EXPORT_PHIEUNHAP");
         
         btnThem.setBackground(Color.WHITE);
         btnSua.setBackground(Color.WHITE);
@@ -127,6 +127,78 @@ public class PhieuNhap extends JPanel {
         // --- 4. THÊM VÀO PANEL CHÍNH ---
         this.add(pnlTopBar, BorderLayout.NORTH); 
         this.add(pnlMain, BorderLayout.CENTER);
+        
+        //ACTION
+        btnThem.addActionListener(e -> {
+        // Gọi form Dialog lên
+            GUI.Dialog.ThemPhieuNhap dialog = new GUI.Dialog.ThemPhieuNhap(
+                (JFrame) SwingUtilities.getWindowAncestor(this), 
+                true
+            );
+            dialog.setVisible(true);
+        }); 
+        
+        // Bắt sự kiện khi nhấn nút "Chi tiết"
+        btnInfo.addActionListener(e -> {
+            // Lấy JTable thực sự đang nằm bên trong TablePanel của bạn
+            JTable table = tblPhieuNhap.getTable(); 
+            int selectedRow = table.getSelectedRow();
+            
+            // 1. Kiểm tra xem người dùng đã click chọn dòng nào trên bảng chưa
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn một phiếu nhập để xem chi tiết!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return; // Dừng lại, không chạy code bên dưới nữa
+            }
+            
+            // 2. Lấy dữ liệu từ dòng được chọn
+            // Nhìn vào mảng headers của bạn: Cột 1 là Mã nhân viên, Cột 2 là Mã NCC
+            String maNV = table.getValueAt(selectedRow, 1).toString();
+            String maNCC = table.getValueAt(selectedRow, 2).toString();
+            
+            // LƯU Ý: Do trên bảng hiển thị Mã nhà cung cấp (kiểu số 1, 2, 3...)
+            // Nên tôi ghép tạm chuỗi để truyền vào. 
+            // Nếu bạn có hàm nccBUS.getTenNhaCungCap(maNCC), bạn có thể dùng để lấy tên cho đẹp!
+            String tenNhaCungCap = "Mã NCC: " + maNCC; 
+
+            // 3. Gọi form XemPhieuNhap và ném dữ liệu vào Constructor
+            GUI.Dialog.XemPhieuNhap dialog = new GUI.Dialog.XemPhieuNhap(
+                (JFrame) SwingUtilities.getWindowAncestor(this), 
+                true, 
+                tenNhaCungCap, 
+                maNV
+            );
+            dialog.setVisible(true);
+        });
+        
+        // Bắt sự kiện khi nhấn nút "Xóa"
+        btnXoa.addActionListener(e -> {
+            JTable table = tblPhieuNhap.getTable(); 
+            int selectedRow = table.getSelectedRow();
+            
+            // 1. Kiểm tra xem có chọn dòng nào chưa
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn một phiếu nhập để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return; 
+            }
+            
+            // 2. Lấy dữ liệu từ dòng được chọn
+            // Cột 0: Mã phiếu nhập (Có chữ PN ở đầu do bạn ghép ở hàm loadData)
+            String maPHN = table.getValueAt(selectedRow, 0).toString(); 
+            String maNV = table.getValueAt(selectedRow, 1).toString();
+            String maNCC = table.getValueAt(selectedRow, 2).toString();
+            
+            String tenNhaCungCap = "Mã NCC: " + maNCC; 
+
+            // 3. Gọi form XoaPhieuNhap lên
+            GUI.Dialog.XoaPhieuNhap dialog = new GUI.Dialog.XoaPhieuNhap(
+                (JFrame) SwingUtilities.getWindowAncestor(this), 
+                true, 
+                maPHN,
+                tenNhaCungCap, 
+                maNV
+            );
+            dialog.setVisible(true);
+        });
     }
     
     public void loadData() {
@@ -150,5 +222,6 @@ public class PhieuNhap extends JPanel {
         }
         
         tblPhieuNhap.setData(data);
+        
     }
 }
