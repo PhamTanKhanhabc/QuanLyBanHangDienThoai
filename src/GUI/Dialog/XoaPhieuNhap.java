@@ -19,10 +19,10 @@ public class XoaPhieuNhap extends JDialog {
     public XoaPhieuNhap(Frame owner, boolean modal, String maPHN, String tenNCC, String maNV){
         super(owner, modal);
         this.maPhieuNhap = maPHN; // Lưu lại ID
-        initUI(maPHN, maNV);
+        initUI(maPHN, maNV, tenNCC);
     }
     
-    public void initUI(String maPHN, String maNV){
+    public void initUI(String maPHN, String maNV,String tenNCC){
         setTitle("XÁC NHẬN XÓA PHIẾU NHẬP");
         setSize(850, 600);
         setLocationRelativeTo(getParent());
@@ -40,7 +40,7 @@ public class XoaPhieuNhap extends JDialog {
         pnlTopTitle.setBackground(Color.WHITE);
         
         // Cảnh báo chữ đỏ cho thao tác Xóa
-        JLabel lblTopTitle = new JLabel("XÓA PHIẾU NHẬP");
+        JLabel lblTopTitle = new JLabel("XÓA PHIẾU NHẬP " + maPHN);
         lblTopTitle.setFont(new Font("Roboto", Font.BOLD, 22));
         lblTopTitle.setForeground(new Color(220, 53, 69)); // Màu đỏ Danger
         pnlTopTitle.add(lblTopTitle);
@@ -49,8 +49,8 @@ public class XoaPhieuNhap extends JDialog {
         pnlTopInfo.setBackground(Color.WHITE);
         pnlTopInfo.setBorder(new EmptyBorder(10, 10, 10, 10));
         
-        pnlTopInfo.add(new JLabel("Mã phiếu nhập "));
-        txtNhaCungCap = new JTextField(maPHN); 
+        pnlTopInfo.add(new JLabel("Mã nhà cung cấp: "));
+        txtNhaCungCap = new JTextField(tenNCC); 
         txtNhaCungCap.setPreferredSize(new Dimension(250, 32));
         txtNhaCungCap.setEditable(false); 
         txtNhaCungCap.setBackground(new Color(245, 245, 245)); 

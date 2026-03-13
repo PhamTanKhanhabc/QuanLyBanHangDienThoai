@@ -187,7 +187,7 @@ public class PhieuNhap extends JPanel {
             String maNV = table.getValueAt(selectedRow, 1).toString();
             String maNCC = table.getValueAt(selectedRow, 2).toString();
             
-            String tenNhaCungCap = "Mã NCC: " + maNCC; 
+            String tenNhaCungCap = maNCC; 
 
             // 3. Gọi form XoaPhieuNhap lên
             GUI.Dialog.XoaPhieuNhap dialog = new GUI.Dialog.XoaPhieuNhap(
@@ -196,6 +196,29 @@ public class PhieuNhap extends JPanel {
                 maPHN,
                 tenNhaCungCap, 
                 maNV
+            );
+            dialog.setVisible(true);
+        });
+        
+        
+        btnSua.addActionListener(e -> {
+            JTable table = tblPhieuNhap.getTable(); 
+            int selectedRow = table.getSelectedRow();
+            
+            // Kiểm tra xem đã chọn dòng nào chưa
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn một phiếu nhập để sửa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return; 
+            }
+            
+            // Lấy Mã phiếu nhập (Lưu ý: Nhớ cắt chữ "PN" ở đầu nếu bạn có ghép vào)
+            String maPHN = table.getValueAt(selectedRow, 0).toString(); 
+
+            // Gọi form SuaPhieuNhap
+            GUI.Dialog.SuaPhieuNhap dialog = new GUI.Dialog.SuaPhieuNhap(
+                (JFrame) SwingUtilities.getWindowAncestor(this), 
+                true, 
+                maPHN
             );
             dialog.setVisible(true);
         });

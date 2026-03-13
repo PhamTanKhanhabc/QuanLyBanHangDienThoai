@@ -84,6 +84,74 @@ public class NhaCungCap extends JPanel {
             );
             dialog.setVisible(true);
         });
+
+
+        // --- 1. Sự kiện nút SỬA ---
+        btnSua.addActionListener(e -> {
+            JTable table = tblNhaCungCap.getTable();
+            int row = table.getSelectedRow();
+            
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn một nhà cung cấp để sửa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            
+            // Lấy dữ liệu từ dòng được chọn
+            String ma = table.getValueAt(row, 0).toString();
+            String ten = table.getValueAt(row, 1).toString();
+            String sdt = table.getValueAt(row, 2).toString();
+            String diaChi = table.getValueAt(row, 3).toString();
+
+            // Gọi form Sửa
+            GUI.Dialog.SuaNhaCungCapDialog dialog = new GUI.Dialog.SuaNhaCungCapDialog(
+                (JFrame) SwingUtilities.getWindowAncestor(this), true, ma, ten, sdt, diaChi
+            );
+            dialog.setVisible(true);
+        });
+
+        // --- 2. Sự kiện nút XEM CHI TIẾT ---
+        btnInfo.addActionListener(e -> {
+            JTable table = tblNhaCungCap.getTable();
+            int row = table.getSelectedRow();
+            
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn một nhà cung cấp để xem chi tiết!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            
+            String ma = table.getValueAt(row, 0).toString();
+            String ten = table.getValueAt(row, 1).toString();
+            String sdt = table.getValueAt(row, 2).toString();
+            String diaChi = table.getValueAt(row, 3).toString();
+
+            // Gọi form Xem
+            GUI.Dialog.XemNhaCungCapDialog dialog = new GUI.Dialog.XemNhaCungCapDialog(
+                (JFrame) SwingUtilities.getWindowAncestor(this), true, ma, ten, sdt, diaChi
+            );
+            dialog.setVisible(true);
+        });
+
+        // --- 3. Sự kiện nút XÓA ---
+        btnXoa.addActionListener(e -> {
+            JTable table = tblNhaCungCap.getTable();
+            int row = table.getSelectedRow();
+            
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn một nhà cung cấp để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            
+            String ma = table.getValueAt(row, 0).toString();
+            String ten = table.getValueAt(row, 1).toString();
+            String sdt = table.getValueAt(row, 2).toString();
+            String diaChi = table.getValueAt(row, 3).toString();
+
+            // Gọi form Xóa
+            GUI.Dialog.XoaNhaCungCapDialog dialog = new GUI.Dialog.XoaNhaCungCapDialog(
+                (JFrame) SwingUtilities.getWindowAncestor(this), true, ma, ten, sdt, diaChi
+            );
+            dialog.setVisible(true);
+        });
     }
     
     public void loadData() {
