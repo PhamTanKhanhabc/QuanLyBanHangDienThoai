@@ -128,8 +128,29 @@ public class ThemNhaCungCapDialog extends JDialog {
         
 
         btnLuu.addActionListener(e -> {
-
-            JOptionPane.showMessageDialog(this, "Chức năng lưu đang được xây dựng!");
+            String tenNCC = txtTenNCC.getText().trim();
+            String sdt = txtSDT.getText().trim();
+            String diaChi = txtDiaChi.getText().trim();
+            
+            if (tenNCC.isEmpty() || sdt.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ Tên và Số điện thoại!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            
+            if (!sdt.matches("\\d{10,11}")) {
+                JOptionPane.showMessageDialog(this, "Số điện thoại phải chứa 10-11 chữ số!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            DTO.NhaCungCapDTO newNCC = new DTO.NhaCungCapDTO("", tenNCC, sdt, diaChi, 1);
+            BUS.NhaCungCapBUS nccBUS = new BUS.NhaCungCapBUS();
+            boolean isSuccess = nccBUS.add(newNCC);
+            
+            if (isSuccess) {
+                JOptionPane.showMessageDialog(this, "Thêm nhà cung cấp thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                dispose(); // Đóng form
+            } else {
+                JOptionPane.showMessageDialog(this, "Thêm nhà cung cấp thất bại! Vui lòng thử lại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
         });
     }
 }
