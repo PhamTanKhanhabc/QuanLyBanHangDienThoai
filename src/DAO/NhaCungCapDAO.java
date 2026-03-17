@@ -23,7 +23,7 @@ public class NhaCungCapDAO implements DAOInterface<NhaCungCapDTO> {
 
             PreparedStatement pst = con.prepareStatement(sql);
 
-            pst.setInt(1, t.getMaNCC());
+            pst.setString(1, t.getMaNCC());
             pst.setString(2, t.getTenNCC());
             pst.setString(3, t.getSDT());
             pst.setString(4, t.getDiaChi());
@@ -52,7 +52,7 @@ public class NhaCungCapDAO implements DAOInterface<NhaCungCapDTO> {
             pst.setString(1, t.getTenNCC());
             pst.setString(2, t.getSDT());
             pst.setString(3, t.getDiaChi());
-            pst.setInt(4, t.getMaNCC());
+            pst.setString(4, t.getMaNCC());
 
             ketQua = pst.executeUpdate();
 
@@ -75,7 +75,7 @@ public class NhaCungCapDAO implements DAOInterface<NhaCungCapDTO> {
 
             PreparedStatement pst = con.prepareStatement(sql);
 
-            pst.setInt(1, t.getMaNCC());
+            pst.setString(1, t.getMaNCC());
 
             ketQua = pst.executeUpdate();
 
@@ -102,7 +102,7 @@ public class NhaCungCapDAO implements DAOInterface<NhaCungCapDTO> {
             while (rs.next()) {
 
                 NhaCungCapDTO ncc = new NhaCungCapDTO(
-                        rs.getInt("maNCC"),
+                        rs.getString("maNCC"),
                         rs.getString("tenNCC"),
                         rs.getString("sdt"),
                         rs.getString("diachi"),
@@ -132,14 +132,14 @@ public class NhaCungCapDAO implements DAOInterface<NhaCungCapDTO> {
 
             PreparedStatement pst = con.prepareStatement(sql);
 
-            pst.setInt(1, t.getMaNCC());
+            pst.setString(1, t.getMaNCC());
 
             ResultSet rs = pst.executeQuery();
 
             if (rs.next()) {
 
                 ketQua = new NhaCungCapDTO(
-                        rs.getInt("maNCC"),
+                        rs.getString("maNCC"),
                         rs.getString("tenNCC"),
                         rs.getString("sdt"),
                         rs.getString("diachi"),
@@ -171,7 +171,7 @@ public class NhaCungCapDAO implements DAOInterface<NhaCungCapDTO> {
             while (rs.next()) {
 
                 NhaCungCapDTO ncc = new NhaCungCapDTO(
-                        rs.getInt("maNCC"),
+                        rs.getString("maNCC"),
                         rs.getString("tenNCC"),
                         rs.getString("sdt"),
                         rs.getString("diachi"),
@@ -191,8 +191,8 @@ public class NhaCungCapDAO implements DAOInterface<NhaCungCapDTO> {
         return ketQua;
     }
 
-    public int getLastMaNCC() {
-        int lastMa = 0;
+    public String getLastMaNCC() {
+        String lastMa = "";
         try {
             Connection con = SQLServerConnect.getConnection();
 
@@ -202,7 +202,7 @@ public class NhaCungCapDAO implements DAOInterface<NhaCungCapDTO> {
             ResultSet rs = pst.executeQuery();
 
             if (rs.next()) {
-                lastMa = rs.getInt("maNCC");
+                lastMa = rs.getString("maNCC");
             }
 
             rs.close();

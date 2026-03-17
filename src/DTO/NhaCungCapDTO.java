@@ -3,7 +3,7 @@ package DTO;
 import java.util.Objects;
 
 public class NhaCungCapDTO {
-    private int maNCC;
+    private String maNCC;
     private String tenNCC;
     private String sdt;
     private String diaChi;
@@ -13,7 +13,7 @@ public class NhaCungCapDTO {
         this.trangThai = 1;
     }
 
-    public NhaCungCapDTO(int maNCC, String tenNCC, String sdt, String diaChi, int trangThai){
+    public NhaCungCapDTO(String maNCC, String tenNCC, String sdt, String diaChi, int trangThai){
         this.maNCC = maNCC;
         this.tenNCC = tenNCC;
         this.sdt = sdt;
@@ -22,7 +22,7 @@ public class NhaCungCapDTO {
     }
 
     //getter
-    public int getMaNCC(){
+    public String getMaNCC(){
         return this.maNCC;
     }
 
@@ -39,7 +39,7 @@ public class NhaCungCapDTO {
     }
 
     //setter
-    public void setMaNCC(int maNCC){
+    public void setMaNCC(String maNCC){
         this.maNCC = maNCC;
     }
 
@@ -54,6 +54,7 @@ public class NhaCungCapDTO {
     public void setDiaChi(String diaChi){
         this.diaChi = diaChi;
     }
+    
     public int getTrangThai(){
         return trangThai;
     }
@@ -67,7 +68,8 @@ public class NhaCungCapDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         NhaCungCapDTO that = (NhaCungCapDTO) o;
-        return maNCC == that.maNCC;
+
+        return Objects.equals(maNCC, that.maNCC);
     }
 
     @Override
@@ -75,11 +77,10 @@ public class NhaCungCapDTO {
         return Objects.hash(maNCC);
     }
 
-
     @Override
     public String toString(){
         return "NhaCungCapDTO{" +
-                "maNCC=" + maNCC +
+                "maNCC='" + maNCC + '\'' +
                 ", tenNCC='" + tenNCC + '\'' +
                 ", sdt='" + sdt + '\'' +
                 ", diaChi='" + diaChi + '\'' +
