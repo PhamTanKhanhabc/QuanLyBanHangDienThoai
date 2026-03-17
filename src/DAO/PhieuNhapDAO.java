@@ -5,7 +5,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 
 public class PhieuNhapDAO implements DAOInterface<PhieuNhapDTO> {
@@ -23,9 +22,9 @@ public class PhieuNhapDAO implements DAOInterface<PhieuNhapDTO> {
             String sql = "INSERT INTO PhieuNhap (maPHN, maNV, maNCC, ngay, tongtien, TrangThai) VALUES (?, ?, ?, ?, ?, 1)";
             PreparedStatement pst = con.prepareStatement(sql);
 
-            pst.setInt(1, t.getMaPHN());
+            pst.setString(1, t.getMaPHN());
             pst.setString(2, t.getMaNV());
-            pst.setInt(3, t.getMaNCC());
+            pst.setString(3, t.getMaNCC());
             pst.setTimestamp(4, t.getNgay());
             pst.setDouble(5, t.getTongTien());
 
@@ -50,10 +49,10 @@ public class PhieuNhapDAO implements DAOInterface<PhieuNhapDTO> {
             PreparedStatement pst = con.prepareStatement(sql);
 
             pst.setString(1, t.getMaNV());
-            pst.setInt(2, t.getMaNCC());
+            pst.setString(2, t.getMaNCC());
             pst.setTimestamp(3, t.getNgay());
             pst.setDouble(4, t.getTongTien());
-            pst.setInt(5, t.getMaPHN());
+            pst.setString(5, t.getMaPHN());
 
             ketQua = pst.executeUpdate();
 
@@ -75,7 +74,7 @@ public class PhieuNhapDAO implements DAOInterface<PhieuNhapDTO> {
             String sql = "UPDATE PhieuNhap SET TrangThai = 0 WHERE maPHN = ? AND TrangThai = 1";
             PreparedStatement pst = con.prepareStatement(sql);
 
-            pst.setInt(1, t.getMaPHN());
+            pst.setString(1, t.getMaPHN());
 
             ketQua = pst.executeUpdate();
 
@@ -102,9 +101,9 @@ public class PhieuNhapDAO implements DAOInterface<PhieuNhapDTO> {
             while (rs.next()) {
 
                 PhieuNhapDTO pn = new PhieuNhapDTO(
-                        rs.getInt("maPHN"),
+                        rs.getString("maPHN"),
                         rs.getString("maNV"),
-                        rs.getInt("maNCC"),
+                        rs.getString("maNCC"),
                         rs.getTimestamp("ngay"),
                         rs.getDouble("tongtien"),
                         rs.getInt("TrangThai")
@@ -132,16 +131,16 @@ public class PhieuNhapDAO implements DAOInterface<PhieuNhapDTO> {
             String sql = "SELECT * FROM PhieuNhap WHERE maPHN = ? AND TrangThai = 1";
             PreparedStatement pst = con.prepareStatement(sql);
 
-            pst.setInt(1, t.getMaPHN());
+            pst.setString(1, t.getMaPHN());
 
             ResultSet rs = pst.executeQuery();
 
             if (rs.next()) {
 
                 ketQua = new PhieuNhapDTO(
-                        rs.getInt("maPHN"),
+                        rs.getString("maPHN"),
                         rs.getString("maNV"),
-                        rs.getInt("maNCC"),
+                        rs.getString("maNCC"),
                         rs.getTimestamp("ngay"),
                         rs.getDouble("tongtien"),
                         rs.getInt("TrangThai")
@@ -172,9 +171,9 @@ public class PhieuNhapDAO implements DAOInterface<PhieuNhapDTO> {
             while (rs.next()) {
 
                 PhieuNhapDTO pn = new PhieuNhapDTO(
-                        rs.getInt("maPHN"),
+                        rs.getString("maPHN"),
                         rs.getString("maNV"),
-                        rs.getInt("maNCC"),
+                        rs.getString("maNCC"),
                         rs.getTimestamp("ngay"),
                         rs.getDouble("tongtien"),
                         rs.getInt("TrangThai")
@@ -193,8 +192,8 @@ public class PhieuNhapDAO implements DAOInterface<PhieuNhapDTO> {
         return ketQua;
     }
 
-    public int getLastMaPHN() {
-        int lastMa = 0;
+    public String getLastMaPHN() {
+        String lastMa = "";
         try {
             Connection con = SQLServerConnect.getConnection();
 
@@ -204,7 +203,7 @@ public class PhieuNhapDAO implements DAOInterface<PhieuNhapDTO> {
             ResultSet rs = pst.executeQuery();
 
             if (rs.next()) {
-                lastMa = rs.getInt("maPHN");
+                lastMa = rs.getString("maPHN");
             }
 
             rs.close();

@@ -236,7 +236,7 @@ public class PhieuNhap extends JPanel {
         for (int i = 0; i < list.size(); i++) {
             PhieuNhapDTO pn = list.get(i);
             
-            data[i][0] = "PN" + pn.getMaPHN();       
+            data[i][0] = pn.getMaPHN();      
             data[i][1] = pn.getMaNV();
             data[i][2] = pn.getMaNCC();              
             data[i][3] = sdf.format(pn.getNgay());   

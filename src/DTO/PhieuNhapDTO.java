@@ -4,28 +4,28 @@ import java.sql.Timestamp;
 import java.util.Objects;
 
 public class PhieuNhapDTO {
-    private int maPHN;
+    private String maPHN;
     private String maNV;
-    private int maNCC;
+    private String maNCC;
     private Timestamp ngay;
     private double tongTien;
-    private int trangThai;  
+    private int trangThai;
 
     public PhieuNhapDTO() {
         this.trangThai = 1;
     }
 
-    public PhieuNhapDTO(int maPHN, String maNV, int maNCC,
+    public PhieuNhapDTO(String maPHN, String maNV, String maNCC,
                         Timestamp ngay, double tongTien, int trangThai) {
         this.maPHN = maPHN;
         this.maNV = maNV;
         this.maNCC = maNCC;
-        this.ngay = ngay;   
+        this.ngay = ngay;
         this.tongTien = tongTien;
         this.trangThai = trangThai;
     }
 
-    public int getMaPHN() {
+    public String getMaPHN() {
         return maPHN;
     }
 
@@ -33,7 +33,7 @@ public class PhieuNhapDTO {
         return maNV;
     }
 
-    public int getMaNCC() {
+    public String getMaNCC() {
         return maNCC;
     }
 
@@ -45,7 +45,7 @@ public class PhieuNhapDTO {
         return tongTien;
     }
 
-    public void setMaPHN(int maPHN) {
+    public void setMaPHN(String maPHN) {
         this.maPHN = maPHN;
     }
 
@@ -53,7 +53,7 @@ public class PhieuNhapDTO {
         this.maNV = maNV;
     }
 
-    public void setMaNCC(int maNCC) {
+    public void setMaNCC(String maNCC) {
         this.maNCC = maNCC;
     }
 
@@ -64,10 +64,11 @@ public class PhieuNhapDTO {
     public void setTongTien(double tongTien) {
         this.tongTien = tongTien;
     }
+
     public int getTrangThai() {
         return trangThai;
     }
-    
+
     public void setTrangThai(int trangThai) {
         this.trangThai = trangThai;
     }
@@ -77,7 +78,7 @@ public class PhieuNhapDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PhieuNhapDTO phieuNhap = (PhieuNhapDTO) o;
-        return maPHN == phieuNhap.maPHN;
+        return Objects.equals(maPHN, phieuNhap.maPHN);
     }
 
     @Override
@@ -88,13 +89,12 @@ public class PhieuNhapDTO {
     @Override
     public String toString() {
         return "PhieuNhapDTO{" +
-                "maPHN=" + maPHN +
+                "maPHN='" + maPHN + '\'' +
                 ", maNV='" + maNV + '\'' +
-                ", maNCC=" + maNCC +
+                ", maNCC='" + maNCC + '\'' +
                 ", ngay=" + ngay +
                 ", tongTien=" + tongTien +
                 ", trangThai=" + trangThai +
                 '}';
     }
-
 }

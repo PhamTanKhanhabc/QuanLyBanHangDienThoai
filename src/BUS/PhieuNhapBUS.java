@@ -17,28 +17,27 @@ public class PhieuNhapBUS {
         return listPN;
     }
 
-    // Tạo mã phiếu nhập
-    public int generateID() {
-
+    public String generateID() {
         if (listPN.isEmpty()) {
-            return 1;
+            return "PN101";
         }
 
-        int maxID = listPN.get(0).getMaPHN();
+        int maxID = 0;
 
         for (PhieuNhapDTO pn : listPN) {
-
-            if (pn.getMaPHN() > maxID) {
-                maxID = pn.getMaPHN();
+            try {
+                int currentID = Integer.parseInt(pn.getMaPHN().replaceAll("[^0-9]", ""));
+                if (currentID > maxID) {
+                    maxID = currentID;
+                }
+            } catch (Exception e) {
             }
         }
 
-        return maxID + 1;
+        return String.format("PN%03d", maxID + 1);
     }
 
-    // Thêm
     public boolean add(PhieuNhapDTO pn) {
-
         pn.setMaPHN(generateID());
 
         boolean check = pnDAO.insert(pn) != 0;
@@ -50,15 +49,11 @@ public class PhieuNhapBUS {
         return check;
     }
 
-    // Xóa
     public boolean delete(PhieuNhapDTO pn) {
-
         boolean check = pnDAO.delete(pn) != 0;
 
         if (check) {
-
             int index = getIndexById(pn.getMaPHN());
-
             if (index != -1) {
                 listPN.remove(index);
             }
@@ -67,15 +62,11 @@ public class PhieuNhapBUS {
         return check;
     }
 
-    // Sửa
     public boolean update(PhieuNhapDTO pn) {
-
         boolean check = pnDAO.update(pn) != 0;
 
         if (check) {
-
             int index = getIndexById(pn.getMaPHN());
-
             if (index != -1) {
                 listPN.set(index, pn);
             }
@@ -84,40 +75,29 @@ public class PhieuNhapBUS {
         return check;
     }
 
-    // Tìm index
-    public int getIndexById(int maPN) {
-
+    public int getIndexById(String maPN) {
         for (int i = 0; i < listPN.size(); i++) {
-
-            if (listPN.get(i).getMaPHN() == maPN) {
+            if (listPN.get(i).getMaPHN().equals(maPN)) {
                 return i;
             }
         }
-
         return -1;
     }
 
-    // Lấy theo index
     public PhieuNhapDTO getByIndex(int index) {
-
         if (index < 0 || index >= listPN.size()) {
             return null;
         }
-
         return listPN.get(index);
     }
 
-    // Search
     public ArrayList<PhieuNhapDTO> search(String text) {
-
         text = text.toLowerCase();
         ArrayList<PhieuNhapDTO> result = new ArrayList<>();
 
         for (PhieuNhapDTO pn : listPN) {
-
-            if (String.valueOf(pn.getMaPHN()).contains(text)
-                || String.valueOf(pn.getMaNCC()).contains(text)) {
-
+            if (pn.getMaPHN().toLowerCase().contains(text)
+                    || pn.getMaNCC().toLowerCase().contains(text)) {
                 result.add(pn);
             }
         }
@@ -125,39 +105,30 @@ public class PhieuNhapBUS {
         return result;
     }
 
-    // Kiểm tra trùng
-    public boolean checkDup(int maPN) {
-
+    public boolean checkDup(String maPN) {
         for (PhieuNhapDTO pn : listPN) {
-
-            if (pn.getMaPHN() == maPN) {
+            if (pn.getMaPHN().equals(maPN)) {
                 return false;
             }
         }
-
         return true;
     }
 
-    // Lấy mã PN
-    public int getMaPN(int maPN) {
-
+    public String getMaPN(String maPN) {
         int index = getIndexById(maPN);
 
         if (index == -1) {
-            return -1;
+            return null;
         }
 
         return listPN.get(index).getMaPHN();
     }
 
-    // Mảng cho combobox
     public String[] getArr() {
-
         String[] result = new String[listPN.size()];
 
         for (int i = 0; i < listPN.size(); i++) {
-
-            result[i] = String.valueOf(listPN.get(i).getMaPHN());
+            result[i] = listPN.get(i).getMaPHN();
         }
 
         return result;
