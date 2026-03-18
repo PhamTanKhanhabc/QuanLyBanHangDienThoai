@@ -63,19 +63,21 @@ VALUES
 ('NV03', N'Lê Thị Ngọc', N'Chi', '2000-03-15', N'Đà Nẵng', '0923456789', 10000000, 1);
 
 CREATE TABLE KhachHang(
-	MaKH varchar(20) NOT NULL,
-	Ho NVARCHAR(50),
-	Ten NVARCHAR(50),
-	DiaChi NVARCHAR(200),
-    TrangThai BIT DEFAULT 1
+    MaKH VARCHAR(20) NOT NULL PRIMARY KEY,
+    Ho NVARCHAR(50),
+    Ten NVARCHAR(50),
+    DiaChi NVARCHAR(200),
+    SoDT VARCHAR(20), 
+    TrangThai INT DEFAULT 1 
 );
-INSERT INTO KhachHang (MaKH, Ho, Ten, DiaChi, TrangThai)
+
+INSERT INTO KhachHang (MaKH, Ho, Ten, DiaChi, SoDT, TrangThai)
 VALUES 
-('KH001', N'Nguyễn Hoàng', N'Nam', N'Quận 1, TP.HCM', 1),
-('KH002', N'Lê Thị Ngọc', N'Mai', N'Quận 3, TP.HCM', 1),
-('KH003', N'Trần Anh', N'Tuấn', N'Quận Tân Bình, TP.HCM', 1),
-('KH004', N'Phạm Minh', N'Đức', N'Quận Đống Đa, Hà Nội', 1),
-('KH005', N'Vũ Thị', N'Lan', N'Quận Hai Bà Trưng, Hà Nội', 1);
+('KH001', N'Nguyễn Hoàng', N'Nam', N'Quận 1, TP.HCM', '0938123456', 1), 
+('KH002', N'Lê Thị Ngọc', N'Mai', N'Quận 3, TP.HCM', '0987654321', 1), 
+('KH003', N'Trần Anh', N'Tuấn', N'Quận Tân Bình, TP.HCM', '0912345678', 1), 
+('KH004', N'Phạm Minh', N'Đức', N'Quận Đống Đa, Hà Nội', '0909112233', 1), 
+('KH005', N'Vũ Thị', N'Lan', N'Quận Hai Bà Trưng, Hà Nội', '0356789012', 1);
 
 CREATE TABLE NhaCungCap(
     maNCC VARCHAR(20) NOT NULL,
