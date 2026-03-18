@@ -63,21 +63,19 @@ VALUES
 ('NV03', N'Lê Thị Ngọc', N'Chi', '2000-03-15', N'Đà Nẵng', '0923456789', 10000000, 1);
 
 CREATE TABLE KhachHang(
-    MaKH VARCHAR(20) NOT NULL,
-    Ho NVARCHAR(50),
-    Ten NVARCHAR(50),
-    DiaChi NVARCHAR(200),
-    SoDT VARCHAR(20), 
-    TrangThai INT DEFAULT 1 
+	MaKH varchar(20) NOT NULL,
+	Ho NVARCHAR(50),
+	Ten NVARCHAR(50),
+	DiaChi NVARCHAR(200),
+    TrangThai BIT DEFAULT 1
 );
-
-INSERT INTO KhachHang (MaKH, Ho, Ten, DiaChi, SoDT, TrangThai)
+INSERT INTO KhachHang (MaKH, Ho, Ten, DiaChi, TrangThai)
 VALUES 
-('KH001', N'Nguyễn Hoàng', N'Nam', N'Quận 1, TP.HCM', '0938123456', 1), 
-('KH002', N'Lê Thị Ngọc', N'Mai', N'Quận 3, TP.HCM', '0987654321', 1), 
-('KH003', N'Trần Anh', N'Tuấn', N'Quận Tân Bình, TP.HCM', '0912345678', 1), 
-('KH004', N'Phạm Minh', N'Đức', N'Quận Đống Đa, Hà Nội', '0909112233', 1), 
-('KH005', N'Vũ Thị', N'Lan', N'Quận Hai Bà Trưng, Hà Nội', '0356789012', 1);
+('KH001', N'Nguyễn Hoàng', N'Nam', N'Quận 1, TP.HCM', 1),
+('KH002', N'Lê Thị Ngọc', N'Mai', N'Quận 3, TP.HCM', 1),
+('KH003', N'Trần Anh', N'Tuấn', N'Quận Tân Bình, TP.HCM', 1),
+('KH004', N'Phạm Minh', N'Đức', N'Quận Đống Đa, Hà Nội', 1),
+('KH005', N'Vũ Thị', N'Lan', N'Quận Hai Bà Trưng, Hà Nội', 1);
 
 CREATE TABLE NhaCungCap(
     maNCC VARCHAR(20) NOT NULL,
@@ -91,7 +89,17 @@ INSERT INTO NhaCungCap (maNCC, tenNCC, sdt, diachi, TrangThai) VALUES
 ('NCC02', N'Apple Việt Nam LLC', '18001127', N'Deutsches Haus, Lê Duẩn, Q.1, TP.HCM', 1),
 ('NCC03', N'Nhà Phân Phối Digiworld', '02839290059', N'195 Điện Biên Phủ, Q.3, TP.HCM', 1),
 ('NCC04', N'OPPO Việt Nam', '1800577776', N'Tòa nhà E-Town, Tân Bình, TP.HCM', 1),
-('NCC05', N'Phân Phối FPT Trading', '02473006666', N'Duy Tân, Cầu Giấy, Hà Nội', 1);
+('NCC05', N'Phân Phối FPT Trading', '02473006666', N'Duy Tân, Cầu Giấy, Hà Nội', 1),
+('NCC06', N'Công Ty Phân Phối Petrosetco', '02838221616', N'Quận 1, TP.HCM', 1),
+('NCC07', N'Công Ty Viettel Commerce', '18008123', N'Quận Ba Đình, Hà Nội', 1),
+('NCC08', N'HMD Global Việt Nam (Nokia)', '18001516', N'Quận 1, TP.HCM', 1),
+('NCC09', N'Công Ty TNHH Asus Việt Nam', '18006588', N'Quận 10, TP.HCM', 1),
+('NCC10', N'Sony Electronics Việt Nam', '1800588885', N'Quận 1, TP.HCM', 1),
+('NCC11', N'Công Ty TNHH Lenovo Việt Nam', '12011072', N'Quận Cầu Giấy, Hà Nội', 1),
+('NCC12', N'Công Ty TNHH Huawei Việt Nam', '18001085', N'Quận 1, TP.HCM', 1),
+('NCC13', N'Nhà Phân Phối Smartcom', '02838208888', N'Quận Phú Nhuận, TP.HCM', 1),
+('NCC14', N'Tập đoàn Vingroup (Vsmart)', '1900232389', N'Quận Long Biên, Hà Nội', 1),
+('NCC15', N'Tập đoàn Bkav (Bphone)', '1900561296', N'Quận Cầu Giấy, Hà Nội', 1);
 
 CREATE TABLE SanPham (
     MaSp VARCHAR(20) NOT NULL,
@@ -156,6 +164,46 @@ INSERT INTO SanPham (MaSp, TenSp, HinhAnh, SoLuongTon, DonGia, DonViTinh, MaLoai
 ('SP033', N'Vivo V29 5G', 'vivov29.jpg', 25, 12990000, N'Chiếc', 1, 9, 1),
 ('SP034', N'Nokia G22', 'nokiag22.jpg', 50, 3990000, N'Chiếc', 1, 10, 1),
 ('SP035', N'Realme 11 Pro+', 'realme11proplus.jpg', 20, 10490000, N'Chiếc', 1, 11, 1);
+
+-- Thêm các sản phẩm tương ứng với các hãng của nhà cung cấp mới
+INSERT INTO SanPham (MaSp, TenSp, HinhAnh, SoLuongTon, DonGia, DonViTinh, MaLoai, MaHang, TrangThai) VALUES
+-- Sản phẩm Huawei (MaHang = 8)
+('SP036', N'Huawei P60 Pro', 'huaweip60pro.jpg', 15, 23990000, N'Chiếc', 1, 8, 1),
+('SP037', N'Huawei MatePad 11', 'huaweimatepad11.jpg', 20, 10990000, N'Chiếc', 3, 8, 1),
+
+-- Sản phẩm Vivo (MaHang = 9) & Realme (MaHang = 11) -> Phân phối bởi Smartcom
+('SP038', N'Vivo X90 Pro', 'vivox90pro.jpg', 10, 19990000, N'Chiếc', 1, 9, 1),
+('SP039', N'Vivo Y36', 'vivoy36.jpg', 30, 6490000, N'Chiếc', 1, 9, 1),
+('SP040', N'Realme C55', 'realmec55.jpg', 40, 4990000, N'Chiếc', 1, 11, 1),
+('SP041', N'Tai nghe Realme Buds Air 5', 'realmebudsair5.jpg', 50, 1490000, N'Chiếc', 4, 11, 1),
+
+-- Sản phẩm Asus (MaHang = 6)
+('SP042', N'Asus Zenfone 10', 'zenfone10.jpg', 12, 19990000, N'Chiếc', 1, 6, 1),
+('SP043', N'Tai nghe Asus ROG Cetra', 'rogcetra.jpg', 25, 2490000, N'Chiếc', 4, 6, 1),
+
+-- Sản phẩm Sony (MaHang = 5)
+('SP044', N'Sony Xperia 5 V', 'xperia5v.jpg', 8, 27990000, N'Chiếc', 1, 5, 1),
+('SP045', N'Tai nghe Sony WF-1000XM5', 'sonywf1000xm5.jpg', 20, 6990000, N'Chiếc', 4, 5, 1),
+
+-- Sản phẩm Nokia (MaHang = 10)
+('SP046', N'Nokia C32', 'nokiac32.jpg', 50, 2990000, N'Chiếc', 1, 10, 1),
+('SP047', N'Nokia G42 5G', 'nokiag42.jpg', 30, 5490000, N'Chiếc', 1, 10, 1),
+
+-- Sản phẩm Lenovo (MaHang = 7)
+('SP048', N'Lenovo Legion Phone Duel 2', 'legionphone.jpg', 5, 18990000, N'Chiếc', 1, 7, 1),
+('SP049', N'Lenovo Tab M10 Gen 3', 'lenovotabm10.jpg', 35, 4990000, N'Chiếc', 3, 7, 1),
+
+-- Sản phẩm Vsmart (MaHang = 12)
+('SP050', N'Vsmart Aris Pro', 'vsmartarispro.jpg', 10, 7490000, N'Chiếc', 1, 12, 1),
+('SP051', N'Vsmart Joy 4', 'vsmartjoy4.jpg', 20, 3290000, N'Chiếc', 1, 12, 1),
+
+-- Sản phẩm Bphone (MaHang = 13)
+('SP052', N'Bphone A85 5G', 'bphonea85.jpg', 15, 9490000, N'Chiếc', 1, 13, 1),
+('SP053', N'Tai nghe AirB Pro', 'airbpro.jpg', 30, 2990000, N'Chiếc', 4, 13, 1),
+
+-- Sản phẩm Apple/Samsung (do Petrosetco & Viettel phân phối)
+('SP054', N'iPhone 15 128GB', 'iphone15.jpg', 40, 22990000, N'Chiếc', 1, 1, 1),
+('SP055', N'Samsung Galaxy A34 5G', 'galaxya34.jpg', 30, 7490000, N'Chiếc', 1, 2, 1);
 
 CREATE TABLE TaiKhoan (
     MaTK VARCHAR(20) NOT NULL,
@@ -250,7 +298,13 @@ INSERT INTO PhieuNhap (maPHN, maNV, maNCC, ngay, tongtien, TrangThai) VALUES
 ('PN017', 'NV02', 'NCC05', '2025-09-01 10:40:00', 240000000.00, 1),
 ('PN018', 'NV03', 'NCC05', '2025-10-10 13:15:00', 280000000.00, 1),
 ('PN019', 'NV01', 'NCC05', '2025-11-25 09:50:00', 230000000.00, 1),
-('PN020', 'NV02', 'NCC05', '2025-12-15 16:10:00', 245000000.00, 1);
+('PN020', 'NV02', 'NCC05', '2025-12-15 16:10:00', 245000000.00, 1), 
+
+('PN021', 'NV01', 'NCC12', '2026-02-01 09:00:00', 440000000.00, 1), 
+('PN022', 'NV02', 'NCC13', '2026-02-02 14:30:00', 463500000.00, 1), 
+('PN023', 'NV03', 'NCC09', '2026-02-03 10:15:00', 252500000.00, 1), 
+('PN024', 'NV01', 'NCC14', '2026-02-04 16:00:00', 110000000.00, 1), 
+('PN025', 'NV02', 'NCC15', '2026-02-05 08:45:00', 185000000.00, 1);
 
 CREATE TABLE ChiTietPhieuNhap (
     maPHN VARCHAR(20) NOT NULL,
@@ -311,8 +365,29 @@ INSERT INTO ChiTietPhieuNhap (maPHN, maSP, soLuong, dongia, thanhtien) VALUES
 ('PN019', 'SP029', 2, 30000000.00, 60000000.00),   
 ('PN020', 'SP030', 10, 6000000.00, 60000000.00),  
 ('PN020', 'SP031', 5, 20000000.00, 100000000.00),  
-('PN020', 'SP035', 10, 8500000.00, 85000000.00);   
+('PN020', 'SP035', 10, 8500000.00, 85000000.00),
 
+-- PN021: Huawei (NCC12)
+('PN021', 'SP036', 15, 20000000.00, 300000000.00), 
+('PN021', 'SP037', 20, 7000000.00, 140000000.00),  
+
+-- PN022: Vivo & Realme (NCC13)
+('PN022', 'SP038', 10, 16000000.00, 160000000.00), 
+('PN022', 'SP039', 30, 5000000.00, 150000000.00),  
+('PN022', 'SP040', 40, 3500000.00, 140000000.00),  
+('PN022', 'SP041', 50, 270000.00, 13500000.00),    
+
+-- PN023: Asus (NCC09)
+('PN023', 'SP042', 10, 16500000.00, 165000000.00), 
+('PN023', 'SP043', 25, 3500000.00, 87500000.00),   
+
+-- PN024: Vsmart (NCC14)
+('PN024', 'SP050', 10, 6000000.00, 60000000.00),   
+('PN024', 'SP051', 20, 2500000.00, 50000000.00),   
+
+-- PN025: Bphone (NCC15)
+('PN025', 'SP052', 15, 7000000.00, 105000000.00),  
+('PN025', 'SP053', 40, 2000000.00, 80000000.00);
 
 CREATE TABLE HoaDon (
     MaHD VARCHAR(20) NOT NULL,
