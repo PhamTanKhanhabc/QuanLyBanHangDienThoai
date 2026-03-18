@@ -115,7 +115,7 @@ VALUES
 ('SP008', N'Samsung Galaxy Tab S9', 'tabs9.jpg', 15, 18990000, N'Chiếc', 3, 2, 1),
 ('SP009', N'Tai nghe AirPods Pro 2', 'airpodspro2.jpg', 40, 5990000, N'Chiếc', 4, 1, 1),
 ('SP010', N'Sạc nhanh Samsung 25W', 'samsung25w.jpg', 50, 690000, N'Chiếc', 4, 2, 1);
--- Thêm sản phẩm Apple (Apple Việt Nam, Digiworld, FPT)
+--sản phẩm Apple (Apple Việt Nam, Digiworld, FPT)
 INSERT INTO SanPham (MaSp, TenSp, HinhAnh, SoLuongTon, DonGia, DonViTinh, MaLoai, MaHang, TrangThai) VALUES
 ('SP011', N'iPhone 15 Pro 256GB', 'iphone15pro.jpg', 30, 28990000, N'Chiếc', 1, 1, 1),
 ('SP012', N'iPhone 13 128GB', 'iphone13.jpg', 40, 15990000, N'Chiếc', 1, 1, 1),
@@ -218,7 +218,7 @@ CREATE TABLE PhieuNhap (
     tongtien DECIMAL(18,2),
     TrangThai BIT DEFAULT 1
 );
--- Dữ liệu 20 Phiếu Nhập mới
+
 INSERT INTO PhieuNhap (maPHN, maNV, maNCC, ngay, tongtien, TrangThai) VALUES 
 -- Nhà cung cấp NCC01 (Samsung Vina)
 ('PN001', 'NV01', 'NCC01', '2025-08-10 09:00:00', 300000000.00, 1),
