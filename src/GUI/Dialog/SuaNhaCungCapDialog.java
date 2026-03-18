@@ -1,9 +1,10 @@
 package GUI.Dialog;
 
-
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import DTO.NhaCungCapDTO;
+import BUS.NhaCungCapBUS;
 
 public class SuaNhaCungCapDialog extends JDialog {
     private JTextField txtMaNCC;
@@ -22,12 +23,11 @@ public class SuaNhaCungCapDialog extends JDialog {
 
     private void initUI(String tenNCC, String sdt, String diaChi) {
         setTitle("Sửa Nhà Cung Cấp");
-        setSize(600, 400); // Tăng chút chiều cao vì có thêm dòng Mã NCC
+        setSize(600, 400); 
         setLocationRelativeTo(getParent());
         setLayout(new BorderLayout(0, 10));
         getContentPane().setBackground(Color.WHITE);
 
-        // TOP PANEL
         JPanel pnlTop = new JPanel(new FlowLayout(FlowLayout.CENTER));
         pnlTop.setBackground(Color.WHITE);
         pnlTop.setBorder(new EmptyBorder(15, 0, 0, 0));
@@ -36,7 +36,6 @@ public class SuaNhaCungCapDialog extends JDialog {
         lblTitle.setForeground(new Color(65, 120, 255));
         pnlTop.add(lblTitle);
 
-        // CENTER PANEL
         JPanel pnlCenter = new JPanel();
         pnlCenter.setBackground(Color.WHITE);
         pnlCenter.setLayout(new BoxLayout(pnlCenter, BoxLayout.Y_AXIS));
@@ -44,7 +43,6 @@ public class SuaNhaCungCapDialog extends JDialog {
 
         Dimension labelSize = new Dimension(130, 40); 
 
-        // -- DÒNG 0: Mã nhà cung cấp (Khóa) --
         JPanel row0 = new JPanel(new BorderLayout(10, 10)); 
         row0.setBackground(Color.WHITE);
         row0.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
@@ -57,7 +55,6 @@ public class SuaNhaCungCapDialog extends JDialog {
         row0.add(lblMa, BorderLayout.WEST);
         row0.add(txtMaNCC, BorderLayout.CENTER);
 
-        // -- DÒNG 1: Tên nhà cung cấp --
         JPanel row1 = new JPanel(new BorderLayout(10, 10)); 
         row1.setBackground(Color.WHITE);
         row1.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
@@ -68,7 +65,6 @@ public class SuaNhaCungCapDialog extends JDialog {
         row1.add(lblTen, BorderLayout.WEST);
         row1.add(txtTenNCC, BorderLayout.CENTER);
 
-        // -- DÒNG 2: Số điện thoại --
         JPanel row2 = new JPanel(new BorderLayout(10, 10));
         row2.setBackground(Color.WHITE);
         row2.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
@@ -79,7 +75,6 @@ public class SuaNhaCungCapDialog extends JDialog {
         row2.add(lblSDT, BorderLayout.WEST);
         row2.add(txtSDT, BorderLayout.CENTER);
 
-        // -- DÒNG 3: Địa chỉ --
         JPanel row3 = new JPanel(new BorderLayout(10, 10));
         row3.setBackground(Color.WHITE);
         row3.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
@@ -95,7 +90,6 @@ public class SuaNhaCungCapDialog extends JDialog {
         pnlCenter.add(row2); pnlCenter.add(Box.createVerticalStrut(15));
         pnlCenter.add(row3);
 
-        // BOTTOM PANEL
         JPanel pnlBottom = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         pnlBottom.setBackground(Color.WHITE);
         pnlBottom.setBorder(new EmptyBorder(0, 0, 20, 0));
@@ -118,8 +112,33 @@ public class SuaNhaCungCapDialog extends JDialog {
         add(pnlBottom, BorderLayout.SOUTH);
 
         btnHuy.addActionListener(e -> dispose());
+        
         btnLuu.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Đang gọi lệnh Sửa cho mã: " + maNCC);
+            String tenNCCMoi = txtTenNCC.getText().trim();
+            String sdtMoi = txtSDT.getText().trim();
+            String diaChiMoi = txtDiaChi.getText().trim();
+
+            if (tenNCCMoi.isEmpty() || sdtMoi.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ Tên và Số điện thoại!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            
+            if (!sdtMoi.matches("\\d{10,11}")) {
+                JOptionPane.showMessageDialog(this, "Số điện thoại phải chứa 10-11 chữ số!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            NhaCungCapDTO nccUpdate = new NhaCungCapDTO(maNCC, tenNCCMoi, sdtMoi, diaChiMoi, 1); 
+
+            NhaCungCapBUS nccBUS = new NhaCungCapBUS();
+            boolean isSuccess = nccBUS.update(nccUpdate);
+
+            if (isSuccess) {
+                JOptionPane.showMessageDialog(this, "Cập nhật nhà cung cấp thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                dispose(); 
+            } else {
+                JOptionPane.showMessageDialog(this, "Cập nhật thất bại! Vui lòng thử lại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
         });
     }
 }

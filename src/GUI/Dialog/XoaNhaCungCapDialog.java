@@ -1,9 +1,9 @@
 package GUI.Dialog;
 
-
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import DTO.NhaCungCapDTO;
 
 public class XoaNhaCungCapDialog extends JDialog {
     public XoaNhaCungCapDialog(Frame owner, boolean modal, String maNCC, String tenNCC, String sdt, String diaChi) {
@@ -15,16 +15,14 @@ public class XoaNhaCungCapDialog extends JDialog {
         setLayout(new BorderLayout(0, 10));
         getContentPane().setBackground(Color.WHITE);
 
-        // TOP (Cảnh báo đỏ)
         JPanel pnlTop = new JPanel(new FlowLayout(FlowLayout.CENTER));
         pnlTop.setBackground(Color.WHITE);
         pnlTop.setBorder(new EmptyBorder(15, 0, 0, 0));
         JLabel lblTitle = new JLabel("BẠN CHẮC CHẮN MUỐN XÓA?");
         lblTitle.setFont(new Font("Roboto", Font.BOLD, 22));
-        lblTitle.setForeground(new Color(220, 53, 69)); // Đỏ
+        lblTitle.setForeground(new Color(220, 53, 69));
         pnlTop.add(lblTitle);
 
-        // CENTER (Khóa 100%)
         JPanel pnlCenter = new JPanel();
         pnlCenter.setBackground(Color.WHITE);
         pnlCenter.setLayout(new BoxLayout(pnlCenter, BoxLayout.Y_AXIS));
@@ -45,7 +43,7 @@ public class XoaNhaCungCapDialog extends JDialog {
             
             JTextField txt = new JTextField(values[i]);
             txt.setEditable(false);
-            txt.setBackground(new Color(255, 240, 240)); // Nền đỏ nhạt cảnh báo
+            txt.setBackground(new Color(255, 240, 240)); 
             
             row.add(lbl, BorderLayout.WEST);
             row.add(txt, BorderLayout.CENTER);
@@ -54,7 +52,6 @@ public class XoaNhaCungCapDialog extends JDialog {
             if(i < 3) pnlCenter.add(Box.createVerticalStrut(15));
         }
 
-        // BOTTOM
         JPanel pnlBottom = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         pnlBottom.setBackground(Color.WHITE);
         pnlBottom.setBorder(new EmptyBorder(0, 0, 20, 0));
@@ -65,7 +62,7 @@ public class XoaNhaCungCapDialog extends JDialog {
         
         JButton btnXoa = new JButton("Xác nhận Xóa");
         btnXoa.setPreferredSize(new Dimension(150, 40));
-        btnXoa.setBackground(new Color(220, 53, 69)); // Đỏ
+        btnXoa.setBackground(new Color(220, 53, 69));
         btnXoa.setForeground(Color.WHITE);
         btnXoa.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
@@ -77,9 +74,26 @@ public class XoaNhaCungCapDialog extends JDialog {
         add(pnlBottom, BorderLayout.SOUTH);
 
         btnHuy.addActionListener(e -> dispose());
+        
         btnXoa.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Đã gọi lệnh xóa mã: " + maNCC);
-            dispose();
+            BUS.NhaCungCapBUS nccBUS = new BUS.NhaCungCapBUS();
+            
+            // Tìm index dựa vào mã NCC
+            int index = nccBUS.getIndexById(maNCC);
+            boolean isSuccess = false;
+            
+            // Nếu tìm thấy, lấy đối tượng DTO ra và thực hiện xóa
+            if (index != -1) {
+                NhaCungCapDTO nccToDelete = nccBUS.getByIndex(index);
+                isSuccess = nccBUS.delete(nccToDelete); 
+            }
+            
+            if (isSuccess) {
+                JOptionPane.showMessageDialog(this, "Đã xóa thành công nhà cung cấp!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                dispose(); 
+            } else {
+                JOptionPane.showMessageDialog(this, "Xóa thất bại! Nhà cung cấp này có thể đang có dữ liệu ràng buộc trong Phiếu Nhập.", "Lỗi Xóa", JOptionPane.ERROR_MESSAGE);
+            }
         });
     }
 }

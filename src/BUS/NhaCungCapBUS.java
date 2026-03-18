@@ -18,23 +18,21 @@ public class NhaCungCapBUS {
     }
 
     public String generateID() {
-        if (listNCC.isEmpty()) {
+        // Lấy mã lớn nhất trực tiếp từ CSDL thông qua DAO
+        String lastMa = nccDAO.getLastMaNCC(); 
+        
+        if (lastMa == null || lastMa.isEmpty()) {
             return "NCC01";
         }
-
-        int maxID = 0;
-
-        for (NhaCungCapDTO ncc : listNCC) {
-            try {
-                int currentID = Integer.parseInt(ncc.getMaNCC().replaceAll("[^0-9]", ""));
-                if (currentID > maxID) {
-                    maxID = currentID;
-                }
-            } catch (Exception e) {
-            }
+        
+        try {
+            // Tách phần số ra khỏi chuỗi "NCC" (Ví dụ: "NCC03" -> 3)
+            int currentID = Integer.parseInt(lastMa.replaceAll("[^0-9]", ""));
+            // Tăng lên 1 và format lại thành 2 chữ số (VD: NCC04)
+            return String.format("NCC%02d", currentID + 1);
+        } catch (Exception e) {
+            return "NCC01";
         }
-
-        return String.format("NCC%02d", maxID + 1);
     }
 
     public boolean add(NhaCungCapDTO ncc) {
