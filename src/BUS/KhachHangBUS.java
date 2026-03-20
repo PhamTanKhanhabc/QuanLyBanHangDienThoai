@@ -163,4 +163,7 @@ public class KhachHangBUS {
 
         return result;
     }
+    public int getSoLuongKH() {
+        return getAll().size();
+    }
 }
