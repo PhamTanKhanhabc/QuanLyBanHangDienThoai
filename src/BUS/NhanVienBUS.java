@@ -107,4 +107,7 @@ public class NhanVienBUS {
         }
         return result;
     }
+    public int getSoLuongNV() {
+        return getAll().size();
+    }
 }
