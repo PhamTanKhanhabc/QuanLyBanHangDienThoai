@@ -8,7 +8,10 @@ import GUI.Panel.KhuyenMaiGUI;
 import GUI.Panel.BaoHanhPanel;
 import GUI.Panel.SanPhamPanel;
 import GUI.Panel.NhaCungCap;
+import GUI.Panel.NhanVienPanel;
 import GUI.Panel.PhieuNhap;
+import GUI.Panel.TaiKhoanPanel;
+import GUI.Panel.VaiTroPanel;
 import java.awt.*;
 import javax.swing.*;
 import java.util.List;
@@ -216,19 +219,22 @@ public class Main extends JFrame {
 
         // Nhân viên
         btnNhanVien.addActionListener(e -> {
-            setPanel(new JLabel("Trang nhân viên", SwingConstants.CENTER));
+            NhanVienPanel nhanVienPanel = new NhanVienPanel();
+            setPanel(nhanVienPanel);
             setActive(btnNhanVien);
         });
 
         // Tài khoản
         btnTaiKhoan.addActionListener(e -> {
-            setPanel(new JLabel("Trang tài khoản", SwingConstants.CENTER));
+            TaiKhoanPanel taiKhoanPanel = new TaiKhoanPanel();
+            setPanel(taiKhoanPanel);
             setActive(btnTaiKhoan);
         });
 
         // Vai trò
         btnVaiTro.addActionListener(e -> {
-            setPanel(new JLabel("Trang vai trò", SwingConstants.CENTER));
+            VaiTroPanel vaiTroPanel = new VaiTroPanel();
+            setPanel(vaiTroPanel);
             setActive(btnVaiTro);
         });
 
