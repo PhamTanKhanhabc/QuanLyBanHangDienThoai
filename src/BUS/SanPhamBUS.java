@@ -157,4 +157,7 @@ public class SanPhamBUS {
 
         return result;
     }
+    public int getTongSanPham() {
+        return getAll().size();
+    }
 }
