@@ -18,48 +18,64 @@ public class KhachHangBUS {
     }
 
     // Thêm
-    public boolean add(KhachHangDTO kh) {
-
-        if (!checkDup(kh.getMaKH())) {
-            return false;
+    public String add(KhachHangDTO kh) {
+        // 1. Kiểm tra dữ liệu rỗng / sai định dạng
+        String error = validate(kh);
+        if (!error.isEmpty()) {
+            return error; // Báo lỗi ngay, không thêm vào DB
         }
 
-        boolean check = khDAO.insert(kh) != 0;
+        // 2. Kiểm tra trùng mã
+        if (!checkDup(kh.getMaKH())) {
+            return "Lỗi: Mã khách hàng đã tồn tại!";
+        }
 
+        // 3. Thực hiện thêm
+        boolean check = khDAO.insert(kh) != 0;
         if (check) {
             listKH.add(kh);
+            return "Thêm thành công!";
         }
-
-        return check;
+        return "Lỗi cơ sở dữ liệu!";
     }
 
     // Xóa
-    public boolean delete(KhachHangDTO kh) {
-
-        boolean check = khDAO.delete(kh) != 0;
-
-        if (check) {
-            listKH.remove(kh);
+   public String delete(KhachHangDTO kh) {
+        // Kiểm tra an toàn
+        if (kh == null || kh.getMaKH() == null || kh.getMaKH().trim().isEmpty()) {
+            return "Lỗi: Không xác định được khách hàng cần xóa!";
         }
 
-        return check;
+        // Thực hiện xóa dưới Database (chuyển TrangThai = 0)
+        boolean check = khDAO.delete(kh) != 0;
+        
+        if (check) {
+            // Xóa phần tử khỏi mảng trên RAM (nhờ hàm equals trong DTO nên Java tự biết xóa dòng nào)
+            listKH.remove(kh);
+            return "Xóa khách hàng thành công!";
+        }
+        
+        return "Lỗi: Xóa thất bại (Có thể mã khách hàng không tồn tại)!";
     }
 
     // Sửa
-    public boolean update(KhachHangDTO kh) {
+   public String update(KhachHangDTO kh) {
+        // 1. Kiểm tra dữ liệu rỗng / sai định dạng
+        String error = validate(kh);
+        if (!error.isEmpty()) {
+            return error;
+        }
 
+        // 2. Thực hiện cập nhật
         boolean check = khDAO.update(kh) != 0;
-
         if (check) {
-
             int index = getIndexById(kh.getMaKH());
-
             if (index != -1) {
                 listKH.set(index, kh);
             }
+            return "Cập nhật thành công!";
         }
-
-        return check;
+        return "Lỗi cập nhật hoặc mã KH không tồn tại!";
     }
 
     // Tìm index theo mã
@@ -88,7 +104,7 @@ public class KhachHangBUS {
     // Search
     public ArrayList<KhachHangDTO> search(String text) {
 
-        text = text.toLowerCase();
+        text = text.toLowerCase().trim();
 
         ArrayList<KhachHangDTO> result = new ArrayList<>();
 
@@ -97,7 +113,8 @@ public class KhachHangBUS {
             if (kh.getMaKH().toLowerCase().contains(text)
                     || kh.getHo().toLowerCase().contains(text)
                     || kh.getTen().toLowerCase().contains(text)
-                    || kh.getDiaChi().toLowerCase().contains(text)) {
+                    || kh.getDiaChi().toLowerCase().contains(text)
+                    || kh.getSoDT().toLowerCase().contains(text)) {
 
                 result.add(kh);
             }
@@ -158,11 +175,57 @@ public class KhachHangBUS {
                     + " - "
                     + kh.getHo()
                     + " "
-                    + kh.getTen();
+                    + kh.getTen()
+                    +"-"
+                    + kh.getSoDT();
         }
 
         return result;
     }
+    public String getMaByInfo(String info) {
+    if (info == null || info.trim().isEmpty()) {
+        return null;
+    }
+    
+    String searchInfo = info.trim().toLowerCase();
+
+    for (KhachHangDTO kh : listKH) {
+        String hoTen = (kh.getHo() + " " + kh.getTen()).toLowerCase();
+        // Kiểm tra nếu thông tin nhập vào khớp với Họ Tên hoặc đúng là Mã KH
+        if (hoTen.equals(searchInfo) || kh.getMaKH().toLowerCase().equals(searchInfo) || kh.getSoDT().equals(searchInfo)) {
+            return kh.getMaKH();
+        }
+    }
+    return null; // Không tìm thấy
+}
+    public String validate(KhachHangDTO kh){
+        if(kh.getMaKH()==null || kh.getMaKH().trim().isEmpty()){
+            return "Loi:Ma khach hang khong duoc de trong";}
+        if(kh.getHo()==null|kh.getHo().trim().isEmpty()){
+            return "Loi: Ho khach hang khong duoc de trong";}
+        if(kh.getTen()==null||kh.getTen().trim().isEmpty()){
+            return "Loi: Ten khach hang khong duoc de trong";}
+        if(kh.getDiaChi()==null || kh.getDiaChi().trim().isEmpty()){
+            kh.setDiaChi("Chua cung cap");}
+        if(kh.getSoDT()==null || kh.getSoDT().trim().isEmpty()){
+            return "Loi: So dien thoai khong duoc de trong ";
+        }
+        
+        String phoneRegex ="^0\\d{9}$";
+        if(!kh.getSoDT().trim().matches(phoneRegex)){
+            return "Loi: Nhap so dien thoai hop le";
+        }
+        return "";
+    }
+    public String getNextID() {
+    String lastID = khDAO.getLastMaKH(); // Lấy mã cuối cùng thực tế trong DB
+    if (lastID == null || lastID.trim().isEmpty()) {
+        return "KH001";
+    }
+    // Ví dụ: KH006 -> lấy số 6, tăng lên thành 7
+    int number = Integer.parseInt(lastID.substring(2));
+    return String.format("KH%03d", number + 1); // Trả về KH007
+}
     public int getSoLuongKH() {
         return getAll().size();
     }
