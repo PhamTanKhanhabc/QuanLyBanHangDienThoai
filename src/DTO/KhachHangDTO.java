@@ -11,6 +11,7 @@ public class KhachHangDTO {
     private String ten;
     private String diaChi;
     private int trangThai;
+    private String soDT;
 
     // Constructor mặc định
     public KhachHangDTO() {
@@ -19,15 +20,17 @@ public class KhachHangDTO {
         ten = "";
         diaChi = "";
         trangThai = 1;
+        soDT="";
     }
 
     // Constructor đầy đủ tham số
-    public KhachHangDTO(String maKH, String ho, String ten, String diaChi, int trangThai) {
+    public KhachHangDTO(String maKH, String ho, String ten, String diaChi, int trangThai, String soDT) {
         this.maKH = maKH;
         this.ho = ho;
         this.ten = ten;
         this.diaChi = diaChi;
         this.trangThai = trangThai;
+        this.soDT=soDT;
     }
 
     // Getters và Setters
@@ -49,6 +52,8 @@ public class KhachHangDTO {
     public void setTrangThai(int trangThai) {
         this.trangThai = trangThai;
     }
+    public String getSoDT(){return soDT;}
+    public void setSoDT(String soDT){this.soDT=soDT;}
 
 
     // hashCode và equals
@@ -67,13 +72,14 @@ public class KhachHangDTO {
 
     // Hàm toString
     @Override
-    public String toString() {
-        return "KhachHangDTO{" +
-                "maKH='" + maKH + '\'' +
-                ", ho='" + ho + '\'' +
-                ", ten='" + ten + '\'' +
-                ", diaChi='" + diaChi + '\'' +
-                ", trangThai=" + trangThai +
-                '}';
-    }
+public String toString() {
+    return "KhachHangDTO{" +
+            "maKH='" + maKH + '\'' +
+            ", ho='" + ho + '\'' +
+            ", ten='" + ten + '\'' +
+            ", diaChi='" + diaChi + '\'' +
+            ", soDT='" + soDT + '\'' + // Thêm dòng này
+            ", trangThai=" + trangThai +
+            '}';
+}
 }
