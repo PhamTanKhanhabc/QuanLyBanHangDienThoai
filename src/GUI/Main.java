@@ -6,6 +6,8 @@ package GUI;
 
 import GUI.Panel.KhuyenMaiGUI;
 import GUI.Panel.BaoHanhPanel;
+import GUI.Panel.HoaDonPanel;
+import GUI.Panel.KhachHangPanel;
 import GUI.Panel.SanPhamPanel;
 import GUI.Panel.NhaCungCap;
 import GUI.Panel.NhanVienPanel;
@@ -201,13 +203,15 @@ public class Main extends JFrame {
 
         // Hóa đơn
         btnHoaDon.addActionListener(e -> {
-            setPanel(new JLabel("Trang hóa đơn", SwingConstants.CENTER));
+            HoaDonPanel hoaDonPanel = new HoaDonPanel();
+            setPanel(hoaDonPanel);
             setActive(btnHoaDon);
         });
 
         // Khách hàng
         btnKhachHang.addActionListener(e -> {
-            setPanel(new JLabel("Trang khách hàng", SwingConstants.CENTER));
+            KhachHangPanel khachHangPanel = new KhachHangPanel();
+            setPanel(khachHangPanel);
             setActive(btnKhachHang);
         });
         // Khuyến mãi
