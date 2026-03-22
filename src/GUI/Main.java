@@ -14,6 +14,7 @@ import GUI.Panel.NhanVienPanel;
 import GUI.Panel.PhieuNhap;
 import GUI.Panel.TaiKhoanPanel;
 import GUI.Panel.VaiTroPanel;
+import GUI.Panel.ThongKe.ThongKePanel;
 import java.awt.*;
 import javax.swing.*;
 import java.util.List;
@@ -244,7 +245,8 @@ public class Main extends JFrame {
 
         // Thống kê
         btnThongKe.addActionListener(e -> {
-            setPanel(new JLabel("Trang thống kê", SwingConstants.CENTER));
+            ThongKePanel thongKePanel = new ThongKePanel();
+            setPanel(thongKePanel);
             setActive(btnThongKe);
         });
         btnLogout.addActionListener(e -> {
@@ -290,4 +292,3 @@ public class Main extends JFrame {
         selectedBtn.setForeground(Color.WHITE);
     }
 }
-
