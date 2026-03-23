@@ -4,6 +4,7 @@
  */
 package GUI;
 
+import GUI.Panel.BanHangPanel;
 import GUI.Panel.KhuyenMaiGUI;
 import GUI.Panel.BaoHanhPanel;
 import GUI.Panel.HoaDonPanel;
@@ -32,6 +33,7 @@ public class Main extends JFrame {
     private JPanel infoPanel;
     
     private JButton btnTrangChu;
+    private JButton btnBanHang;
     private JButton btnSanPham;
     private JButton btnBaoHanh;
     private JButton btnNhaCungCap;
@@ -120,6 +122,7 @@ public class Main extends JFrame {
         menuPanel.setBackground(Color.WHITE);
         
         btnTrangChu = createMenuButton("Trang chủ");
+        btnBanHang = createMenuButton("Bán hàng");
         btnSanPham = createMenuButton("Sản phẩm");
         btnBaoHanh = createMenuButton("Bảo hành");
         btnNhaCungCap = createMenuButton("Nhà cung cấp");
@@ -134,6 +137,7 @@ public class Main extends JFrame {
         
         
         menuPanel.add(btnTrangChu);   
+        menuPanel.add(btnBanHang);
         menuPanel.add(btnSanPham);
         menuPanel.add(btnBaoHanh);
         menuPanel.add(btnNhaCungCap);
@@ -154,6 +158,7 @@ public class Main extends JFrame {
         
         menuItems = new ArrayList<>();
         menuItems.add(btnTrangChu);
+        menuItems.add(btnBanHang);
         menuItems.add(btnSanPham);
         menuItems.add(btnBaoHanh);
         menuItems.add(btnNhaCungCap);
@@ -176,6 +181,12 @@ public class Main extends JFrame {
             setActive(btnTrangChu);
         });
 
+        // Bán Hàng
+       btnBanHang.addActionListener(e -> {
+            setPanel(new BanHangPanel());
+            setActive(btnBanHang);
+        });
+        
         // Sản phẩm
         btnSanPham.addActionListener(e -> {
             SanPhamPanel sanPhamPanel = new SanPhamPanel();
