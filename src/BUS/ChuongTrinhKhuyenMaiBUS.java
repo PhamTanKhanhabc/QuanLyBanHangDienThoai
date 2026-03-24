@@ -14,17 +14,19 @@ public class ChuongTrinhKhuyenMaiBUS {
     }
 
     public ArrayList<ChuongTrinhKhuyenMaiDTO> getAll() {
+        listCTKM = dao.selectALL();
         return listCTKM;
     }
 
     public String generateMaCTKM() {
         String lastMa = dao.getLastMaCTKM();
-        if (lastMa == null) {
-            return "KM001";
-        }
-        int so = Integer.parseInt(lastMa.substring(2));
-        so++;
-        return String.format("KM%03d", so);
+        if (lastMa == null || lastMa.trim().isEmpty()) {
+            return "CTKM01";
+    }
+
+        String soStr = lastMa.replaceAll("\\D+", "");
+        int so = soStr.isEmpty() ? 0 : Integer.parseInt(soStr);
+           return String.format("CTKM%02d", so + 1);
     }
 
     public boolean add(ChuongTrinhKhuyenMaiDTO t) {
