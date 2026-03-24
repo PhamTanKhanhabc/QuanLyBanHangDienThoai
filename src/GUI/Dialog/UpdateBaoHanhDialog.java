@@ -337,7 +337,7 @@ public class UpdateBaoHanhDialog extends JDialog{
         pnlThoiHan.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 6, 0));
 
         lblThoiHan.setFont(new java.awt.Font("Roboto", 0, 14)); 
-        lblThoiHan.setText("Tên bảo hành");
+        lblThoiHan.setText("Thời hạn (tháng): ");
         lblThoiHan.setPreferredSize(new java.awt.Dimension(150, 40));
         pnlThoiHan.add(lblThoiHan);
         
