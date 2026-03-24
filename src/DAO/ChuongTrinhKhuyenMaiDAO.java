@@ -57,17 +57,48 @@ public class ChuongTrinhKhuyenMaiDAO implements DAOInterface<ChuongTrinhKhuyenMa
 
     @Override
     public int delete(ChuongTrinhKhuyenMaiDTO t) {
-        int result = 0;
-        String sql = "DELETE FROM ChuongTrinhKhuyenMai WHERE MaCTKM=?";
-        try {
-            Connection con = SQLServerConnect.getConnection();
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, t.getMaCTKM());
-            result = ps.executeUpdate();
+         int result = 0;
+         Connection con = null;
+
+         String sqlDeleteKMHD = "DELETE FROM ChiTietKhuyenMaiHoaDon WHERE MaCTKM = ?";
+         String sqlDeleteKMSP = "DELETE FROM ChiTietKhuyenMaiSanPham WHERE MaCTKM = ?";
+         String sqlDeleteCTKM = "DELETE FROM ChuongTrinhKhuyenMai WHERE MaCTKM = ?";
+
+       try {
+        con = SQLServerConnect.getConnection();
+        con.setAutoCommit(false);
+
+        PreparedStatement ps1 = con.prepareStatement(sqlDeleteKMHD);
+        ps1.setString(1, t.getMaCTKM());
+        ps1.executeUpdate();
+
+        PreparedStatement ps2 = con.prepareStatement(sqlDeleteKMSP);
+        ps2.setString(1, t.getMaCTKM());
+        ps2.executeUpdate();
+
+        PreparedStatement ps3 = con.prepareStatement(sqlDeleteCTKM);
+        ps3.setString(1, t.getMaCTKM());
+        result = ps3.executeUpdate();
+
+        con.commit();
+      } catch (SQLException e) {
+          try {
+            if (con != null) con.rollback();
+          } catch (SQLException ex) {
+            ex.printStackTrace();
+          }
+          e.printStackTrace();
+      } finally {
+           try {
+            if (con != null) {
+                con.setAutoCommit(true);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return result;
+    }
+
+    return result;
     }
 
     @Override
