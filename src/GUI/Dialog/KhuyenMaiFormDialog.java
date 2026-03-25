@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package GUI.Dialog;
 
 import BUS.ChuongTrinhKhuyenMaiBUS;
@@ -27,7 +23,7 @@ import javax.swing.JTextField;
 
 public class KhuyenMaiFormDialog extends JDialog {
 
-    private final ChuongTrinhKhuyenMaiBUS kmBUS = new ChuongTrinhKhuyenMaiBUS();
+    private final ChuongTrinhKhuyenMaiBUS kmBUS;
     private final KhuyenMaiGUI panel;
     private final ChuongTrinhKhuyenMaiDTO current;
 
@@ -46,10 +42,13 @@ public class KhuyenMaiFormDialog extends JDialog {
         DateTimeFormatter.ISO_LOCAL_DATE
     };
 
-    public KhuyenMaiFormDialog(Frame parent, boolean modal, KhuyenMaiGUI panel, ChuongTrinhKhuyenMaiDTO current) {
+    public KhuyenMaiFormDialog(Frame parent, boolean modal,
+        KhuyenMaiGUI panel, ChuongTrinhKhuyenMaiDTO current,
+        ChuongTrinhKhuyenMaiBUS kmBUS) {
         super(parent, modal);
         this.panel = panel;
         this.current = current;
+        this.kmBUS = kmBUS;
         initComponents();
         fillData();
     }
