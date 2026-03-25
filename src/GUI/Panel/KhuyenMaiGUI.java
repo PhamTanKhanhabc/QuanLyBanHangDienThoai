@@ -91,16 +91,16 @@ public class KhuyenMaiGUI extends JPanel {
 
     private void initEvents() {
         actionPanel.btnAdd.addActionListener(e ->
-                new KhuyenMaiFormDialog(getFrame(), true, this, null).setVisible(true)
+         new KhuyenMaiFormDialog(getFrame(), true, this, null, kmBUS).setVisible(true)
         );
 
         actionPanel.btnUpdate.addActionListener(e -> {
-            ChuongTrinhKhuyenMaiDTO km = getSelected();
-            if (km == null) {
-                JOptionPane.showMessageDialog(this, "Vui lòng chọn dòng cần sửa!");
-                return;
-            }
-            new KhuyenMaiFormDialog(getFrame(), true, this, km).setVisible(true);
+           ChuongTrinhKhuyenMaiDTO km = getSelected();
+           if (km == null) {
+              JOptionPane.showMessageDialog(this, "Vui lòng chọn dòng cần sửa!");
+              return;
+        }
+         new KhuyenMaiFormDialog(getFrame(), true, this, km, kmBUS).setVisible(true);
         });
 
         actionPanel.btnDelete.addActionListener(e -> {
@@ -373,7 +373,11 @@ public class KhuyenMaiGUI extends JPanel {
             }
         }
     }
-
+    
+    public ChuongTrinhKhuyenMaiBUS getKmBUS() {
+    return kmBUS;
+    }
+    
     private String getTrangThai(int t) {
         return t == 1 ? "Đang diễn ra" : "Đã kết thúc";
     }
