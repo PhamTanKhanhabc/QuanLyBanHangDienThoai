@@ -3,15 +3,18 @@ package GUI.Dialog;
 import BUS.ChuongTrinhKhuyenMaiBUS;
 import DTO.ChuongTrinhKhuyenMaiDTO;
 import GUI.Panel.KhuyenMaiGUI;
+import com.toedter.calendar.JDateChooser;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridLayout;
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+import java.time.ZoneId;
+import java.util.Date;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -23,34 +26,28 @@ import javax.swing.JTextField;
 
 public class KhuyenMaiFormDialog extends JDialog {
 
-    private final ChuongTrinhKhuyenMaiBUS kmBUS;
     private final KhuyenMaiGUI panel;
     private final ChuongTrinhKhuyenMaiDTO current;
+    private final ZoneId zoneId = ZoneId.systemDefault();
 
     private JTextField txtMa;
     private JTextField txtTen;
     private JTextField txtLoai;
     private JTextField txtMoTa;
-    private JTextField txtNgayBD;
-    private JTextField txtNgayKT;
+    private JDateChooser dateNgayBD;
+    private JDateChooser dateNgayKT;
     private JComboBox<String> cboxTrangThai;
-
-    private final DateTimeFormatter displayFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    private final DateTimeFormatter[] inputFormats = {
-        DateTimeFormatter.ofPattern("dd/MM/yyyy"),
-        DateTimeFormatter.ofPattern("d/M/yyyy"),
-        DateTimeFormatter.ISO_LOCAL_DATE
-    };
+    private final ChuongTrinhKhuyenMaiBUS kmBUS;
 
     public KhuyenMaiFormDialog(Frame parent, boolean modal,
         KhuyenMaiGUI panel, ChuongTrinhKhuyenMaiDTO current,
         ChuongTrinhKhuyenMaiBUS kmBUS) {
-        super(parent, modal);
-        this.panel = panel;
-        this.current = current;
-        this.kmBUS = kmBUS;
-        initComponents();
-        fillData();
+    super(parent, modal);
+    this.panel = panel;
+    this.current = current;
+    this.kmBUS = kmBUS;
+    initComponents();
+    fillData();
     }
 
     private void initComponents() {
@@ -62,6 +59,7 @@ public class KhuyenMaiFormDialog extends JDialog {
         JPanel header = new JPanel(new BorderLayout());
         header.setBackground(new Color(65, 120, 255));
         header.setPreferredSize(new Dimension(100, 50));
+
         JLabel lblTitle = new JLabel(
                 current == null ? "THÊM CHƯƠNG TRÌNH KHUYẾN MÃI" : "CẬP NHẬT CHƯƠNG TRÌNH KHUYẾN MÃI",
                 JLabel.CENTER
@@ -77,8 +75,8 @@ public class KhuyenMaiFormDialog extends JDialog {
         txtTen = new JTextField();
         txtLoai = new JTextField();
         txtMoTa = new JTextField();
-        txtNgayBD = new JTextField();
-        txtNgayKT = new JTextField();
+        dateNgayBD = createDateChooser();
+        dateNgayKT = createDateChooser();
         cboxTrangThai = new JComboBox<>(new String[]{"Đang diễn ra", "Đã kết thúc"});
 
         txtMa.setEditable(false);
@@ -87,8 +85,8 @@ public class KhuyenMaiFormDialog extends JDialog {
         form.add(createRow("Tên CTKM", txtTen));
         form.add(createRow("Loại khuyến mãi", txtLoai));
         form.add(createRow("Mô tả", txtMoTa));
-        form.add(createRow("Ngày bắt đầu", txtNgayBD));
-        form.add(createRow("Ngày kết thúc", txtNgayKT));
+        form.add(createRow("Ngày bắt đầu", dateNgayBD));
+        form.add(createRow("Ngày kết thúc", dateNgayKT));
         form.add(createRow("Trạng thái", cboxTrangThai));
 
         JPanel bottom = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
@@ -96,7 +94,6 @@ public class KhuyenMaiFormDialog extends JDialog {
 
         JButton btnCancel = new JButton("Hủy");
         JButton btnSave = new JButton(current == null ? "Thêm" : "Cập nhật");
-
         btnCancel.setPreferredSize(new Dimension(140, 38));
         btnSave.setPreferredSize(new Dimension(140, 38));
 
@@ -111,13 +108,19 @@ public class KhuyenMaiFormDialog extends JDialog {
         add(bottom, BorderLayout.SOUTH);
     }
 
-    private JPanel createRow(String label, java.awt.Component input) {
+    private JDateChooser createDateChooser() {
+        JDateChooser chooser = new JDateChooser();
+        chooser.setDateFormatString("dd/MM/yyyy");
+        chooser.setPreferredSize(new Dimension(500, 35));
+        return chooser;
+    }
+
+    private JPanel createRow(String label, Component input) {
         JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         row.setBackground(Color.WHITE);
 
         JLabel lbl = new JLabel(label);
         lbl.setPreferredSize(new Dimension(140, 35));
-
         input.setPreferredSize(new Dimension(500, 35));
 
         row.add(lbl);
@@ -128,8 +131,8 @@ public class KhuyenMaiFormDialog extends JDialog {
     private void fillData() {
         if (current == null) {
             txtMa.setText("Tự động tạo");
-            txtNgayBD.setText(LocalDate.now().format(displayFormat));
-            txtNgayKT.setText(LocalDate.now().plusDays(7).format(displayFormat));
+            dateNgayBD.setDate(toDate(LocalDate.now()));
+            dateNgayKT.setDate(toDate(LocalDate.now().plusDays(7)));
             cboxTrangThai.setSelectedItem("Đang diễn ra");
             return;
         }
@@ -138,8 +141,8 @@ public class KhuyenMaiFormDialog extends JDialog {
         txtTen.setText(safe(current.getTenCTKM()));
         txtLoai.setText(safe(current.getLoaiKhuyenMai()));
         txtMoTa.setText(safe(current.getMoTa()));
-        txtNgayBD.setText(formatDate(current.getNgayBatDau()));
-        txtNgayKT.setText(formatDate(current.getNgayKetThuc()));
+        dateNgayBD.setDate(toDate(current.getNgayBatDau()));
+        dateNgayKT.setDate(toDate(current.getNgayKetThuc()));
         cboxTrangThai.setSelectedItem(current.getTrangThai() == 1 ? "Đang diễn ra" : "Đã kết thúc");
     }
 
@@ -160,20 +163,21 @@ public class KhuyenMaiFormDialog extends JDialog {
             return;
         }
 
-        LocalDate ngayBD;
-        LocalDate ngayKT;
+        LocalDate ngayBD = getSelectedDate(dateNgayBD, "Ngày bắt đầu không được để trống!");
+        if (ngayBD == null) {
+            focusDateChooser(dateNgayBD);
+            return;
+        }
 
-        try {
-            ngayBD = parseDate(txtNgayBD.getText().trim());
-            ngayKT = parseDate(txtNgayKT.getText().trim());
-        } catch (IllegalArgumentException ex) {
-            showWarn(ex.getMessage());
+        LocalDate ngayKT = getSelectedDate(dateNgayKT, "Ngày kết thúc không được để trống!");
+        if (ngayKT == null) {
+            focusDateChooser(dateNgayKT);
             return;
         }
 
         if (ngayKT.isBefore(ngayBD)) {
             showWarn("Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu!");
-            txtNgayKT.requestFocus();
+            focusDateChooser(dateNgayKT);
             return;
         }
 
@@ -230,22 +234,30 @@ public class KhuyenMaiFormDialog extends JDialog {
         }
     }
 
+    private LocalDate getSelectedDate(JDateChooser chooser, String message) {
+        Date date = chooser.getDate();
+        if (date == null) {
+            showWarn(message);
+            return null;
+        }
+        return Instant.ofEpochMilli(date.getTime()).atZone(zoneId).toLocalDate();
+    }
+
+    private Date toDate(LocalDate localDate) {
+        if (localDate == null) {
+            return null;
+        }
+        return Date.from(localDate.atStartOfDay(zoneId).toInstant());
+    }
+
+    private void focusDateChooser(JDateChooser chooser) {
+        if (chooser.getDateEditor() != null && chooser.getDateEditor().getUiComponent() != null) {
+            chooser.getDateEditor().getUiComponent().requestFocus();
+        }
+    }
+
     private int getTrangThaiValue() {
         return "Đang diễn ra".equals(String.valueOf(cboxTrangThai.getSelectedItem())) ? 1 : 0;
-    }
-
-    private LocalDate parseDate(String text) {
-        for (DateTimeFormatter fmt : inputFormats) {
-            try {
-                return LocalDate.parse(text, fmt);
-            } catch (DateTimeParseException ignored) {
-            }
-        }
-        throw new IllegalArgumentException("Ngày phải theo định dạng dd/MM/yyyy hoặc yyyy-MM-dd.");
-    }
-
-    private String formatDate(LocalDate date) {
-        return date == null ? "" : date.format(displayFormat);
     }
 
     private String safe(String text) {
