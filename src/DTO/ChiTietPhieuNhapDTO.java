@@ -3,27 +3,33 @@ package DTO;
 import java.util.Objects;
 
 public class ChiTietPhieuNhapDTO {
-    private int maPHN;
+    private String maPHN;
     private String maSP;
+    private int soLuong;
     private double donGia;
     private double thanhTien;
 
     public ChiTietPhieuNhapDTO() {
     }
 
-    public ChiTietPhieuNhapDTO(int maPHN, String maSP, double donGia, double thanhTien) {
+    public ChiTietPhieuNhapDTO(String maPHN, String maSP, int soLuong, double donGia, double thanhTien) {
         this.maPHN = maPHN;
         this.maSP = maSP;
+        this.soLuong = soLuong;
         this.donGia = donGia;
         this.thanhTien = thanhTien;
     }
 
-    public int getMaPHN() {
+    public String getMaPHN() {
         return maPHN;
     }
 
     public String getMaSP() {
         return maSP;
+    }
+
+    public int getSoLuong() {
+        return soLuong;
     }
 
     public double getDonGia() {
@@ -34,12 +40,16 @@ public class ChiTietPhieuNhapDTO {
         return thanhTien;
     }
 
-    public void setMaPHN(int maPHN) {
+    public void setMaPHN(String maPHN) {
         this.maPHN = maPHN;
     }
 
     public void setMaSP(String maSP) {
         this.maSP = maSP;
+    }
+
+    public void setSoLuong(int soLuong) {
+        this.soLuong = soLuong;
     }
 
     public void setDonGia(double donGia) {
@@ -55,7 +65,7 @@ public class ChiTietPhieuNhapDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChiTietPhieuNhapDTO that = (ChiTietPhieuNhapDTO) o;
-        return maPHN == that.maPHN && Objects.equals(maSP, that.maSP);
+        return Objects.equals(maPHN, that.maPHN) && Objects.equals(maSP, that.maSP);
     }
 
     @Override
@@ -66,8 +76,9 @@ public class ChiTietPhieuNhapDTO {
     @Override
     public String toString() {
         return "ChiTietPhieuNhap {" +
-                "maPHN=" + maPHN +
+                "maPHN='" + maPHN + '\'' +
                 ", maSP='" + maSP + '\'' +
+                ", soLuong=" + soLuong +
                 ", donGia=" + donGia +
                 ", thanhTien=" + thanhTien +
                 '}';

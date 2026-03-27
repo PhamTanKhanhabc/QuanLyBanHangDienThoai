@@ -1,27 +1,32 @@
 package GUI.Dialog;
 
-
+import BUS.ChiTietPhieuNhapBUS;
+import BUS.NhaCungCapBUS;
+import DTO.ChiTietPhieuNhapDTO;
+import DTO.NhaCungCapDTO;
 import java.awt.*;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import java.text.DecimalFormat;
 
 public class XemPhieuNhap extends JDialog {
 
     private JTextField txtNhaCungCap;
     private JTextField txtNhanVien;
-    
     private DefaultTableModel chiTietModel;
     private JTable tblChiTiet;
     private JButton btnDong;
-    
 
-    public XemPhieuNhap(Frame owner, boolean modal, String tenNCC, String maNV){
+    public XemPhieuNhap(Frame owner, boolean modal, String maNCC, String maNV, String maPHN){
         super(owner, modal);
-        initUI(tenNCC, maNV);
+        initUI(maNCC, maNV, maPHN);
+        loadChiTietPhieuNhap(maPHN);
     }
     
-    public void initUI(String tenNCC, String maNV){
+    public void initUI(String maNCC, String maNV, String maPHN){
         setTitle("CHI TIẾT PHIẾU NHẬP");
         setSize(850, 600);
         setLocationRelativeTo(getParent());
@@ -29,16 +34,13 @@ public class XemPhieuNhap extends JDialog {
         setLayout(new BorderLayout(10, 10)); 
         getContentPane().setBackground(Color.WHITE);
         
-        // ==========================================
-        // 1. TOP PANEL
-        // ==========================================
         JPanel pnlTop = new JPanel(new BorderLayout()); 
         pnlTop.setBackground(Color.WHITE);
         
         JPanel pnlTopTitle = new JPanel(new FlowLayout(FlowLayout.CENTER));
         pnlTopTitle.setBackground(Color.WHITE);
         
-        JLabel lblTopTitle = new JLabel("CHI TIẾT PHIẾU NHẬP");
+        JLabel lblTopTitle = new JLabel("CHI TIẾT PHIẾU NHẬP " + maPHN);
         lblTopTitle.setFont(new Font("Roboto", Font.BOLD, 24));
         lblTopTitle.setForeground(new Color(65, 120, 255));
         pnlTopTitle.add(lblTopTitle);
@@ -47,20 +49,31 @@ public class XemPhieuNhap extends JDialog {
         pnlTopInfo.setBackground(Color.WHITE);
         pnlTopInfo.setBorder(new EmptyBorder(10, 10, 10, 10));
         
-        // --- Ô hiển thị Nhà Cung Cấp ---
         pnlTopInfo.add(new JLabel("Nhà Cung Cấp: "));
-        txtNhaCungCap = new JTextField(tenNCC); // Điền sẵn tên NCC được truyền vào
+        
+        String tenNCC = maNCC;
+        NhaCungCapBUS nccBUS = new NhaCungCapBUS();
+        ArrayList<NhaCungCapDTO> nccList = nccBUS.getAll();
+        if (nccList != null) {
+            for (NhaCungCapDTO tmp : nccList) {
+                if (tmp.getMaNCC().equals(maNCC)) {
+                    tenNCC = tmp.getTenNCC();
+                    break;
+                }
+            }
+        }
+
+        txtNhaCungCap = new JTextField(tenNCC);
         txtNhaCungCap.setPreferredSize(new Dimension(250, 32));
-        txtNhaCungCap.setEditable(false); // KHÓA TƯƠNG TÁC
-        txtNhaCungCap.setBackground(new Color(245, 245, 245)); // Tô nền xám nhạt để phân biệt với form Thêm
+        txtNhaCungCap.setEditable(false);
+        txtNhaCungCap.setBackground(new Color(245, 245, 245));
         txtNhaCungCap.setFont(new Font("Roboto", Font.BOLD, 14));
         pnlTopInfo.add(txtNhaCungCap);
         
-        // --- Ô hiển thị Nhân Viên ---
         pnlTopInfo.add(new JLabel("Mã nhân viên: "));
-        txtNhanVien = new JTextField(maNV); // Điền sẵn mã NV được truyền vào
+        txtNhanVien = new JTextField(maNV);
         txtNhanVien.setPreferredSize(new Dimension(150, 32));
-        txtNhanVien.setEditable(false); // KHÓA TƯƠNG TÁC
+        txtNhanVien.setEditable(false);
         txtNhanVien.setBackground(new Color(245, 245, 245));
         txtNhanVien.setFont(new Font("Roboto", Font.BOLD, 14));
         pnlTopInfo.add(txtNhanVien);
@@ -68,9 +81,6 @@ public class XemPhieuNhap extends JDialog {
         pnlTop.add(pnlTopTitle, BorderLayout.NORTH);
         pnlTop.add(pnlTopInfo, BorderLayout.CENTER);
         
-        // ==========================================
-        // 2. MAIN PANEL (BẢNG DỮ LIỆU)
-        // ==========================================
         JPanel pnlMain = new JPanel(new BorderLayout(0, 10));
         pnlMain.setBackground(Color.WHITE);
         pnlMain.setBorder(new EmptyBorder(0, 20, 20, 20)); 
@@ -89,14 +99,17 @@ public class XemPhieuNhap extends JDialog {
         tblChiTiet = new JTable(chiTietModel);
         tblChiTiet.setRowHeight(35);
         tblChiTiet.setSelectionBackground(new Color(230, 245, 245));
-        tblChiTiet.getTableHeader().setReorderingAllowed(false); // Khóa di chuyển cột
+        tblChiTiet.setSelectionForeground(Color.BLACK); 
+        tblChiTiet.getTableHeader().setReorderingAllowed(false);
         
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        for (int i = 0; i < tblChiTiet.getColumnCount(); i++) {
+            tblChiTiet.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
         JScrollPane scrollPane = new JScrollPane(tblChiTiet);
         pnlMain.add(scrollPane, BorderLayout.CENTER);
         
-        // ==========================================
-        // 3. BOTTOM PANEL (CHỈ CHỨA NÚT ĐÓNG)
-        // ==========================================
         JPanel pnlMainAction = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         pnlMainAction.setBackground(Color.WHITE);
         pnlMainAction.setBorder(new EmptyBorder(0, 0, 20, 0));
@@ -105,16 +118,34 @@ public class XemPhieuNhap extends JDialog {
         btnDong.setPreferredSize(new Dimension(120, 40));
         btnDong.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
-
         btnDong.addActionListener(e -> dispose());
         
         pnlMainAction.add(btnDong);
         
-        // ==========================================
-        // 4. THÊM VÀO DIALOG
-        // ==========================================
         add(pnlTop, BorderLayout.NORTH);
         add(pnlMain, BorderLayout.CENTER);
         add(pnlMainAction, BorderLayout.SOUTH);
+    }
+    
+    public void loadChiTietPhieuNhap(String maPHN){
+        chiTietModel.setRowCount(0);
+        ChiTietPhieuNhapBUS ctpnBUS = new ChiTietPhieuNhapBUS();
+        ArrayList<ChiTietPhieuNhapDTO> list = ctpnBUS.getAllByMaPN(maPHN);
+        
+        DecimalFormat df = new DecimalFormat("#,###");
+        
+        if(list != null){
+            int stt = 1;
+            for (ChiTietPhieuNhapDTO tmp : list){
+                Object[] row = {
+                    stt++,
+                    tmp.getMaSP(), 
+                    tmp.getSoLuong(),
+                    df.format(tmp.getDonGia()),                  
+                    df.format(tmp.getSoLuong() * tmp.getDonGia())  
+                };
+                chiTietModel.addRow(row);
+            }    
+        }
     }
 }

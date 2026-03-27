@@ -12,24 +12,37 @@ public class ChiTietPhieuNhapDAO implements ChiTietInterface<ChiTietPhieuNhapDTO
     public static ChiTietPhieuNhapDAO getInstance() {
         return new ChiTietPhieuNhapDAO();
     }
+    
+    public boolean deleteAllByMaPHN(String maPHN) {
+        int ketQua = 0;
+        try {
+            Connection con = SQLServerConnect.getConnection();
+            String sql = "DELETE FROM ChiTietPhieuNhap WHERE maPHN = ?";
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.setString(1, maPHN);
+            ketQua = pst.executeUpdate();
+            
+            pst.close();
+            SQLServerConnect.closeConnection(con);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return ketQua > 0;
+    }
 
     @Override
     public int insert(ChiTietPhieuNhapDTO t) {
         int ketQua = 0;
         try {
             Connection con = SQLServerConnect.getConnection();
-            
-            String sql = "INSERT INTO ChiTietPhieuNhap (maPHN, maSP, dongia, thanhtien) VALUES (?, ?, ?, ?)";
-            
+            String sql = "INSERT INTO ChiTietPhieuNhap (maPHN, maSP, soluong, dongia, thanhtien) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement pst = con.prepareStatement(sql);
-            
-            pst.setInt(1, t.getMaPHN());
+            pst.setString(1, t.getMaPHN());
             pst.setString(2, t.getMaSP());
-            pst.setDouble(3, t.getDonGia());
-            pst.setDouble(4, t.getThanhTien());
-
+            pst.setInt(3, t.getSoLuong());
+            pst.setDouble(4, t.getDonGia());
+            pst.setDouble(5, t.getThanhTien());
             ketQua = pst.executeUpdate();
-            
             pst.close();
             con.close();
         } catch (SQLException ex) {
@@ -43,19 +56,14 @@ public class ChiTietPhieuNhapDAO implements ChiTietInterface<ChiTietPhieuNhapDTO
         int ketQua = 0;
         try {
             Connection con = SQLServerConnect.getConnection();
-
-            String sql = "UPDATE ChiTietPhieuNhap SET dongia=?, thanhtien=? WHERE maPHN=? AND maSP=?";
-            
+            String sql = "UPDATE ChiTietPhieuNhap SET soluong=?, dongia=?, thanhtien=? WHERE maPHN=? AND maSP=?";
             PreparedStatement pst = con.prepareStatement(sql);
-            
-            pst.setDouble(1, t.getDonGia());
-            pst.setDouble(2, t.getThanhTien());
-            
-            pst.setInt(3, t.getMaPHN());
-            pst.setString(4, t.getMaSP());
-
+            pst.setInt(1, t.getSoLuong());
+            pst.setDouble(2, t.getDonGia());
+            pst.setDouble(3, t.getThanhTien());
+            pst.setString(4, t.getMaPHN());
+            pst.setString(5, t.getMaSP());
             ketQua = pst.executeUpdate();
-            
             pst.close();
             con.close();
         } catch (SQLException ex) {
@@ -69,16 +77,11 @@ public class ChiTietPhieuNhapDAO implements ChiTietInterface<ChiTietPhieuNhapDTO
         int ketQua = 0;
         try {
             Connection con = SQLServerConnect.getConnection();
-            
             String sql = "DELETE FROM ChiTietPhieuNhap WHERE maPHN=? AND maSP=?";
-            
             PreparedStatement pst = con.prepareStatement(sql);
-            
-            pst.setInt(1, t.getMaPHN());
+            pst.setString(1, t.getMaPHN());
             pst.setString(2, t.getMaSP());
-
             ketQua = pst.executeUpdate();
-            
             pst.close();
             con.close();
         } catch (SQLException ex) {
@@ -92,24 +95,19 @@ public class ChiTietPhieuNhapDAO implements ChiTietInterface<ChiTietPhieuNhapDTO
         ArrayList<ChiTietPhieuNhapDTO> ketQua = new ArrayList<>();
         try {
             Connection con = SQLServerConnect.getConnection();
-            
             String sql = "SELECT * FROM ChiTietPhieuNhap WHERE maPHN = ?";
             PreparedStatement pst = con.prepareStatement(sql);
-            
-            pst.setInt(1, Integer.parseInt(t));
-            
+            pst.setString(1, t);
             ResultSet rs = pst.executeQuery();
-            
             while (rs.next()) {
-                int maPHN = rs.getInt("maPHN");
+                String maPHN = rs.getString("maPHN");
                 String maSP = rs.getString("maSP");
+                int soLuong = rs.getInt("soluong");
                 double donGia = rs.getDouble("dongia");
                 double thanhTien = rs.getDouble("thanhtien");
-                
-                ChiTietPhieuNhapDTO ctpn = new ChiTietPhieuNhapDTO(maPHN, maSP, donGia, thanhTien);
+                ChiTietPhieuNhapDTO ctpn = new ChiTietPhieuNhapDTO(maPHN, maSP, soLuong, donGia, thanhTien);
                 ketQua.add(ctpn);
             }
-            
             rs.close();
             pst.close();
             con.close();
@@ -123,26 +121,21 @@ public class ChiTietPhieuNhapDAO implements ChiTietInterface<ChiTietPhieuNhapDTO
         ArrayList<ChiTietPhieuNhapDTO> ketQua = new ArrayList<>();
         try {
             Connection con = SQLServerConnect.getConnection();
-
             String sql = "SELECT * FROM ChiTietPhieuNhap";
             PreparedStatement pst = con.prepareStatement(sql);
-
             ResultSet rs = pst.executeQuery();
-
             while (rs.next()) {
-                int maPHN = rs.getInt("maPHN");
+                String maPHN = rs.getString("maPHN");
                 String maSP = rs.getString("maSP");
+                int soLuong = rs.getInt("soluong");
                 double donGia = rs.getDouble("dongia");
                 double thanhTien = rs.getDouble("thanhtien");
-
-                ChiTietPhieuNhapDTO ctpn = new ChiTietPhieuNhapDTO(maPHN, maSP, donGia, thanhTien);
+                ChiTietPhieuNhapDTO ctpn = new ChiTietPhieuNhapDTO(maPHN, maSP, soLuong, donGia, thanhTien);
                 ketQua.add(ctpn);
             }
-
             rs.close();
             pst.close();
             con.close();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
