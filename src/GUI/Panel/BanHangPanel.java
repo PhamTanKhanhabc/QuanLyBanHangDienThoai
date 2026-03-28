@@ -56,6 +56,7 @@ public class BanHangPanel extends JPanel {
     private DefaultTableModel modelHoaDon;
     private JLabel lblTongHoaDon;
     private JLabel lblTongThanhToan;
+    private static final Color MENU_BLUE = new Color(67, 114, 243);
 
     public BanHangPanel() {
         initUI();
@@ -87,19 +88,20 @@ public class BanHangPanel extends JPanel {
                 new EmptyBorder(18, 20, 18, 20)
         ));
 
-        JLabel title = new JLabel("TẤN KHÁNH STORE");
-        title.setFont(new Font("Arial", Font.BOLD, 28));
+        JLabel title = new JLabel("GEARVN");
+        title.setFont(new Font("Times New Roman", Font.BOLD | Font.ITALIC, 28));
+        title.setForeground(new Color(220, 0, 0));
 
         JPanel right = new JPanel();
         right.setOpaque(false);
         right.setLayout(new BoxLayout(right, BoxLayout.Y_AXIS));
 
         JLabel user = new JLabel("Người bán hàng");
-        user.setFont(new Font("Arial", Font.BOLD, 18));
+        user.setFont(new Font("Times New Roman", Font.BOLD, 18));
         user.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
         JLabel role = new JLabel("Quản lý cửa hàng");
-        role.setFont(new Font("Arial", Font.BOLD, 14));
+        role.setFont(new Font("Times New Roman", Font.BOLD, 14));
         role.setForeground(new Color(220, 0, 0));
         role.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
@@ -162,51 +164,57 @@ public class BanHangPanel extends JPanel {
     }
 
     private JPanel createBoLoc() {
-        JPanel p = new JPanel(new GridBagLayout());
-        p.setBackground(Color.WHITE);
-        p.setBorder(new EmptyBorder(12, 16, 12, 16));
+    JPanel p = new JPanel(new BorderLayout(0, 12));
+    p.setBackground(Color.WHITE);
+    p.setBorder(new EmptyBorder(16, 20, 16, 20));
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 8, 8, 8);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+    txtTim = new JTextField(); // giữ lại để loadSanPham() không bị lỗi
+    cboLoai = new JComboBox<>(new String[]{"Tất cả"});
+    cboHang = new JComboBox<>(new String[]{"Tất cả"});
 
-        txtTim = new JTextField();
-        cboLoai = new JComboBox<>(new String[]{"Tất cả"});
-        cboHang = new JComboBox<>(new String[]{"Tất cả"});
+    Dimension comboSize = new Dimension(150, 32);
+    cboLoai.setPreferredSize(comboSize);
+    cboHang.setPreferredSize(comboSize);
 
-        JButton btnLamMoi = createButton("Làm mới", new Color(245, 245, 245));
-        JButton btnApDung = createButton("Áp dụng", new Color(245, 245, 245));
+    cboLoai.setFont(new Font("Arial", Font.PLAIN, 14));
+    cboHang.setFont(new Font("Arial", Font.PLAIN, 14));
 
-        gbc.gridx = 0; gbc.gridy = 0;
-        p.add(new JLabel("Tên sản phẩm"), gbc);
-        gbc.gridx = 1; gbc.weightx = 1;
-        p.add(txtTim, gbc);
+    JLabel lblLoai = new JLabel("Loại");
+    JLabel lblHang = new JLabel("Hãng");
+    lblLoai.setFont(new Font("Arial", Font.PLAIN, 14));
+    lblHang.setFont(new Font("Arial", Font.PLAIN, 14));
 
-        gbc.gridx = 2; gbc.weightx = 0;
-        p.add(new JLabel("Loại"), gbc);
-        gbc.gridx = 3;
-        p.add(cboLoai, gbc);
+    JPanel rowTop = new JPanel(new FlowLayout(FlowLayout.CENTER, 18, 0));
+    rowTop.setOpaque(false);
+    rowTop.add(lblLoai);
+    rowTop.add(cboLoai);
+    rowTop.add(lblHang);
+    rowTop.add(cboHang);
 
-        gbc.gridx = 4;
-        p.add(new JLabel("Hãng"), gbc);
-        gbc.gridx = 5;
-        p.add(cboHang, gbc);
+    JButton btnLamMoi = createButton("Làm mới", new Color(245, 245, 245));
+    JButton btnApDung = createButton("Áp dụng", new Color(245, 245, 245));
 
-        gbc.gridx = 1; gbc.gridy = 1;
-        p.add(btnLamMoi, gbc);
-        gbc.gridx = 2;
-        p.add(btnApDung, gbc);
+    btnLamMoi.setPreferredSize(new Dimension(100, 34));
+    btnApDung.setPreferredSize(new Dimension(100, 34));
 
-        btnApDung.addActionListener(e -> loadSanPham());
-        btnLamMoi.addActionListener(e -> {
-            txtTim.setText("");
-            cboLoai.setSelectedIndex(0);
-            cboHang.setSelectedIndex(0);
-            loadSanPham();
-        });
+    JPanel rowBottom = new JPanel(new FlowLayout(FlowLayout.CENTER, 12, 0));
+    rowBottom.setOpaque(false);
+    rowBottom.add(btnLamMoi);
+    rowBottom.add(btnApDung);
 
-        return wrapSection("Bộ lọc", p);
-    }
+    btnApDung.addActionListener(e -> loadSanPham());
+    btnLamMoi.addActionListener(e -> {
+        txtTim.setText("");
+        cboLoai.setSelectedIndex(0);
+        cboHang.setSelectedIndex(0);
+        loadSanPham();
+    });
+
+    p.add(rowTop, BorderLayout.CENTER);
+    p.add(rowBottom, BorderLayout.SOUTH);
+
+    return wrapSection("Bộ lọc", p);
+}
 
     private JPanel createHoaDonPanel() {
         JPanel content = new JPanel(new BorderLayout(0, 10));
@@ -289,22 +297,26 @@ public class BanHangPanel extends JPanel {
     }
 
     private JPanel wrapSection(String title, JPanel content) {
-        JPanel wrapper = new JPanel(new BorderLayout());
-        wrapper.setOpaque(false);
+    JPanel wrapper = new JPanel(new BorderLayout());
+    wrapper.setOpaque(false);
 
-        JPanel titleBar = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 8));
-        titleBar.setBackground(new Color(222, 232, 242));
-        titleBar.add(new JLabel(title));
+    JPanel titleBar = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 8));
+    titleBar.setBackground(MENU_BLUE);
 
-        JPanel body = new JPanel(new BorderLayout());
-        body.setBackground(Color.WHITE);
-        body.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 230)));
-        body.add(content, BorderLayout.CENTER);
+    JLabel lblTitle = new JLabel(title);
+    lblTitle.setForeground(Color.WHITE);
+    lblTitle.setFont(new Font("Arial", Font.BOLD, 14));
+    titleBar.add(lblTitle);
 
-        wrapper.add(titleBar, BorderLayout.NORTH);
-        wrapper.add(body, BorderLayout.CENTER);
-        return wrapper;
-    }
+    JPanel body = new JPanel(new BorderLayout());
+    body.setBackground(Color.WHITE);
+    body.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 230)));
+    body.add(content, BorderLayout.CENTER);
+
+    wrapper.add(titleBar, BorderLayout.NORTH);
+    wrapper.add(body, BorderLayout.CENTER);
+    return wrapper;
+}
 
     private JButton createButton(String text, Color bg) {
         JButton btn = new JButton(text);
@@ -646,7 +658,7 @@ public class BanHangPanel extends JPanel {
     }
 
     private long toLong(String s) {
-        return Long.parseLong(s.replace("VNĐ", "").replace(",", "").trim());
+        return Long.parseLong(s.replace("VNĐ", "").replace(".", "").trim());
     }
 
     private static class SanPham {
