@@ -26,6 +26,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import com.formdev.flatlaf.FlatLightLaf;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import javax.swing.UIManager;
 
 /**
@@ -35,7 +37,8 @@ import javax.swing.UIManager;
 public class CreateSanPhamDialog extends javax.swing.JDialog {
     private SanPhamPanel sanPhamPanel;
     private final SanPhamBUS spBUS = new SanPhamBUS();
-    private byte[] SanPhamImage;
+    private SanPhamDTO sp;
+    private String imagePath;
 
     private final List<LoaiSanPhamDTO> listLSP = new LoaiSanPhamBUS().getAll();
     private final List<HangSanXuatDTO> listHSX = new HangSanXuatBUS().getAll();
@@ -114,7 +117,7 @@ public class CreateSanPhamDialog extends javax.swing.JDialog {
             return false;
         }
 
-        if (SanPhamImage == null) {
+        if (lblHinhAnh.getIcon() == null){
             JOptionPane.showMessageDialog(
                     this,
                     "Hình ảnh không được để trống!",
@@ -210,7 +213,7 @@ public class CreateSanPhamDialog extends javax.swing.JDialog {
     private SanPhamDTO getInputFields() {
         String maSp = spBUS.generateMaSP();
         String tenSp = txtTenSanPham.getText().trim();
-        String hinhAnh = lblHinhAnh.getText(); 
+        String hinhAnh = sp.getHinhAnh();  
         int soLuongTon = Integer.parseInt(txtSoLuongTon.getText());
         double donGia = Double.parseDouble(txtDonGia.getText().trim());
         String donViTinh = txtDonViTinh.getText().trim();; 
@@ -227,6 +230,21 @@ public class CreateSanPhamDialog extends javax.swing.JDialog {
                 hsx.getMaHang(),
                 1
         );
+    }
+    public String saveImage(String path) {
+        File file = new File(path);
+
+        // tạo tên mới tránh trùng
+        String newName = System.currentTimeMillis() + "_" + file.getName();
+
+        try {
+            Files.copy(file.toPath(),
+                    Paths.get("img/" + newName));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return newName;
     }
 
     private void initComponents() {
@@ -477,6 +495,11 @@ public class CreateSanPhamDialog extends javax.swing.JDialog {
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {                                     
         if (isValidateFields()) {
             SanPhamDTO e = getInputFields();
+            
+            if (imagePath != null && !imagePath.equals(sp.getHinhAnh())) {
+                String newImage = saveImage(imagePath);
+                e.setHinhAnh(newImage);
+            }
 
             boolean check = spBUS.add(e);
 
@@ -510,7 +533,9 @@ public class CreateSanPhamDialog extends javax.swing.JDialog {
 
             File selectedFile = fileChooser.getSelectedFile();
             String filename = selectedFile.getAbsolutePath();
-
+            
+            imagePath = filename;
+            
             ImageIcon imageIcon = new ImageIcon(
                     new ImageIcon(filename)
                             .getImage()
@@ -520,35 +545,6 @@ public class CreateSanPhamDialog extends javax.swing.JDialog {
             );
 
             lblHinhAnh.setIcon(imageIcon);
-
-            try {
-                FileInputStream fis = new FileInputStream(new File(filename));
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-                byte[] buf = new byte[1024];
-                int readNum;
-
-                while ((readNum = fis.read(buf)) != -1) {
-                    bos.write(buf, 0, readNum);
-                }
-
-                SanPhamImage = bos.toByteArray();
-
-            } catch (FileNotFoundException ex) {
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Không tìm thấy file!",
-                        "Lỗi",
-                        JOptionPane.ERROR_MESSAGE
-                );
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Lỗi khi đọc file!",
-                        "Lỗi",
-                        JOptionPane.ERROR_MESSAGE
-                );
-            }
         }
     }
 }

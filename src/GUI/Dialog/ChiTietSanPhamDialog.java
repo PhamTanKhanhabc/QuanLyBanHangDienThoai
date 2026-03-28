@@ -17,6 +17,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -37,7 +40,6 @@ public class ChiTietSanPhamDialog extends JDialog {
 
     private SanPhamPanel sanPhamPanel;
     private final SanPhamBUS spBUS = new SanPhamBUS();
-    private byte[] SanPhamImage;
     private SanPhamDTO sp;
     private String imagePath;
 
@@ -103,24 +105,62 @@ public class ChiTietSanPhamDialog extends JDialog {
 
         txtTenSanPham.setText(sp.getTenSp());
 
-        String imagePath = sp.getHinhAnh();
-        if (imagePath != null && !imagePath.isEmpty()) {
-            ImageIcon icon = new ImageIcon(
-                new ImageIcon(imagePath).getImage().getScaledInstance(
-                    300,
-                    300,
-                    Image.SCALE_SMOOTH
-                )
-            );
-            lblHinhAnh.setIcon(icon);
+        imagePath = sp.getHinhAnh();
+        File file = new File("img/" + sp.getHinhAnh());
+
+        if (file.exists()) {
+            lblHinhAnh.setIcon(new ImageIcon(
+                new ImageIcon(file.getAbsolutePath())
+                    .getImage()
+                    .getScaledInstance(200, 200, Image.SCALE_SMOOTH)
+            ));
+        } else {
+            java.net.URL imgURL = getClass().getResource("/img/" + sp.getHinhAnh());
+
+            if (imgURL != null) {
+                lblHinhAnh.setIcon(new ImageIcon(
+                    new ImageIcon(imgURL)
+                        .getImage()
+                        .getScaledInstance(200, 200, Image.SCALE_SMOOTH)
+                ));
+            } else {
+                lblHinhAnh.setIcon(new FlatSVGIcon("./icon/image.svg"));
+            }
         }
 
         txtSoLuongTon.setText(String.valueOf(sp.getSoLuongTon()));
         txtDonGia.setText(String.valueOf((long) sp.getDonGia()));
         txtDonViTinh.setText(sp.getDonViTinh());
 
-        cboxLoaiSanPham.setSelectedItem(sp.getMaLoai());
-        cboxHangSanXuat.setSelectedItem(sp.getMaHang());
+        for (int i = 0; i < listLSP.size(); i++) {
+            if (listLSP.get(i).getMaLoai() == sp.getMaLoai()) {
+                cboxLoaiSanPham.setSelectedIndex(i);
+                break;
+            }
+        }
+
+        // set đúng hãng sản xuất
+        for (int i = 0; i < listHSX.size(); i++) {
+            if (listHSX.get(i).getMaHang() == sp.getMaHang()) {
+                cboxHangSanXuat.setSelectedIndex(i);
+                break;
+            }
+        }
+    }
+    public String saveImage(String path) {
+        File file = new File(path);
+
+        // tạo tên mới tránh trùng
+        String newName = System.currentTimeMillis() + "_" + file.getName();
+
+        try {
+            Files.copy(file.toPath(),
+                    Paths.get("img/" + newName));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return newName;
     }
     private void initComponents() {
         pnlHeader = new JPanel();

@@ -18,11 +18,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.List;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -36,6 +32,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 import javax.swing.JDialog;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  *
@@ -45,7 +43,6 @@ public class UpdateSanPhamDialog extends JDialog {
     
     private SanPhamPanel sanPhamPanel;
     private final SanPhamBUS spBUS = new SanPhamBUS();
-    private byte[] SanPhamImage;
     private SanPhamDTO sp;
     private String imagePath;
 
@@ -119,24 +116,48 @@ public class UpdateSanPhamDialog extends JDialog {
 
         txtTenSanPham.setText(sp.getTenSp());
 
-        String imagePath = sp.getHinhAnh();
-        if (imagePath != null && !imagePath.isEmpty()) {
-            ImageIcon icon = new ImageIcon(
-                new ImageIcon(imagePath).getImage().getScaledInstance(
-                    300,
-                    300,
-                    Image.SCALE_SMOOTH
-                )
-            );
-            lblHinhAnh.setIcon(icon);
+        // Hiển thị hình ảnh sản phẩm
+        imagePath = sp.getHinhAnh();
+        File file = new File("img/" + sp.getHinhAnh());
+
+        if (file.exists()) {
+            lblHinhAnh.setIcon(new ImageIcon(
+                new ImageIcon(file.getAbsolutePath())
+                    .getImage()
+                    .getScaledInstance(200, 200, Image.SCALE_SMOOTH)
+            ));
+        } else {
+            java.net.URL imgURL = getClass().getResource("/img/" + sp.getHinhAnh());
+
+            if (imgURL != null) {
+                lblHinhAnh.setIcon(new ImageIcon(
+                    new ImageIcon(imgURL)
+                        .getImage()
+                        .getScaledInstance(200, 200, Image.SCALE_SMOOTH)
+                ));
+            } else {
+                lblHinhAnh.setIcon(new FlatSVGIcon("./icon/image.svg"));
+            }
         }
 
         txtSoLuongTon.setText(String.valueOf(sp.getSoLuongTon()));
         txtDonGia.setText(String.valueOf((long) sp.getDonGia()));
         txtDonViTinh.setText(sp.getDonViTinh());
 
-        cboxLoaiSanPham.setSelectedItem(sp.getMaLoai());
-        cboxHangSanXuat.setSelectedItem(sp.getMaHang());
+        for (int i = 0; i < listLSP.size(); i++) {
+            if (listLSP.get(i).getMaLoai() == sp.getMaLoai()) {
+                cboxLoaiSanPham.setSelectedIndex(i);
+                break;
+            }
+        }
+
+        // set đúng hãng sản xuất
+        for (int i = 0; i < listHSX.size(); i++) {
+            if (listHSX.get(i).getMaHang() == sp.getMaHang()) {
+                cboxHangSanXuat.setSelectedIndex(i);
+                break;
+            }
+        }
     }
 
     private boolean isValidateFields() {
@@ -247,7 +268,7 @@ public class UpdateSanPhamDialog extends JDialog {
     private SanPhamDTO getInputFields() {
 
         String tenSp = txtTenSanPham.getText().trim();
-        String hinhAnh = lblHinhAnh.getText(); 
+        String hinhAnh = sp.getHinhAnh(); 
         int soLuongTon = Integer.parseInt(txtSoLuongTon.getText());
         double donGia = Double.parseDouble(txtDonGia.getText().trim());
         String donViTinh = txtDonViTinh.getText().trim();; 
@@ -264,6 +285,21 @@ public class UpdateSanPhamDialog extends JDialog {
                 hsx.getMaHang(),
                 1
         );
+    }
+    public String saveImage(String path) {
+        File file = new File(path);
+
+        // tạo tên mới tránh trùng
+        String newName = System.currentTimeMillis() + "_" + file.getName();
+
+        try {
+            Files.copy(file.toPath(),
+                    Paths.get("img/" + newName));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return newName;
     }
 
     private void initComponents() {
@@ -515,6 +551,11 @@ public class UpdateSanPhamDialog extends JDialog {
         if (isValidateFields()) {
 
             SanPhamDTO e = getInputFields();
+            
+            if (imagePath != null && !imagePath.equals(sp.getHinhAnh())) {
+                String newImage = saveImage(imagePath);
+                e.setHinhAnh(newImage);
+            }
 
             boolean check = spBUS.update(e);
 
@@ -552,7 +593,9 @@ public class UpdateSanPhamDialog extends JDialog {
 
             File selectedFile = fileChooser.getSelectedFile();
             String filename = selectedFile.getAbsolutePath();
-
+            
+            imagePath = filename;
+            
             ImageIcon imageIcon = new ImageIcon(
                     new ImageIcon(filename)
                             .getImage()
@@ -562,35 +605,6 @@ public class UpdateSanPhamDialog extends JDialog {
             );
 
             lblHinhAnh.setIcon(imageIcon);
-
-            try {
-                FileInputStream fis = new FileInputStream(new File(filename));
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-                byte[] buf = new byte[1024];
-                int readNum;
-
-                while ((readNum = fis.read(buf)) != -1) {
-                    bos.write(buf, 0, readNum);
-                }
-
-                SanPhamImage = bos.toByteArray();
-
-            } catch (FileNotFoundException ex) {
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Không tìm thấy file!",
-                        "Lỗi",
-                        JOptionPane.ERROR_MESSAGE
-                );
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Lỗi khi đọc file!",
-                        "Lỗi",
-                        JOptionPane.ERROR_MESSAGE
-                );
-            }
         }
     }
 }
