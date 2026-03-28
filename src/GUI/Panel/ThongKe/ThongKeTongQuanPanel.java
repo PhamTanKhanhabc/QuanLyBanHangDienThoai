@@ -184,7 +184,7 @@ public class ThongKeTongQuanPanel extends JPanel{
         
         lblProductIcon.setBackground(new Color(255,255,255));
         lblProductIcon.setHorizontalAlignment(SwingConstants.CENTER);
-        lblProductIcon.setIcon(new FlatSVGIcon("./icon/product_52.svg"));
+        lblProductIcon.setIcon(new FlatSVGIcon("./icon/product_52.svg", 52, 52));
         lblProductIcon.setBorder(BorderFactory.createEmptyBorder(16,16,16,16));
         lblProductIcon.setHorizontalTextPosition(SwingConstants.CENTER);
 
@@ -223,7 +223,7 @@ public class ThongKeTongQuanPanel extends JPanel{
 
         lblCustomerIcon.setBackground(new Color(255,255,255));
         lblCustomerIcon.setHorizontalAlignment(SwingConstants.CENTER);
-        lblCustomerIcon.setIcon(new FlatSVGIcon("./icon/customer_52.svg"));
+        lblCustomerIcon.setIcon(new FlatSVGIcon("./icon/customer_52.svg", 52, 52));
         lblCustomerIcon.setBorder(BorderFactory.createEmptyBorder(16,16,16,16));
         lblCustomerIcon.setHorizontalTextPosition(SwingConstants.CENTER);
 
@@ -265,7 +265,7 @@ public class ThongKeTongQuanPanel extends JPanel{
         pnlEmployeeIcon.setLayout(new BorderLayout());
         
         lblEmployeeIcon.setHorizontalAlignment(SwingConstants.CENTER);
-        lblEmployeeIcon.setIcon(new FlatSVGIcon("./icon/man_52.svg"));
+        lblEmployeeIcon.setIcon(new FlatSVGIcon("./icon/man_52.svg", 52, 52));
         lblEmployeeIcon.setBorder(BorderFactory.createEmptyBorder(16,16,16,16));
         
         pnlEmployeeIcon.add(lblEmployeeIcon, BorderLayout.CENTER);
