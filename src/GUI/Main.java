@@ -385,4 +385,17 @@ public class Main extends JFrame {
             // (Giữ lại: Sản phẩm + nhập hàng)
         }
     }
+    public void chuyenTrang(String tenTrang) {
+        switch (tenTrang) {
+            case "BanHang": 
+                btnBanHang.doClick(); 
+                break;
+            case "HoaDon": 
+                btnHoaDon.doClick(); 
+                break;
+            case "ThongKe": 
+                btnThongKe.doClick(); 
+                break;
+        }
+    }
 }
