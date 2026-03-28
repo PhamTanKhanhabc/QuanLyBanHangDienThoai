@@ -206,7 +206,6 @@ public class TrangChu extends JPanel {
         card.setLayout(new BorderLayout());
         card.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // Hover effect
         card.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -221,23 +220,22 @@ public class TrangChu extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 Window window = SwingUtilities.getWindowAncestor(TrangChu.this);
- 
+                if (window instanceof GUI.Main) {
+                    ((GUI.Main) window).chuyenTrang(targetPage);
+                }
             }
         });
 
-        // Icon hoặc placeholder
         JLabel iconLabel;
         if (icon != null) {
             iconLabel = new JLabel(icon, SwingConstants.CENTER);
         } else {
-            // Placeholder khi không tìm thấy ảnh
             iconLabel = new JLabel(getPlaceholderIcon(title), SwingConstants.CENTER);
         }
         iconLabel.setPreferredSize(new Dimension(0, 160));
         iconLabel.setBorder(new EmptyBorder(20, 20, 10, 20));
         card.add(iconLabel, BorderLayout.NORTH);
 
-        // Text panel
         JPanel textPanel = new JPanel();
         textPanel.setOpaque(false);
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
