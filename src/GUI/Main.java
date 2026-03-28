@@ -17,6 +17,7 @@ import GUI.Panel.VaiTroPanel;
 import GUI.Panel.ThongKe.ThongKePanel;
 import GUI.Panel.ThuocTinhPanel;
 import GUI.Panel.BanHangPanel;
+import GUI.Panel.TrangChu;
 import java.awt.*;
 import javax.swing.*;
 import java.util.List;
@@ -189,12 +190,13 @@ public class Main extends JFrame {
         menuItems.add(btnThongKe);
         
         // Mặc định chọn trang đầu
-        setPanel(new JLabel("Trang chủ", SwingConstants.CENTER));
         setActive(btnTrangChu);
+        setPanel(new TrangChu());
         
         // Trang chủ
         btnTrangChu.addActionListener(e -> {
-            setPanel(new JLabel("Trang chủ", SwingConstants.CENTER));
+            TrangChu trangChuPanel = new TrangChu(); 
+            setPanel(trangChuPanel);
             setActive(btnTrangChu);
         });
         btnBanHang.addActionListener(e -> {
