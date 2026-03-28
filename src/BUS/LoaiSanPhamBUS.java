@@ -115,4 +115,35 @@ public class LoaiSanPhamBUS {
         }
         return -1;
     }
+    public ArrayList<LoaiSanPhamDTO> search(String text, String type) {
+        text = text.toLowerCase();
+        ArrayList<LoaiSanPhamDTO> result = new ArrayList<>();
+
+        for (LoaiSanPhamDTO lsp : listLSP) {
+
+            switch (type) {
+
+                case "Mã":
+                    if (String.valueOf(lsp.getMaLoai()).toLowerCase().contains(text)) {
+                        result.add(lsp);
+                    }
+                    break;
+
+                case "Tên":
+                    if (lsp.getTenLoai().toLowerCase().contains(text)) {
+                        result.add(lsp);
+                    }
+                    break;
+
+                default:
+                    if (String.valueOf(lsp.getMaLoai()).toLowerCase().contains(text)
+                            || lsp.getTenLoai().toLowerCase().contains(text)) {
+                        result.add(lsp);
+                    }
+                    break;
+            }
+        }
+
+        return result;
+    }
 }

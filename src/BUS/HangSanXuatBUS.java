@@ -115,4 +115,35 @@ public class HangSanXuatBUS {
         }
         return -1;
     }
+    public ArrayList<HangSanXuatDTO> search(String text, String type) {
+        text = text.toLowerCase();
+        ArrayList<HangSanXuatDTO> result = new ArrayList<>();
+
+        for (HangSanXuatDTO hsx : listHSX) {
+
+            switch (type) {
+
+                case "Mã":
+                    if (String.valueOf(hsx.getMaHang()).toLowerCase().contains(text)) {
+                        result.add(hsx);
+                    }
+                    break;
+
+                case "Tên":
+                    if (hsx.getTenHang().toLowerCase().contains(text)) {
+                        result.add(hsx);
+                    }
+                    break;
+
+                default:
+                    if (String.valueOf(hsx.getMaHang()).toLowerCase().contains(text)
+                            || hsx.getTenHang().toLowerCase().contains(text)) {
+                        result.add(hsx);
+                    }
+                    break;
+            }
+        }
+
+        return result;
+    }
 }
