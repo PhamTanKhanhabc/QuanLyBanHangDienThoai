@@ -24,7 +24,7 @@ public class TrangChu extends JPanel {
         setLayout(new BorderLayout());
         setBackground(BG_COLOR);
 
-        add(buildHeader(),     BorderLayout.NORTH);
+        add(buildHeader(),      BorderLayout.NORTH);
         add(buildCardsPanel(), BorderLayout.CENTER);
     }
 
@@ -54,7 +54,8 @@ public class TrangChu extends JPanel {
             "<html><div style='text-align:center;'>Hệ Thống Bán Lẻ Điện Thoại</div></html>",
             SwingConstants.CENTER
         );
-        title.setFont(new Font("Arial", Font.BOLD, 22));
+        // TĂNG KÍCH THƯỚC: từ 22 lên 28
+        title.setFont(new Font("Arial", Font.BOLD, 28));
         title.setForeground(TEAL_DARK);
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         header.add(title);
@@ -70,7 +71,8 @@ public class TrangChu extends JPanel {
             + "</div></html>",
             SwingConstants.CENTER
         );
-        slogan.setFont(new Font("Arial", Font.PLAIN, 13));
+        // TĂNG KÍCH THƯỚC: từ 13 lên 16
+        slogan.setFont(new Font("Arial", Font.PLAIN, 16));
         slogan.setForeground(new Color(50, 50, 50));
         slogan.setAlignmentX(Component.CENTER_ALIGNMENT);
         header.add(slogan);
@@ -152,7 +154,6 @@ public class TrangChu extends JPanel {
             }
         }
 
-        // Thử đường dẫn file hệ thống (fallback cuối)
         String[] filePaths = {
             "/img/"           + baseName + ".png",
         };
@@ -170,9 +171,7 @@ public class TrangChu extends JPanel {
         return null;
     }
 
-    /**
-     * Load ảnh đơn theo đường dẫn tuyệt đối trong classpath.
-     */
+ 
     private ImageIcon loadImage(String path, int w, int h) {
         java.net.URL url = getClass().getResource(path);
         if (url == null) {
@@ -222,9 +221,7 @@ public class TrangChu extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 Window window = SwingUtilities.getWindowAncestor(TrangChu.this);
-                if (window instanceof GUI.Main) {
-                    ((GUI.Main) window).chuyenTrang(targetPage);
-                }
+ 
             }
         });
 
@@ -247,7 +244,7 @@ public class TrangChu extends JPanel {
         textPanel.setBorder(new EmptyBorder(0, 20, 25, 20));
 
         JLabel titleLabel = new JLabel(title, SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 15));
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
         titleLabel.setForeground(TEXT_TEAL);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         textPanel.add(titleLabel);
@@ -255,7 +252,7 @@ public class TrangChu extends JPanel {
         textPanel.add(Box.createVerticalStrut(10));
 
         JTextArea descArea = new JTextArea(description);
-        descArea.setFont(new Font("Arial", Font.PLAIN, 13));
+        descArea.setFont(new Font("Arial", Font.PLAIN, 16));
         descArea.setForeground(TEXT_GRAY);
         descArea.setLineWrap(true);
         descArea.setWrapStyleWord(true);
@@ -287,8 +284,7 @@ public class TrangChu extends JPanel {
         g2.setStroke(new BasicStroke(2f));
         g2.drawOval(1, 1, size - 2, size - 2);
 
-        // Chữ cái đầu
-        g2.setFont(new Font("Arial", Font.BOLD, 28));
+        g2.setFont(new Font("Arial", Font.BOLD, 32));
         g2.setColor(TEXT_TEAL);
         String letter = title.length() > 0 ? String.valueOf(title.charAt(0)) : "?";
         FontMetrics fm = g2.getFontMetrics();
