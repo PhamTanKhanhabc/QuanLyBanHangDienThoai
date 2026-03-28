@@ -1,5 +1,7 @@
 package GUI;
 
+import BUS.NhanVienBUS;
+import BUS.VaiTroBUS;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatClientProperties;
@@ -144,8 +146,17 @@ public class LogIn extends JFrame {
             JOptionPane.showMessageDialog(this, "Tài khoản không tồn tại");
         } 
         else if (password.equals(tk.getMatKhau())) {
+            // 👉 Lấy tên nhân viên bằng BUS
+            NhanVienBUS nvBUS = new NhanVienBUS();
+            String tenNV = nvBUS.getHoTen(tk.getMaNhanVien());
+
+            // 👉 Lấy vai trò
+            VaiTroBUS vtBUS = new VaiTroBUS();
+            String tenVT = vtBUS.getTenVaiTro(tk.getMaVaiTro());
+
             this.dispose();
-            new Main().setVisible(true);
+
+            new Main(tenNV, tenVT, tk.getMaVaiTro()).setVisible(true);
         } 
         else {
             JOptionPane.showMessageDialog(this, "Sai mật khẩu");

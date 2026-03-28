@@ -4,7 +4,6 @@
  */
 package GUI;
 
-import GUI.Panel.BanHangPanel;
 import GUI.Panel.KhuyenMaiGUI;
 import GUI.Panel.BaoHanhPanel;
 import GUI.Panel.HoaDonPanel;
@@ -16,7 +15,8 @@ import GUI.Panel.PhieuNhap;
 import GUI.Panel.TaiKhoanPanel;
 import GUI.Panel.VaiTroPanel;
 import GUI.Panel.ThongKe.ThongKePanel;
-import GUI.Panel.TrangChu;
+import GUI.Panel.ThuocTinhPanel;
+import GUI.Panel.BanHangPanel;
 import java.awt.*;
 import javax.swing.*;
 import java.util.List;
@@ -36,6 +36,7 @@ public class Main extends JFrame {
     private JButton btnTrangChu;
     private JButton btnBanHang;
     private JButton btnSanPham;
+    private JButton btnThuocTinh;
     private JButton btnBaoHanh;
     private JButton btnNhaCungCap;
     private JButton btnPhieuNhap;
@@ -48,12 +49,24 @@ public class Main extends JFrame {
     private JButton btnThongKe;
     private JButton btnLogout;
     
+    private JLabel lblName;
+    private JLabel lblRole;
+    
     private List<JButton> menuItems;
     
     private final Color ACTIVE_COLOR = new Color(65, 120, 255);
     
     public Main(){
         initUI();
+    }
+    public Main(String role){
+        initUI();
+        checkRole(role); 
+    }   
+    public Main(String tenNV, String tenVaiTro, String maVaiTro){
+        initUI();
+        setUserInfo(tenNV, tenVaiTro);
+        checkRole(maVaiTro);
     }
     private void initUI(){
         setTitle("Quản lý cửa hàng bán hàng điện thoại");
@@ -102,8 +115,8 @@ public class Main extends JFrame {
         textPanel.setBackground(Color.WHITE);
         textPanel.setBorder(BorderFactory.createEmptyBorder(25, 0, 0, 0));
         
-        JLabel lblName = new JLabel("Nguyễn Văn A");
-        JLabel lblRole = new JLabel("Quản lý");
+        lblName = new JLabel();   
+        lblRole = new JLabel();
         lblName.setAlignmentX(Component.LEFT_ALIGNMENT);
         lblRole.setAlignmentX(Component.LEFT_ALIGNMENT);
         
@@ -125,6 +138,7 @@ public class Main extends JFrame {
         btnTrangChu = createMenuButton("Trang chủ");
         btnBanHang = createMenuButton("Bán hàng");
         btnSanPham = createMenuButton("Sản phẩm");
+        btnThuocTinh = createMenuButton("Thuộc tính");
         btnBaoHanh = createMenuButton("Bảo hành");
         btnNhaCungCap = createMenuButton("Nhà cung cấp");
         btnPhieuNhap = createMenuButton("Phiếu nhập");
@@ -138,8 +152,9 @@ public class Main extends JFrame {
         
         
         menuPanel.add(btnTrangChu);   
-        menuPanel.add(btnBanHang);
+        menuPanel.add(btnBanHang);           
         menuPanel.add(btnSanPham);
+        menuPanel.add(btnThuocTinh); 
         menuPanel.add(btnBaoHanh);
         menuPanel.add(btnNhaCungCap);
         menuPanel.add(btnPhieuNhap);
@@ -161,6 +176,7 @@ public class Main extends JFrame {
         menuItems.add(btnTrangChu);
         menuItems.add(btnBanHang);
         menuItems.add(btnSanPham);
+        menuItems.add(btnThuocTinh); 
         menuItems.add(btnBaoHanh);
         menuItems.add(btnNhaCungCap);
         menuItems.add(btnPhieuNhap);
@@ -173,28 +189,32 @@ public class Main extends JFrame {
         menuItems.add(btnThongKe);
         
         // Mặc định chọn trang đầu
-        setPanel(new TrangChu());
+        setPanel(new JLabel("Trang chủ", SwingConstants.CENTER));
         setActive(btnTrangChu);
         
         // Trang chủ
         btnTrangChu.addActionListener(e -> {
-            setPanel(new TrangChu());
+            setPanel(new JLabel("Trang chủ", SwingConstants.CENTER));
             setActive(btnTrangChu);
         });
-
-        // Bán Hàng
-       btnBanHang.addActionListener(e -> {
-            setPanel(new BanHangPanel());
+        btnBanHang.addActionListener(e -> {
+            BanHangPanel banHangPanel = new BanHangPanel();
+            setPanel(banHangPanel);
             setActive(btnBanHang);
         });
-        
         // Sản phẩm
         btnSanPham.addActionListener(e -> {
             SanPhamPanel sanPhamPanel = new SanPhamPanel();
             setPanel(sanPhamPanel);
             setActive(btnSanPham);
         });
-
+        
+        btnThuocTinh.addActionListener(e -> {
+            ThuocTinhPanel panel = new ThuocTinhPanel();
+            setPanel(panel);
+            setActive(btnThuocTinh);
+        });
+        
         // Bảo hành
         btnBaoHanh.addActionListener(e -> {
             BaoHanhPanel baoHanhPanel = new BaoHanhPanel();
@@ -277,7 +297,7 @@ public class Main extends JFrame {
     }
     private JButton createMenuButton(String text){
         JButton btn = new JButton(text);
-        btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+        btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
         btn.setAlignmentX(Component.LEFT_ALIGNMENT); //căn trái vị trí nút
         btn.setFocusPainted(false); //ẩn viền focus
         btn.setBorderPainted(false); //Ẩn toàn bộ viền nút
@@ -288,7 +308,7 @@ public class Main extends JFrame {
         
         return btn;
     }
-    public void setPanel(Component comp){
+    private void setPanel(Component comp){
         mainContent.removeAll();
         mainContent.add(comp, BorderLayout.CENTER);
         mainContent.revalidate();
@@ -303,18 +323,66 @@ public class Main extends JFrame {
         selectedBtn.setBackground(ACTIVE_COLOR);
         selectedBtn.setForeground(Color.WHITE);
     }
-    
-    public void chuyenTrang(String tenTrang) {
-        switch (tenTrang) {
-            case "BanHang": 
-                btnBanHang.doClick(); 
-                break;
-            case "HoaDon": 
-                btnHoaDon.doClick(); 
-                break;
-            case "ThongKe": 
-                btnThongKe.doClick(); 
-                break;
+    private void setUserInfo(String tenNV, String tenVaiTro){
+        lblName.setText(tenNV);
+        lblRole.setText(tenVaiTro);
+    }
+    private void checkRole(String role) {
+
+        // ===== VT01: ADMIN (không tắt gì) =====
+        if (role.equals("VT01")) {
+            return;
+        }
+
+        // ===== VT02: Quản lý nội bộ =====
+        if (role.equals("VT02")) {
+            // Tắt bán hàng
+            btnBanHang.setEnabled(false);
+            btnHoaDon.setEnabled(false);
+            btnKhachHang.setEnabled(false);
+            btnKhuyenMai.setEnabled(false);
+
+            // Tắt sản phẩm
+            btnSanPham.setEnabled(false);
+            btnThuocTinh.setEnabled(false);
+            btnBaoHanh.setEnabled(false);
+            btnNhaCungCap.setEnabled(false);
+            btnPhieuNhap.setEnabled(false);
+
+            // (Giữ lại: Nhân viên, Tài khoản, Vai trò)
+        }
+
+        // ===== VT03: Nhân viên bán hàng =====
+        if (role.equals("VT03")) {
+            // Tắt nhân sự
+            btnNhanVien.setEnabled(false);
+            btnTaiKhoan.setEnabled(false);
+            btnVaiTro.setEnabled(false);
+
+            // Tắt sản phẩm
+            btnSanPham.setEnabled(false);
+            btnThuocTinh.setEnabled(false);
+            btnBaoHanh.setEnabled(false);
+            btnNhaCungCap.setEnabled(false);
+            btnPhieuNhap.setEnabled(false);
+
+            // (Giữ lại: Bán hàng, Hóa đơn, Khách hàng, Khuyến mãi)
+        }
+
+        // ===== VT04: Quản lý sản phẩm =====
+        if (role.equals("VT04")) {
+            // Tắt nhân sự
+            btnNhanVien.setEnabled(false);
+            btnTaiKhoan.setEnabled(false);
+            btnVaiTro.setEnabled(false);
+
+            // Tắt bán hàng
+            btnBanHang.setEnabled(false);
+            btnHoaDon.setEnabled(false);
+            btnKhachHang.setEnabled(false);
+            btnKhuyenMai.setEnabled(false);
+
+            // (Giữ lại: Sản phẩm + nhập hàng)
         }
     }
 }
