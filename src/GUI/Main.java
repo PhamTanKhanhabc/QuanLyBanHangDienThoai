@@ -16,6 +16,7 @@ import GUI.Panel.PhieuNhap;
 import GUI.Panel.TaiKhoanPanel;
 import GUI.Panel.VaiTroPanel;
 import GUI.Panel.ThongKe.ThongKePanel;
+import GUI.Panel.TrangChu;
 import java.awt.*;
 import javax.swing.*;
 import java.util.List;
@@ -172,12 +173,12 @@ public class Main extends JFrame {
         menuItems.add(btnThongKe);
         
         // Mặc định chọn trang đầu
-        setPanel(new JLabel("Trang chủ", SwingConstants.CENTER));
+        setPanel(new TrangChu());
         setActive(btnTrangChu);
         
         // Trang chủ
         btnTrangChu.addActionListener(e -> {
-            setPanel(new JLabel("Trang chủ", SwingConstants.CENTER));
+            setPanel(new TrangChu());
             setActive(btnTrangChu);
         });
 
@@ -287,7 +288,7 @@ public class Main extends JFrame {
         
         return btn;
     }
-    private void setPanel(Component comp){
+    public void setPanel(Component comp){
         mainContent.removeAll();
         mainContent.add(comp, BorderLayout.CENTER);
         mainContent.revalidate();
@@ -301,5 +302,19 @@ public class Main extends JFrame {
 
         selectedBtn.setBackground(ACTIVE_COLOR);
         selectedBtn.setForeground(Color.WHITE);
+    }
+    
+    public void chuyenTrang(String tenTrang) {
+        switch (tenTrang) {
+            case "BanHang": 
+                btnBanHang.doClick(); 
+                break;
+            case "HoaDon": 
+                btnHoaDon.doClick(); 
+                break;
+            case "ThongKe": 
+                btnThongKe.doClick(); 
+                break;
+        }
     }
 }
