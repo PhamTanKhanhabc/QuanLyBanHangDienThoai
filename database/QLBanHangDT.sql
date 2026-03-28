@@ -41,9 +41,10 @@ CREATE TABLE VaiTro (
     TrangThai BIT DEFAULT 1
 );
 INSERT INTO VaiTro (MaVaiTro, TenVaiTro, TrangThai) VALUES
-('VT01', N'Quản lý', 1),
-('VT02', N'Nhân viên', 1),
-('VT03', N'Kế toán', 1);
+('VT01', N'admin', 1),
+('VT02', N'Nhân viên Quản lý nội bộ', 1),
+('VT03', N'Nhân viên Bán hàng', 1),
+('VT04', N'Nhân viên Quản lý Sản phẩm', 1);
 
 CREATE TABLE NhanVien (
     MaNV VARCHAR(20) NOT NULL,
@@ -60,7 +61,8 @@ INSERT INTO NhanVien
 VALUES
 ('NV01', N'Nguyễn Văn', N'An', '1998-05-12', N'Hà Nội', '0901234567', 12000000, 1),
 ('NV02', N'Trần Minh', N'Bình', '1995-08-20', N'Hồ Chí Minh', '0912345678', 15000000, 1),
-('NV03', N'Lê Thị Ngọc', N'Chi', '2000-03-15', N'Đà Nẵng', '0923456789', 10000000, 1);
+('NV03', N'Lê Thị Ngọc', N'Chi', '2000-03-15', N'Đà Nẵng', '0923456789', 10000000, 1),
+('NV04', N'Lê Thị Huyền', N'Trang', '2000-05-16', N'Hà Nội', '0923456987', 13000000, 1);
 
 CREATE TABLE KhachHang(
     MaKH VARCHAR(20) NOT NULL,
@@ -228,8 +230,9 @@ CREATE TABLE TaiKhoan (
 INSERT INTO TaiKhoan (MaTK, TenDangNhap, MatKhau, MaNV, MaVaiTro, TrangThai)
 VALUES
 ('TK01', 'admin', '123456', 'NV01', 'VT01', 1),
-('TK02', 'nhanvien1', '123456', 'NV02', 'VT02', 1),
-('TK03', 'ketoan1', '123456', 'NV03', 'VT03', 1);
+('TK02', 'nhanvienquanlynoibo', '123456', 'NV02', 'VT02', 1),
+('TK03', 'nhanvienquanlybanhang', '123456', 'NV03', 'VT03', 1),
+('TK04', 'nhanvienquanlysanpham', '123456', 'NV04', 'VT04', 1);
 
 CREATE TABLE ChuongTrinhKhuyenMai (
     MaCTKM        VARCHAR(20) NOT NULL,
