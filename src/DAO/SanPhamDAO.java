@@ -241,7 +241,7 @@
             }
             return lastMa;
         }
-
+        
         public List<SanPhamDTO> getSearchTable(String text, String searchType) {
             List<SanPhamDTO> result = new ArrayList<>();
 
