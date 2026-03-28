@@ -91,17 +91,17 @@ public class KhuyenMaiGUI extends JPanel {
 
     private void initEvents() {
         actionPanel.btnAdd.addActionListener(e ->
-          new KhuyenMaiFormDialog(getFrame(), true, this, null, kmBUS).setVisible(true)
-          );
+         new KhuyenMaiFormDialog(getFrame(), true, this, null, kmBUS).setVisible(true)
+        );
 
         actionPanel.btnUpdate.addActionListener(e -> {
-          ChuongTrinhKhuyenMaiDTO km = getSelected();
-            if (km == null) {
-              JOptionPane.showMessageDialog(this, "Vui lòng chọn dòng cần sửa!");
-              return;
-              }
-           new KhuyenMaiFormDialog(getFrame(), true, this, km, kmBUS).setVisible(true);
-         });
+        ChuongTrinhKhuyenMaiDTO km = getSelected();
+         if (km == null) {
+         JOptionPane.showMessageDialog(this, "Vui lòng chọn dòng cần sửa!");
+         return;
+        }
+         new KhuyenMaiFormDialog(getFrame(), true, this, km, kmBUS).setVisible(true);
+        });
 
         actionPanel.btnDelete.addActionListener(e -> {
             ChuongTrinhKhuyenMaiDTO km = getSelected();
