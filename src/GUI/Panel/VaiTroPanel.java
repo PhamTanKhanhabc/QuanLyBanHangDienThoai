@@ -44,15 +44,15 @@ public class VaiTroPanel extends JPanel {
 
         actionPanel = new ActionPanel();
         // Hiển thị đủ 6 nút theo giao diện chuẩn
-        actionPanel.configButtons(new String[]{"add", "update", "delete", "info", "import", "export"}); 
-        
+        actionPanel.configButtons(new String[] { "add", "update", "delete", "info", "import", "export" });
+
         headerRightPanel = new HeaderRightPanel();
 
         topPanel.add(actionPanel, BorderLayout.WEST);
         topPanel.add(headerRightPanel, BorderLayout.EAST);
         add(topPanel, BorderLayout.NORTH);
 
-        String[] header = {"Ma Vai Tro", "Ten Vai Tro"};
+        String[] header = { "Ma Vai Tro", "Ten Vai Tro" };
         tablePanel = new TablePanel("DANH SACH VAI TRO", header);
         add(tablePanel, BorderLayout.CENTER);
     }
@@ -85,7 +85,7 @@ public class VaiTroPanel extends JPanel {
             JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
             VaiTroDialog dialog = new VaiTroDialog(parentFrame, true, "Them", null);
             dialog.setVisible(true);
-            
+
             if (dialog.isSuccess()) {
                 vaiTroBUS.refresh();
                 loadDataToTable(vaiTroBUS.getAll());
@@ -98,14 +98,14 @@ public class VaiTroPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, "Vui long chon vai tro can sua!");
                 return;
             }
-            
+
             String maVaiTro = tablePanel.getTable().getValueAt(row, 0).toString();
             VaiTroDTO dtoToEdit = vaiTroBUS.getAll().get(vaiTroBUS.getIndexById(maVaiTro));
-            
+
             JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
             VaiTroDialog dialog = new VaiTroDialog(parentFrame, true, "Sua", dtoToEdit);
             dialog.setVisible(true);
-            
+
             if (dialog.isSuccess()) {
                 vaiTroBUS.refresh();
                 loadDataToTable(vaiTroBUS.getAll());
@@ -118,10 +118,12 @@ public class VaiTroPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, "Vui long chon vai tro can xoa!");
                 return;
             }
-            
+
             String maVaiTro = tablePanel.getTable().getValueAt(row, 0).toString();
-            int confirm = JOptionPane.showConfirmDialog(this, "Xoa vai tro " + maVaiTro + " se anh huong den tai khoan. Chac chan xoa?", "Xac nhan", JOptionPane.YES_NO_OPTION);
-            
+            int confirm = JOptionPane.showConfirmDialog(this,
+                    "Xoa vai tro " + maVaiTro + " se anh huong den tai khoan. Chac chan xoa?", "Xac nhan",
+                    JOptionPane.YES_NO_OPTION);
+
             if (confirm == JOptionPane.YES_OPTION) {
                 VaiTroDTO dto = new VaiTroDTO();
                 dto.setMaVaiTro(maVaiTro);
@@ -131,7 +133,8 @@ public class VaiTroPanel extends JPanel {
                     vaiTroBUS.refresh();
                     loadDataToTable(vaiTroBUS.getAll());
                 } else {
-                    JOptionPane.showMessageDialog(this, "Xoa that bai! (Co the do con tai khoan dang dung vai tro nay)");
+                    JOptionPane.showMessageDialog(this,
+                            "Xoa that bai! (Co the do con tai khoan dang dung vai tro nay)");
                 }
             }
         });
@@ -145,11 +148,17 @@ public class VaiTroPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, "Vui long chon vai tro de xem chi tiet!");
                 return;
             }
+
             String maVaiTro = tablePanel.getTable().getValueAt(row, 0).toString();
-            JOptionPane.showMessageDialog(this, "Chuc nang xem thong tin chi tiet cua: " + maVaiTro + " dang duoc xay dung!");
+            VaiTroDTO dtoToView = vaiTroBUS.getAll().get(vaiTroBUS.getIndexById(maVaiTro));
+
+            JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+            // Gọi VaiTroDialog với tham số "Xem"
+            VaiTroDialog dialog = new VaiTroDialog(parentFrame, true, "Xem", dtoToView);
+            dialog.setVisible(true);
         });
 
-        // Sự kiện nút EXPORT 
+        // Sự kiện nút EXPORT
         actionPanel.btnExport.addActionListener(e -> {
             utils.JTableExporter.exportJTableToExcel(tablePanel.getTable());
         });
@@ -166,11 +175,11 @@ public class VaiTroPanel extends JPanel {
             if (userChoice == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
                 try (FileInputStream fis = new FileInputStream(selectedFile);
-                     Workbook workbook = new XSSFWorkbook(fis)) {
+                        Workbook workbook = new XSSFWorkbook(fis)) {
 
-                    Sheet sheet = workbook.getSheetAt(0); 
-                    DataFormatter formatter = new DataFormatter(); 
-                    
+                    Sheet sheet = workbook.getSheetAt(0);
+                    DataFormatter formatter = new DataFormatter();
+
                     int successCount = 0;
                     int failCount = 0;
 
@@ -187,23 +196,24 @@ public class VaiTroPanel extends JPanel {
                                 if (vaiTroBUS.add(dto)) {
                                     successCount++;
                                 } else {
-                                    failCount++; 
+                                    failCount++;
                                 }
                             }
                         }
                     }
-                    
-                    String message = "Import hoan tat!\n" 
-                                   + "- Them thanh cong: " + successCount + " dong.\n"
-                                   + "- That bai (trung ma hoac loi): " + failCount + " dong.";
+
+                    String message = "Import hoan tat!\n"
+                            + "- Them thanh cong: " + successCount + " dong.\n"
+                            + "- That bai (trung ma hoac loi): " + failCount + " dong.";
                     JOptionPane.showMessageDialog(this, message);
-                    
+
                     // Làm mới lại bảng sau khi import
                     vaiTroBUS.refresh();
                     loadDataToTable(vaiTroBUS.getAll());
 
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, "Loi doc file Excel!\n" + ex.getMessage(), "Loi", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Loi doc file Excel!\n" + ex.getMessage(), "Loi",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         });

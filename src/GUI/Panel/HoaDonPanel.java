@@ -1,328 +1,379 @@
 package GUI.Panel;
 
-import BUS.KhachHangBUS;
 import BUS.HoaDonBUS;
-import BUS.SanPhamBUS;
-import BUS.ChiTietHoaDonBUS;
 import DTO.HoaDonDTO;
+import GUI.Component.ButtonToolBar;
+import GUI.Component.HeaderRightPanel;
+import GUI.Component.TablePanel;
 import DTO.SanPhamDTO;
 import DTO.ChiTietHoaDonDTO;
-import GUI.Component.TablePanel;
-import com.formdev.flatlaf.extras.FlatSVGIcon;
+import BUS.ChiTietHoaDonBUS;
+import BUS.SanPhamBUS;
+
 import java.awt.*;
-import java.awt.event.*;
 import java.text.DecimalFormat;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.ArrayList;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 public class HoaDonPanel extends JPanel {
-    private SanPhamBUS spBUS = new SanPhamBUS();
     private HoaDonBUS hdBUS = new HoaDonBUS();
-    private KhachHangBUS khBUS = new KhachHangBUS();
-    private ChiTietHoaDonBUS cthdBUS = new ChiTietHoaDonBUS();
-    private JTable tableSP, tableGioHang;
-    private DefaultTableModel modelSP, modelGioHang;
-    private JTextField txtMaSP, txtTenSP, txtDonGia, txtSoLuongMua;
-    private JTextField txtMaHD, txtSdtKH, txtTenKH, txtTienKhachDua, txtTienThua;
-    private JLabel lblTongTien;
-    private JButton btnThemSP, btnInHD, btnHuy, btnXoaDong;
-    private double tongTien = 0;
-    private JTable tableLichSuHD, tableChiTietHD;
-    private DefaultTableModel modelLichSuHD, modelChiTietHD;
-    private JLabel lblLS_MaHD, lblLS_TongTien;
+    private TablePanel tblHoaDon;
+    
+    // Khai báo HeaderRightPanel cho thanh tìm kiếm
+    private HeaderRightPanel headerRightPanel;
+
     private DecimalFormat df = new DecimalFormat("#,### VNĐ");
     private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     public HoaDonPanel() {
-        initComponents();
-        loadTableSanPham(spBUS.getAll());
-        loadTableLichSuHD(hdBUS.getAll());
-        txtMaHD.setText(hdBUS.generateMaHD()); 
+        initUI();
+        loadData();
     }
 
-    private void initComponents() {
-        setLayout(new BorderLayout());
-        setBackground(new Color(230, 245, 245));
-        JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.setFont(new Font("SansSerif", Font.BOLD, 14));
-        tabbedPane.addTab("🛒 TẠO HÓA ĐƠN (BÁN HÀNG)", createTabBanHang());
-        tabbedPane.addTab("📜 LỊCH SỬ HÓA ĐƠN", createTabLichSu());
+    private void initUI() {
+        // --- 1. SETUP LAYOUT TỔNG THỂ ---
+        setLayout(new BorderLayout(0, 10));
+        setBackground(Color.WHITE);
+        setBorder(new EmptyBorder(10, 10, 10, 10));
+        
+        // --- 2. HEADER PANEL (Chứa Nút chức năng & Thanh tìm kiếm) ---
+        JPanel pnlTopBar = new JPanel(new BorderLayout());
+        pnlTopBar.setBackground(Color.WHITE);
+        
+        JPanel pnlTopBarLeftSub = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        pnlTopBarLeftSub.setBackground(Color.WHITE);
+        
+        // Sử dụng ButtonToolBar giống hệt form Nhà Cung Cấp
+        ButtonToolBar btnThem = new ButtonToolBar("Thêm", "icon/add.svg", 80, 60, 14, "ADD_HOADON");
+        ButtonToolBar btnSua = new ButtonToolBar("Sửa", "icon/update.svg", 80, 60, 14, "EDIT_HOADON");
+        ButtonToolBar btnXoa = new ButtonToolBar("Xóa", "icon/delete.svg", 80, 60, 14, "DELETE_HOADON");
+        ButtonToolBar btnInfo = new ButtonToolBar("Info", "icon/info.svg", 80, 60, 14, "INFO_HOADON");
+        ButtonToolBar btnExport = new ButtonToolBar("Export", "icon/export.svg", 80, 60, 14, "EXPORT_HOADON");
+        
+        btnThem.setBackground(Color.WHITE);
+        btnSua.setBackground(Color.WHITE);
+        btnXoa.setBackground(Color.WHITE);
+        btnInfo.setBackground(Color.WHITE);
+        btnExport.setBackground(Color.WHITE);
+        
+        pnlTopBarLeftSub.add(btnThem);
+        pnlTopBarLeftSub.add(btnSua);
+        pnlTopBarLeftSub.add(btnXoa);
+        pnlTopBarLeftSub.add(btnInfo);
+        pnlTopBarLeftSub.add(btnExport);
+        
+        // Cài đặt HeaderRightPanel (Thanh tìm kiếm)
+        headerRightPanel = new HeaderRightPanel();
+        
+        // Thiết lập các item cho ComboBox tìm kiếm (Tùy chỉnh lại tùy theo HeaderRightPanel của bạn)
+        JComboBox<String> cboxSearch = headerRightPanel.getCboxSearch();
+        cboxSearch.removeAllItems();
+        cboxSearch.addItem("Tất cả");
+        cboxSearch.addItem("Mã HĐ");
+        cboxSearch.addItem("Mã KH");
+        cboxSearch.addItem("Mã NV");
 
-        add(tabbedPane, BorderLayout.CENTER);
+        pnlTopBar.add(pnlTopBarLeftSub, BorderLayout.WEST);
+        pnlTopBar.add(headerRightPanel, BorderLayout.EAST);
+        
+        // --- 3. MAIN PANEL (Chứa Bảng dữ liệu) ---
+        JPanel pnlMain = new JPanel(new BorderLayout(10, 0));
+        pnlMain.setBackground(Color.WHITE);
+        
+        String[] headers = {"STT", "Mã Hóa Đơn", "Mã NV", "Mã KH", "Ngày Lập", "Tổng Tiền"};
+        tblHoaDon = new TablePanel("DANH SÁCH HÓA ĐƠN", headers);
+        tblHoaDon.getTable().getTableHeader().setReorderingAllowed(false);
+        
+        pnlMain.add(tblHoaDon, BorderLayout.CENTER);
+        
+        // --- 4. THÊM VÀO PANEL CHÍNH ---
+        this.add(pnlTopBar, BorderLayout.NORTH);
+        this.add(pnlMain, BorderLayout.CENTER);
+        
+        // ======================== ACTION CÁC NÚT CƠ BẢN ========================
+        
+        btnThem.addActionListener(e -> {
+            GUI.Dialog.CreateHoaDonDialog dialog = new GUI.Dialog.CreateHoaDonDialog(
+        (JFrame) SwingUtilities.getWindowAncestor(this), 
+        true // Đặt là true để bắt buộc người dùng thao tác xong mới quay lại form chính
+    );
+    dialog.setVisible(true);
+    
+    // Refresh lại bảng Hóa Đơn sau khi thanh toán xong
+    loadData();
+        });
+
+        btnSua.addActionListener(e -> {
+    JTable table = tblHoaDon.getTable();
+    int row = table.getSelectedRow();
+    if (row == -1) {
+        JOptionPane.showMessageDialog(this, "Vui lòng chọn một hóa đơn để sửa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        return;
     }
-    private JPanel createTabBanHang() {
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-        panel.setBackground(new Color(230, 245, 245));
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
-        JPanel northPanel = new JPanel(new GridBagLayout());
-        northPanel.setBackground(Color.WHITE);
-        northPanel.setBorder(BorderFactory.createTitledBorder("THÔNG TIN SẢN PHẨM"));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 10, 5, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+    
+    // Lấy Mã HD từ bảng danh sách (thường là cột số 1)
+    String maHD = table.getValueAt(row, 1).toString();
+    
+    // Mở Dialog cập nhật và truyền mã HD vào
+    GUI.Dialog.UpdateHoaDonDialog dialog = new GUI.Dialog.UpdateHoaDonDialog(
+        (JFrame) SwingUtilities.getWindowAncestor(this), 
+        true, 
+        maHD 
+    );
+    dialog.setVisible(true);
+    
+    // Cập nhật lại danh sách sau khi đóng form sửa
+    loadData();
+});
 
-        txtMaSP = new JTextField(10); txtMaSP.setEditable(false);
-        txtTenSP = new JTextField(20); txtTenSP.setEditable(false);
-        txtDonGia = new JTextField(10); txtDonGia.setEditable(false);
-        txtSoLuongMua = new JTextField("1", 5);
-        btnThemSP = new JButton("THÊM", new FlatSVGIcon("icon/add.svg",24,24)); 
-        btnThemSP.setBackground(new Color(0, 150, 136));
-        btnThemSP.setForeground(Color.WHITE);
-
-        gbc.gridx = 0; northPanel.add(new JLabel("Mã SP:"), gbc);
-        gbc.gridx = 1; northPanel.add(txtMaSP, gbc);
-        gbc.gridx = 2; northPanel.add(new JLabel("Tên SP:"), gbc);
-        gbc.gridx = 3; northPanel.add(txtTenSP, gbc);
-        gbc.gridx = 4; northPanel.add(new JLabel("Số lượng:"), gbc);
-        gbc.gridx = 5; northPanel.add(txtSoLuongMua, gbc);
-        gbc.gridx = 6; northPanel.add(btnThemSP, gbc);
-
-        
-        TablePanel tpSP = new TablePanel("Danh sách sản phẩm", new String[]{"STT", "Mã SP", "Tên SP", "Tồn kho", "Đơn giá"});
-        tableSP = tpSP.getTable();
-        modelSP = (DefaultTableModel) tableSP.getModel();
-
-       
-        JPanel eastPanel = new JPanel(new BorderLayout(5, 5));
-        eastPanel.setPreferredSize(new Dimension(420, 0));
-        eastPanel.setBackground(Color.WHITE);
-
-        
-        TablePanel tpGioHang = new TablePanel("Giỏ hàng", new String[]{"Mã SP", "Tên SP", "SL", "Đơn giá", "Thành tiền"});
-        tableGioHang = tpGioHang.getTable();
-        modelGioHang = (DefaultTableModel) tableGioHang.getModel();
-        
-        JPanel pnlXoa = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        pnlXoa.setBackground(Color.WHITE);
-        btnXoaDong = new JButton();
-        btnXoaDong.setIcon(new FlatSVGIcon("icon/delete.svg", 24, 24)); 
-        btnXoaDong.setBackground(new Color(255, 102, 102));
-        pnlXoa.add(btnXoaDong);
-
-        JPanel cartWrapper = new JPanel(new BorderLayout());
-        cartWrapper.add(tpGioHang, BorderLayout.CENTER);
-        cartWrapper.add(pnlXoa, BorderLayout.SOUTH);
-
-        
-        JPanel invoiceWrapper = new JPanel(new BorderLayout());
-        invoiceWrapper.setBackground(Color.WHITE);
-        
-        JPanel payPanel = new JPanel(new GridLayout(0, 1, 2, 2));
-        payPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 10));
-        payPanel.setBackground(Color.WHITE);
-
-        txtMaHD = new JTextField(); txtMaHD.setEditable(false);
-        txtSdtKH = new JTextField();
-        txtTenKH = new JTextField();
-        lblTongTien = new JLabel("0 VNĐ", SwingConstants.RIGHT);
-        lblTongTien.setFont(new Font("SansSerif", Font.BOLD, 22)); lblTongTien.setForeground(Color.RED);
-        txtTienKhachDua = new JTextField();
-        txtTienThua = new JTextField(); txtTienThua.setEditable(false);
-
-        payPanel.add(new JLabel("Mã Hóa Đơn:")); payPanel.add(txtMaHD);
-        payPanel.add(new JLabel("SĐT Khách hàng:")); payPanel.add(txtSdtKH);
-        payPanel.add(new JLabel("Tên Khách hàng:")); payPanel.add(txtTenKH);
-        payPanel.add(new JLabel("TỔNG CỘNG:")); payPanel.add(lblTongTien);
-        payPanel.add(new JLabel("Tiền khách đưa:")); payPanel.add(txtTienKhachDua);
-        payPanel.add(new JLabel("Tiền thừa:")); payPanel.add(txtTienThua);
-
-        JPanel btnGroup = new JPanel(new GridLayout(1, 2, 10, 10));
-        btnGroup.setBorder(BorderFactory.createEmptyBorder(5, 10, 10, 10));
-        btnGroup.setBackground(Color.WHITE);
-        btnHuy = new JButton("HỦY BỎ"); btnHuy.setBackground(new Color(255, 82, 82)); btnHuy.setForeground(Color.WHITE);
-        btnInHD = new JButton("IN HÓA ĐƠN"); btnInHD.setBackground(new Color(46, 204, 113)); btnInHD.setForeground(Color.WHITE);
-        btnGroup.add(btnHuy); btnGroup.add(btnInHD);
-
-        invoiceWrapper.add(payPanel, BorderLayout.CENTER);
-        invoiceWrapper.add(btnGroup, BorderLayout.SOUTH);
-
-        eastPanel.add(cartWrapper, BorderLayout.CENTER);
-        eastPanel.add(invoiceWrapper, BorderLayout.SOUTH);
-
-        
-        panel.add(northPanel, BorderLayout.NORTH);
-        panel.add(tpSP, BorderLayout.CENTER);
-        panel.add(eastPanel, BorderLayout.EAST);
-
-        // --- EVENTS TAB 1 ---
-        tableSP.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                int row = tableSP.getSelectedRow();
-                if (row != -1) {
-                    txtMaSP.setText(modelSP.getValueAt(row, 1).toString());
-                    txtTenSP.setText(modelSP.getValueAt(row, 2).toString());
-                    txtDonGia.setText(modelSP.getValueAt(row, 4).toString());
-                }
+        btnInfo.addActionListener(e -> {
+            JTable table = tblHoaDon.getTable();
+            int row = table.getSelectedRow();
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn một hóa đơn để xem chi tiết!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return;
             }
-        });
-
-        btnThemSP.addActionListener(e -> addToCart());
-        
-        btnXoaDong.addActionListener(e -> {
-            int row = tableGioHang.getSelectedRow();
-            if (row != -1) {
-                String value = modelGioHang.getValueAt(row, 4).toString().replace(",", "").replace(" VNĐ", "");
-                tongTien -= Double.parseDouble(value);
-                lblTongTien.setText(df.format(tongTien));
-                modelGioHang.removeRow(row);
-                tinhTienThua(); 
-            }
-        });
-
-        txtTienKhachDua.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) { tinhTienThua(); }
-        });
-
-        btnInHD.addActionListener(e -> thanhToan());
-        btnHuy.addActionListener(e -> resetForm());
-
-        return panel;
-    }
-
-    private JPanel createTabLichSu() {
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-        panel.setBackground(new Color(230, 245, 245));
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        
-        TablePanel tpLS = new TablePanel("Danh sách Hóa Đơn", new String[]{"STT", "Mã Hóa Đơn", "Mã NV", "Mã KH", "Ngày Lập", "Tổng Tiền"});
-        tableLichSuHD = tpLS.getTable();
-        modelLichSuHD = (DefaultTableModel) tableLichSuHD.getModel();
-        panel.add(tpLS, BorderLayout.CENTER);
-
-        
-        JPanel rightPanel = new JPanel(new BorderLayout(5, 5));
-        rightPanel.setPreferredSize(new Dimension(450, 0)); 
-        rightPanel.setBackground(Color.WHITE);
-
-        TablePanel tpCTHD = new TablePanel("Chi tiết sản phẩm", new String[]{"STT", "Mã SP", "Số lượng", "Đơn giá", "Thành tiền"});
-        tableChiTietHD = tpCTHD.getTable();
-        modelChiTietHD = (DefaultTableModel) tableChiTietHD.getModel();
-
-        JPanel infoPanel = new JPanel(new GridLayout(0, 1, 5, 10));
-        infoPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-        infoPanel.setBackground(Color.WHITE);
-        lblLS_MaHD = new JLabel("Hóa Đơn: Chưa chọn", SwingConstants.CENTER);
-        lblLS_MaHD.setFont(new Font("SansSerif", Font.BOLD, 16));
-        lblLS_TongTien = new JLabel("0 VNĐ", SwingConstants.CENTER);
-        lblLS_TongTien.setFont(new Font("SansSerif", Font.BOLD, 24)); lblLS_TongTien.setForeground(Color.RED);
-        
-        infoPanel.add(lblLS_MaHD);
-        infoPanel.add(new JLabel("TỔNG THÀNH TIỀN:", SwingConstants.CENTER));
-        infoPanel.add(lblLS_TongTien);
-
-        rightPanel.add(tpCTHD, BorderLayout.CENTER);
-        rightPanel.add(infoPanel, BorderLayout.SOUTH);
-        panel.add(rightPanel, BorderLayout.EAST);
-
-       
-        tableLichSuHD.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                int row = tableLichSuHD.getSelectedRow();
-                if (row != -1) {
-                    String maHD = modelLichSuHD.getValueAt(row, 1).toString();
-                    lblLS_MaHD.setText("Hóa Đơn: " + maHD);
-                    lblLS_TongTien.setText(modelLichSuHD.getValueAt(row, 5).toString());
-                    loadTableChiTietHoaDon(maHD);
-                }
-            }
-        });
-
-        return panel;
-    }
-
-   
-    private void addToCart() {
-        try {
-            if(txtMaSP.getText().isEmpty()) return;
-            String ma = txtMaSP.getText();
-            String ten = txtTenSP.getText();
-            int sl = Integer.parseInt(txtSoLuongMua.getText());
-            double gia = Double.parseDouble(txtDonGia.getText().replace(",", "").replace(" VNĐ", ""));
-            double thanhTien = sl * gia;
-
-            modelGioHang.addRow(new Object[]{ma, ten, sl, df.format(gia), df.format(thanhTien)});
-            tongTien += thanhTien;
-            lblTongTien.setText(df.format(tongTien));
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập số lượng hợp lệ!");
-        }
-    }
-
-    private void tinhTienThua() {
-        try {
-            double khachDua = Double.parseDouble(txtTienKhachDua.getText());
-            txtTienThua.setText(df.format(khachDua - tongTien));
-        } catch (Exception e) { txtTienThua.setText(""); }
-    }
-
-    private void thanhToan() {
-        if (modelGioHang.getRowCount() == 0) {
-            JOptionPane.showMessageDialog(this, "Giỏ hàng trống!"); return;
-        }
-
-        String maKHThatSu = khBUS.getMaByInfo(txtSdtKH.getText().trim());
-        if (maKHThatSu == null) maKHThatSu = khBUS.getMaByInfo(txtTenKH.getText().trim());
-
-        if (maKHThatSu == null) {
-            JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng!"); return;
-        }
-
-       
-        HoaDonDTO hd = new HoaDonDTO(txtMaHD.getText().trim(), "NV01", maKHThatSu, LocalDateTime.now(), tongTien, 1);
-
-        if (hdBUS.add(hd)) {
             
-            for (int i = 0; i < modelGioHang.getRowCount(); i++) {
-                String maSP = modelGioHang.getValueAt(i, 0).toString();
-                int sl = Integer.parseInt(modelGioHang.getValueAt(i, 2).toString());
-                double gia = Double.parseDouble(modelGioHang.getValueAt(i, 3).toString().replace(",", "").replace(" VNĐ", ""));
-                double tien = Double.parseDouble(modelGioHang.getValueAt(i, 4).toString().replace(",", "").replace(" VNĐ", ""));
+            // Cột 1 chứa Mã Hóa Đơn
+            String maHD = table.getValueAt(row, 1).toString();
+            
+            // Gọi form Chi Tiết
+            GUI.Dialog.ChiTietHoaDonDialog dialog = new GUI.Dialog.ChiTietHoaDonDialog(
+                (JFrame) SwingUtilities.getWindowAncestor(this), 
+                true, 
+                maHD
+            );
+            dialog.setVisible(true);
+        });
+
+        btnXoa.addActionListener(e -> {
+            JTable table = tblHoaDon.getTable();
+            int row = table.getSelectedRow();
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn một hóa đơn để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            
+            // Lấy mã Hóa Đơn từ dòng được chọn (Cột 1 là Mã HD)
+            String maHD = table.getValueAt(row, 1).toString();
+            
+            // 1. Hỏi xác nhận
+            int confirm = JOptionPane.showConfirmDialog(
+                this, 
+                "Bạn có chắc chắn muốn xóa hóa đơn " + maHD + " không?\nLưu ý: Số lượng sản phẩm của hóa đơn này sẽ được hoàn trả lại vào kho.", 
+                "Xác nhận xóa", 
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+            );
+            
+            if (confirm == JOptionPane.YES_OPTION) {
+                ChiTietHoaDonBUS cthdBUS = new ChiTietHoaDonBUS();
+                SanPhamBUS spBUS = new SanPhamBUS();
                 
-                cthdBUS.add(new ChiTietHoaDonDTO(hd.getMaHD(), maSP, sl, gia, tien)); 
+                // 2. Phục hồi tồn kho trước khi xóa
+                ArrayList<ChiTietHoaDonDTO> listCT = cthdBUS.getAllByMaHD(maHD);
+                if (listCT != null) {
+                    for (ChiTietHoaDonDTO ct : listCT) {
+                        int indexSP = spBUS.getIndexById(ct.getMaSP());
+                        if (indexSP != -1) {
+                            SanPhamDTO sp = spBUS.getByIndex(indexSP);
+                            // Cộng trả lại kho
+                            sp.setSoLuongTon(sp.getSoLuongTon() + ct.getSoLuong()); 
+                            spBUS.update(sp);
+                        }
+                    }
+                    // 3. Xóa toàn bộ Chi tiết hóa đơn trong DB
+                    cthdBUS.deleteByMaHD(maHD);
+                }
+                
+                // 4. Xóa Hóa đơn (Chạy hàm Soft Delete UPDATE TrangThai = 0 của bạn)
+                int indexHD = hdBUS.getIndexById(maHD);
+                if (indexHD != -1) {
+                    HoaDonDTO hdXoa = hdBUS.getByIndex(indexHD);
+                    
+                    if (hdBUS.delete(hdXoa)) {
+                        JOptionPane.showMessageDialog(this, "Xóa hóa đơn thành công!");
+                        // Tải lại dữ liệu lên bảng
+                        loadData(); 
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Lỗi khi xóa hóa đơn từ Cơ sở dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
             }
+        });
+        
 
-            JOptionPane.showMessageDialog(this, "Thanh toán thành công!");
-            resetForm();
-            
-            
-            loadTableLichSuHD(hdBUS.getAll());
-        } else {
-            JOptionPane.showMessageDialog(this, "Lỗi khi lưu Database!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        btnExport.addActionListener(e -> {
+            try {
+                // 1. Mở cửa sổ chọn nơi lưu file
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Chọn nơi lưu file Hóa Đơn");
+                
+                // Chỉ cho phép lưu định dạng Excel
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("Excel File (.xlsx)", "xlsx");
+                fileChooser.setFileFilter(filter);
+                
+                int userSelection = fileChooser.showSaveDialog(this);
+                
+                if (userSelection == JFileChooser.APPROVE_OPTION) {
+                    File fileToSave = fileChooser.getSelectedFile();
+                    String filePath = fileToSave.getAbsolutePath();
+                    
+                    // Tự động thêm đuôi .xlsx nếu người dùng quên gõ
+                    if (!filePath.toLowerCase().endsWith(".xlsx")) {
+                        filePath += ".xlsx";
+                    }
+                    
+                    // 2. Tạo Workbook và Sheet bằng Apache POI
+                    Workbook workbook = new XSSFWorkbook();
+                    Sheet sheet = workbook.createSheet("DanhSachHoaDon");
+                    
+                    JTable table = tblHoaDon.getTable();
+                    
+                    // 3. Tạo dòng tiêu đề (Header)
+                    Row headerRow = sheet.createRow(0);
+                    for (int i = 0; i < table.getColumnCount(); i++) {
+                        headerRow.createCell(i).setCellValue(table.getColumnName(i));
+                    }
+                    
+                    // 4. Đổ dữ liệu từ bảng giao diện vào file Excel
+                    for (int i = 0; i < table.getRowCount(); i++) {
+                        Row row = sheet.createRow(i + 1);
+                        for (int j = 0; j < table.getColumnCount(); j++) {
+                            Object value = table.getValueAt(i, j);
+                            row.createCell(j).setCellValue(value != null ? value.toString() : "");
+                        }
+                    }
+                    
+                    // Tự động căn chỉnh độ rộng cột cho đẹp mắt (Tùy chọn)
+                    for (int i = 0; i < table.getColumnCount(); i++) {
+                        sheet.autoSizeColumn(i);
+                    }
+                    
+                    // 5. Ghi file ra ổ cứng
+                    try (FileOutputStream out = new FileOutputStream(filePath)) {
+                        workbook.write(out);
+                    }
+                    workbook.close();
+                    
+                    JOptionPane.showMessageDialog(this, "Xuất file Excel thành công!\nĐã lưu tại: " + filePath, "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Lỗi khi xuất file Excel:\n" + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        // ======================== TÌM KIẾM & LÀM MỚI ========================
+        
+        JTextField txtSearch = headerRightPanel.getTxtSearch();
+        JButton btnReload = headerRightPanel.getBtnReload();
+
+        // 1. Gõ phím tới đâu lọc tới đó (Real-time search)
+        txtSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                searchData();
+            }
+        });
+
+        // 2. Đổi tiêu chí tìm kiếm ở ComboBox -> Tự động lọc lại
+        cboxSearch.addActionListener(e -> {
+            searchData();
+        });
+
+        // 3. Nút Làm Mới (Refresh) -> Ép tải lại toàn bộ Database mới nhất
+        btnReload.addActionListener(e -> {
+            loadData(); 
+        });
+    }
+    
+    // ======================== HÀM XỬ LÝ DỮ LIỆU ========================
+
+    // Hàm load toàn bộ dữ liệu (có ép đọc lại Database)
+    public void loadData() {
+        hdBUS = new HoaDonBUS(); 
+        ArrayList<HoaDonDTO> list = hdBUS.getAll();
+        
+        if (list == null) return;
+        
+        Object[][] data = new Object[list.size()][6];
+        
+        for (int i = 0; i < list.size(); i++) {
+            HoaDonDTO hd = list.get(i);
+
+            data[i][0] = i + 1; // STT
+            data[i][1] = hd.getMaHD();       
+            data[i][2] = hd.getMaNV();
+            data[i][3] = hd.getMaKH();              
+            data[i][4] = hd.getNgayLapHD() != null ? hd.getNgayLapHD().format(dtf) : "";
+            data[i][5] = df.format(hd.getTongTien());
         }
+        tblHoaDon.setData(data); // Đổ mảng Object[][] vào TablePanel
     }
 
-    private void resetForm() {
-        modelGioHang.setRowCount(0);
-        tongTien = 0; lblTongTien.setText("0 VNĐ");
-        txtTienKhachDua.setText(""); txtTienThua.setText("");
-        txtSdtKH.setText(""); txtTenKH.setText("");
-        txtMaHD.setText(hdBUS.generateMaHD());
-    }
-    public void loadTableSanPham(List<SanPhamDTO> list) {
-        modelSP.setRowCount(0);
-        int stt = 1;
-        for (SanPhamDTO sp : list) 
-            modelSP.addRow(new Object[]{stt++, sp.getMaSp(), sp.getTenSp(), sp.getSoLuongTon(), df.format(sp.getDonGia())});
-    }
-
-    public void loadTableLichSuHD(ArrayList<HoaDonDTO> list) {
-        modelLichSuHD.setRowCount(0);
-        int stt = 1;
-        for (HoaDonDTO hd : list) 
-            modelLichSuHD.addRow(new Object[]{stt++, hd.getMaHD(), hd.getMaNV(), hd.getMaKH(), hd.getNgayLapHD().format(dtf), df.format(hd.getTongTien())});
-    }
-
-    private void loadTableChiTietHoaDon(String maHD) {
-        modelChiTietHD.setRowCount(0);
-        ArrayList<ChiTietHoaDonDTO> listCT = cthdBUS.getAllByMaHD(maHD);
-        int stt = 1;
-        for (ChiTietHoaDonDTO ct : listCT) 
-            modelChiTietHD.addRow(new Object[]{stt++, ct.getMaSP(), ct.getSoLuong(), df.format(ct.getDonGia()), df.format(ct.getThanhTien())});
+    // Hàm lọc dữ liệu nội bộ dựa vào ô tìm kiếm
+    public void searchData() {
+        String text = headerRightPanel.getTxtSearch().getText().trim().toLowerCase();
+        String type = headerRightPanel.getCboxSearch().getSelectedItem().toString();
+        
+        ArrayList<HoaDonDTO> listAll = hdBUS.getAll();
+        ArrayList<HoaDonDTO> listFilter = new ArrayList<>();
+        
+        if (listAll != null) {
+            for (HoaDonDTO hd : listAll) {
+                boolean match = false;
+                
+                if (type.equals("Tất cả")) {
+                    if (hd.getMaHD().toLowerCase().contains(text) || 
+                        hd.getMaKH().toLowerCase().contains(text) || 
+                        hd.getMaNV().toLowerCase().contains(text)) {
+                        match = true;
+                    }
+                } else if (type.equals("Mã HĐ")) {
+                    if (hd.getMaHD().toLowerCase().contains(text)) {
+                        match = true;
+                    }
+                } else if (type.equals("Mã KH")) {
+                    if (hd.getMaKH().toLowerCase().contains(text)) {
+                        match = true;
+                    }
+                } else if (type.equals("Mã NV")) {
+                    if (hd.getMaNV().toLowerCase().contains(text)) {
+                        match = true;
+                    }
+                }
+                
+                if (match) {
+                    listFilter.add(hd);
+                }
+            }
+        }
+        
+        // Đổ mảng dữ liệu đã lọc lên bảng
+        Object[][] data = new Object[listFilter.size()][6];
+        for (int i = 0; i < listFilter.size(); i++) {
+            HoaDonDTO hd = listFilter.get(i);
+            
+            data[i][0] = i + 1; 
+            data[i][1] = hd.getMaHD();       
+            data[i][2] = hd.getMaNV();
+            data[i][3] = hd.getMaKH();              
+            data[i][4] = hd.getNgayLapHD() != null ? hd.getNgayLapHD().format(dtf) : "";
+            data[i][5] = df.format(hd.getTongTien());
+        }
+        tblHoaDon.setData(data);
     }
 }

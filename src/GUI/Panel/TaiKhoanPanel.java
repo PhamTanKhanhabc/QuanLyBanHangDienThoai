@@ -13,6 +13,14 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.awt.Color;
+
+// Bổ sung thư viện cho Import Excel
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.io.File;
+import java.io.FileInputStream;
 
 public class TaiKhoanPanel extends JPanel {
 
@@ -40,7 +48,8 @@ public class TaiKhoanPanel extends JPanel {
         topHeader.setBackground(Color.WHITE);
         
         actionPanel = new ActionPanel();
-        actionPanel.configButtons(new String[]{"add", "update", "delete", "export"}); 
+        // Cấu hình đủ bộ 6 nút giống hệt NhanVienPanel
+        actionPanel.configButtons(new String[]{"add", "update", "delete", "info", "import", "export"}); 
         
         headerRightPanel = new HeaderRightPanel();
 
@@ -157,9 +166,87 @@ public class TaiKhoanPanel extends JPanel {
                 
                 if (taiKhoanBUS.delete(dto)) {
                     JOptionPane.showMessageDialog(this, "Xoa tai khoan thanh cong!");
+                    taiKhoanBUS.refresh(); 
                     loadDataToTable(taiKhoanBUS.getAll());
                 } else {
                     JOptionPane.showMessageDialog(this, "Xoa that bai!");
+                }
+            }
+        });
+
+        // Chức năng Xem chi tiết (Info)
+        actionPanel.btnInfo.addActionListener(e -> {
+            int row = tablePanel.getTable().getSelectedRow();
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Vui long chon tai khoan de xem chi tiet!");
+                return;
+            }
+            
+            String maTK = tablePanel.getTable().getValueAt(row, 0).toString();
+            TaiKhoanDTO dtoToView = taiKhoanBUS.getAll().get(taiKhoanBUS.getIndexById(maTK));
+            
+            JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+            TaiKhoanDialog dialog = new TaiKhoanDialog(parentFrame, true, "Xem", dtoToView);
+            dialog.setVisible(true);
+        });
+
+        // Chức năng Xuất Excel (Export)
+        actionPanel.btnExport.addActionListener(e -> {
+            utils.JTableExporter.exportJTableToExcel(tablePanel.getTable());
+        });
+
+        // Chức năng Nhập Excel (Import)
+        actionPanel.btnImport.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Chon file Excel de Import Tai Khoan");
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("XLSX files", "xlsx");
+            fileChooser.setFileFilter(filter);
+            fileChooser.setAcceptAllFileFilterUsed(false);
+
+            int userChoice = fileChooser.showOpenDialog(this);
+            if (userChoice == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+                try (FileInputStream fis = new FileInputStream(selectedFile);
+                     Workbook workbook = new XSSFWorkbook(fis)) {
+
+                    Sheet sheet = workbook.getSheetAt(0);
+                    DataFormatter formatter = new DataFormatter();
+                    
+                    int successCount = 0;
+                    int failCount = 0;
+
+                    // Duyệt từ dòng 1 (bỏ qua Header) để lấy 5 cột dữ liệu
+                    for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                        Row row = sheet.getRow(i);
+                        if (row != null) {
+                            String maTK = formatter.formatCellValue(row.getCell(0)).trim();
+                            String tenDN = formatter.formatCellValue(row.getCell(1)).trim();
+                            String matKhau = formatter.formatCellValue(row.getCell(2)).trim();
+                            String maNV = formatter.formatCellValue(row.getCell(3)).trim();
+                            String maVT = formatter.formatCellValue(row.getCell(4)).trim();
+
+                            if (!maTK.isEmpty() && !tenDN.isEmpty()) {
+                                TaiKhoanDTO dto = new TaiKhoanDTO(maTK, tenDN, matKhau, maNV, maVT, 1);
+                                
+                                if (taiKhoanBUS.add(dto)) {
+                                    successCount++;
+                                } else {
+                                    failCount++; 
+                                }
+                            }
+                        }
+                    }
+                    
+                    String message = "Import hoan tat!\n" 
+                                   + "- Them thanh cong: " + successCount + " dong.\n"
+                                   + "- That bai (trung ma hoac loi SQL): " + failCount + " dong.";
+                    JOptionPane.showMessageDialog(this, message);
+                    
+                    taiKhoanBUS.refresh();
+                    loadDataToTable(taiKhoanBUS.getAll());
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Loi doc file Excel!\n" + ex.getMessage(), "Loi", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });

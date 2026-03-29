@@ -5,7 +5,7 @@ import DTO.NhanVienDTO;
 import GUI.Component.ActionPanel;
 import GUI.Component.HeaderRightPanel;
 import GUI.Component.TablePanel;
-import GUI.Dialog.NhanVienDialog; 
+import GUI.Dialog.NhanVienDialog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,6 +13,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.awt.Color;
+
 // Bổ sung thư viện cho Import/Export Excel
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -28,7 +29,7 @@ public class NhanVienPanel extends JPanel {
     private TablePanel tablePanel;
     private ActionPanel actionPanel;
     private HeaderRightPanel headerRightPanel;
-    
+
     public NhanVienPanel() {
         nhanVienBUS = new NhanVienBUS();
         initComponents();
@@ -45,15 +46,15 @@ public class NhanVienPanel extends JPanel {
 
         actionPanel = new ActionPanel();
         // Cập nhật để hiển thị đủ 6 nút giống VaiTroPanel
-        actionPanel.configButtons(new String[]{"add", "update", "delete", "info", "import", "export"}); 
-        
+        actionPanel.configButtons(new String[] { "add", "update", "delete", "info", "import", "export" });
+
         headerRightPanel = new HeaderRightPanel();
 
         topPanel.add(actionPanel, BorderLayout.WEST);
         topPanel.add(headerRightPanel, BorderLayout.EAST);
         add(topPanel, BorderLayout.NORTH);
 
-        String[] header = {"Ma NV", "Ho", "Ten", "Ngay Sinh", "Dia Chi", "Dien Thoai", "Luong Thang"};
+        String[] header = { "Ma NV", "Ho", "Ten", "Ngay Sinh", "Dia Chi", "Dien Thoai", "Luong Thang" };
         tablePanel = new TablePanel("DANH SACH NHAN VIEN", header);
         add(tablePanel, BorderLayout.CENTER);
     }
@@ -91,7 +92,7 @@ public class NhanVienPanel extends JPanel {
             JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
             NhanVienDialog dialog = new NhanVienDialog(parentFrame, true, "Them", null);
             dialog.setVisible(true);
-            
+
             if (dialog.isSuccess()) {
                 nhanVienBUS.refresh();
                 loadDataToTable(nhanVienBUS.getAll());
@@ -104,14 +105,14 @@ public class NhanVienPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, "Vui long chon nhan vien can sua!");
                 return;
             }
-            
+
             String maNV = tablePanel.getTable().getValueAt(row, 0).toString();
             NhanVienDTO dtoToEdit = nhanVienBUS.getAll().get(nhanVienBUS.getIndexById(maNV));
-            
+
             JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
             NhanVienDialog dialog = new NhanVienDialog(parentFrame, true, "Sua", dtoToEdit);
             dialog.setVisible(true);
-            
+
             if (dialog.isSuccess()) {
                 nhanVienBUS.refresh();
                 loadDataToTable(nhanVienBUS.getAll());
@@ -124,10 +125,11 @@ public class NhanVienPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, "Vui long chon nhan vien can xoa!");
                 return;
             }
-            
+
             String maNV = tablePanel.getTable().getValueAt(row, 0).toString();
-            int confirm = JOptionPane.showConfirmDialog(this, "Ban co chac muon xoa nhan vien " + maNV + "?", "Xac nhan", JOptionPane.YES_NO_OPTION);
-            
+            int confirm = JOptionPane.showConfirmDialog(this, "Ban co chac muon xoa nhan vien " + maNV + "?",
+                    "Xac nhan", JOptionPane.YES_NO_OPTION);
+
             if (confirm == JOptionPane.YES_OPTION) {
                 NhanVienDTO dto = new NhanVienDTO();
                 dto.setMaNV(maNV);
@@ -137,7 +139,8 @@ public class NhanVienPanel extends JPanel {
                     nhanVienBUS.refresh();
                     loadDataToTable(nhanVienBUS.getAll());
                 } else {
-                    JOptionPane.showMessageDialog(this, "Xoa that bai! (Co the do nhan vien dang co hoa don/tai khoan)");
+                    JOptionPane.showMessageDialog(this,
+                            "Xoa that bai! (Co the do nhan vien dang co hoa don/tai khoan)");
                 }
             }
         });
@@ -151,8 +154,15 @@ public class NhanVienPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, "Vui long chon nhan vien de xem chi tiet!");
                 return;
             }
+
+            // Lấy mã nhân viên được chọn và tìm DTO tương ứng
             String maNV = tablePanel.getTable().getValueAt(row, 0).toString();
-            JOptionPane.showMessageDialog(this, "Chuc nang xem thong tin chi tiet cua nhan vien: " + maNV + " dang duoc xay dung!");
+            NhanVienDTO dtoToView = nhanVienBUS.getAll().get(nhanVienBUS.getIndexById(maNV));
+
+            // Mở NhanVienDialog ở chế độ "Xem"
+            JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+            NhanVienDialog dialog = new NhanVienDialog(parentFrame, true, "Xem", dtoToView);
+            dialog.setVisible(true);
         });
 
         // Sự kiện nút EXPORT (Sử dụng utils.JTableExporter)
@@ -172,11 +182,11 @@ public class NhanVienPanel extends JPanel {
             if (userChoice == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
                 try (FileInputStream fis = new FileInputStream(selectedFile);
-                     Workbook workbook = new XSSFWorkbook(fis)) {
+                        Workbook workbook = new XSSFWorkbook(fis)) {
 
                     Sheet sheet = workbook.getSheetAt(0);
                     DataFormatter formatter = new DataFormatter();
-                    
+
                     int successCount = 0;
                     int failCount = 0;
 
@@ -201,33 +211,35 @@ public class NhanVienPanel extends JPanel {
                             if (!ma.isEmpty() && !ten.isEmpty()) {
                                 double luong = 0;
                                 try {
-                                    if(!luongStr.isEmpty()) luong = Double.parseDouble(luongStr);
+                                    if (!luongStr.isEmpty())
+                                        luong = Double.parseDouble(luongStr);
                                 } catch (NumberFormatException ex) {
                                     luong = 0; // Nếu nhập sai định dạng lương thì mặc định là 0
                                 }
 
                                 NhanVienDTO dto = new NhanVienDTO(ma, ho, ten, ngaySinh, diaChi, dienThoai, luong, 1);
-                                
+
                                 if (nhanVienBUS.add(dto)) {
                                     successCount++;
                                 } else {
-                                    failCount++; 
+                                    failCount++;
                                 }
                             }
                         }
                     }
-                    
-                    String message = "Import hoan tat!\n" 
-                                   + "- Them thanh cong: " + successCount + " dong.\n"
-                                   + "- That bai (trung ma hoac loi SQL): " + failCount + " dong.";
+
+                    String message = "Import hoan tat!\n"
+                            + "- Them thanh cong: " + successCount + " dong.\n"
+                            + "- That bai (trung ma hoac loi SQL): " + failCount + " dong.";
                     JOptionPane.showMessageDialog(this, message);
-                    
+
                     // Làm mới dữ liệu
                     nhanVienBUS.refresh();
                     loadDataToTable(nhanVienBUS.getAll());
 
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, "Loi doc file Excel!\n" + ex.getMessage(), "Loi", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Loi doc file Excel!\n" + ex.getMessage(), "Loi",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
