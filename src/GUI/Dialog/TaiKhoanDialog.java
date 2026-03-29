@@ -27,8 +27,9 @@ public class TaiKhoanDialog extends JDialog {
         initComponents();
         loadComboBoxData();
         
-        if (type.equals("Sua") && dto != null) {
-            setTitle("Cap Nhat Tai Khoan");
+        // Thêm điều kiện type.equals("Xem") vào đây
+        if ((type.equals("Sua") || type.equals("Xem")) && dto != null) {
+            setTitle(type.equals("Sua") ? "Cap Nhat Tai Khoan" : "Chi Tiet Tai Khoan");
             txtMaTK.setText(dto.getMaTaiKhoan());
             txtMaTK.setEditable(false);
             txtTenDN.setText(dto.getTenDangNhap());
@@ -36,6 +37,16 @@ public class TaiKhoanDialog extends JDialog {
             
             cboNhanVien.setSelectedItem(dto.getMaNhanVien());
             cboVaiTro.setSelectedItem(dto.getMaVaiTro());
+            
+            // Nếu là chế độ xem, khóa toàn bộ thao tác và ẩn nút Lưu
+            if (type.equals("Xem")) {
+                txtTenDN.setEditable(false);
+                txtMatKhau.setEditable(false);
+                cboNhanVien.setEnabled(false);
+                cboVaiTro.setEnabled(false);
+                btnSave.setVisible(false);
+                btnCancel.setText("Dong");
+            }
         } else {
             setTitle("Them Tai Khoan Moi");
         }
@@ -94,7 +105,7 @@ public class TaiKhoanDialog extends JDialog {
                 } else {
                     JOptionPane.showMessageDialog(this, "Loi: Trung ma hoac ten dang nhap!");
                 }
-            } else {
+            } else if (type.equals("Sua")) {
                 if (taiKhoanBUS.update(newDto)) {
                     JOptionPane.showMessageDialog(this, "Cap nhat thanh cong!");
                     isSuccess = true; dispose();

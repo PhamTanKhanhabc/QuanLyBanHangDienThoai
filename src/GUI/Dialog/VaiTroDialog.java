@@ -18,11 +18,19 @@ public class VaiTroDialog extends JDialog {
         this.type = type;
         initComponents();
         
-        if (type.equals("Sua") && dto != null) {
-            setTitle("Cap Nhat Vai Tro");
+        // Bổ sung điều kiện xử lý cho trạng thái "Xem"
+        if ((type.equals("Sua") || type.equals("Xem")) && dto != null) {
+            setTitle(type.equals("Sua") ? "Cap Nhat Vai Tro" : "Chi Tiet Vai Tro");
             txtMa.setText(dto.getMaVaiTro());
             txtMa.setEditable(false); 
             txtTen.setText(dto.getTenVaiTro());
+            
+            // Nếu là chế độ xem, khóa toàn bộ thao tác và ẩn nút Lưu
+            if (type.equals("Xem")) {
+                txtTen.setEditable(false);
+                btnSave.setVisible(false);
+                btnCancel.setText("Dong");
+            }
         } else {
             setTitle("Them Vai Tro Moi");
         }
@@ -72,7 +80,7 @@ public class VaiTroDialog extends JDialog {
                 } else {
                     JOptionPane.showMessageDialog(this, "Them that bai (Trung ma hoac ten)!");
                 }
-            } else { 
+            } else if (type.equals("Sua")) { // Cập nhật lại logic chỗ này cho chặt chẽ hơn
                 if (vaiTroBUS.update(newDto)) {
                     JOptionPane.showMessageDialog(this, "Cap nhat thanh cong!");
                     isSuccess = true;

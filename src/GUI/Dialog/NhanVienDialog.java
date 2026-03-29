@@ -3,9 +3,9 @@ package GUI.Dialog;
 import BUS.NhanVienBUS;
 import DTO.NhanVienDTO;
 import java.awt.*;
-import javax.swing.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import javax.swing.*;
 
 public class NhanVienDialog extends JDialog {
 
@@ -20,16 +20,30 @@ public class NhanVienDialog extends JDialog {
         this.type = type;
         initComponents();
         
-        if (type.equals("Sua") && dto != null) {
-            setTitle("Cap Nhat Nhan Vien");
+        if ((type.equals("Sua") || type.equals("Xem")) && dto != null) {
+            setTitle(type.equals("Sua") ? "Cap Nhat Nhan Vien" : "Chi Tiet Nhan Vien");
             txtMa.setText(dto.getMaNV());
-            txtMa.setEditable(false);
             txtHo.setText(dto.getHo());
             txtTen.setText(dto.getTen());
             txtNgaySinh.setText(dto.getNgaySinh().toString());
             txtDiaChi.setText(dto.getDiaChi());
             txtDienThoai.setText(dto.getDienThoai());
             txtLuong.setText(String.valueOf(dto.getLuongThang()));
+            
+            // Khóa mã nhân viên khi sửa hoặc xem
+            txtMa.setEditable(false);
+            
+            // Nếu là chế độ xem thì khóa tất cả các trường và ẩn nút Lưu
+            if (type.equals("Xem")) {
+                txtHo.setEditable(false);
+                txtTen.setEditable(false);
+                txtNgaySinh.setEditable(false);
+                txtDiaChi.setEditable(false);
+                txtDienThoai.setEditable(false);
+                txtLuong.setEditable(false);
+                btnSave.setVisible(false);
+                btnCancel.setText("Dong"); // Đổi chữ nút Hủy thành Đóng
+            }
         } else {
             setTitle("Them Nhan Vien Moi");
         }
@@ -84,7 +98,7 @@ public class NhanVienDialog extends JDialog {
                     } else {
                         JOptionPane.showMessageDialog(this, "Trung ma nhan vien!");
                     }
-                } else {
+                } else if (type.equals("Sua")) {
                     if (nhanVienBUS.update(newDto)) {
                         JOptionPane.showMessageDialog(this, "Cap nhat thanh cong!");
                         isSuccess = true; dispose();
