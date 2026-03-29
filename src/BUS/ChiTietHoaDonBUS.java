@@ -55,6 +55,23 @@ public class ChiTietHoaDonBUS {
 
         return check;
     }
+    // Xóa toàn bộ chi tiết hóa đơn dựa vào Mã Hóa Đơn (Dùng cho chức năng Sửa/Cập nhật HĐ)
+    public boolean deleteByMaHD(String maHD) {
+        // 1. Lấy danh sách các chi tiết thuộc hóa đơn này
+        ArrayList<ChiTietHoaDonDTO> listCachXoa = getAllByMaHD(maHD);
+        
+        boolean isSuccess = true;
+        
+        // 2. Duyệt qua từng chi tiết và gọi hàm xóa đã có sẵn
+        for (ChiTietHoaDonDTO ct : listCachXoa) {
+            boolean check = delete(ct); // Gọi hàm delete(ChiTietHoaDonDTO) bên trên
+            if (!check) {
+                isSuccess = false; // Nếu có 1 món xóa thất bại thì đánh dấu lỗi
+            }
+        }
+        
+        return isSuccess;
+    }
 
     // Sửa
     public boolean update(ChiTietHoaDonDTO cthd) {

@@ -18,30 +18,19 @@ public class HoaDonBUS {
     }
 
     public String generateMaHD() {
-
-        if (listHD == null || listHD.isEmpty()) {
+        String lastMaHD = hdDAO.getLastMaHD();
+        if (lastMaHD == null || lastMaHD.isEmpty()) {
             return "HD001";
         }
-
-        int max = 0;
-
-        for (HoaDonDTO hd : listHD) {
-
-            try {
-
-                String blocks = hd.getMaHD().substring(2);
-                int currentID = Integer.parseInt(blocks);
-
-                if (currentID > max) {
-                    max = currentID;
-                }
-
-            } catch (Exception e) {
-                continue;
-            }
+        try {
+            String blocks = lastMaHD.substring(2);
+            int currentID = Integer.parseInt(blocks);   
+            
+            return String.format("HD%03d", currentID + 1);           
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        return String.format("HD%03d", max + 1);
+        return "HD001"; 
     }
 
     // Thêm

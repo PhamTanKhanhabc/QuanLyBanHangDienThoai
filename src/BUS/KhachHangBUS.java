@@ -229,4 +229,29 @@ public class KhachHangBUS {
     public int getSoLuongKH() {
         return getAll().size();
     }
+    // Hàm sinh mã Khách hàng tự động (Nằm trong KhachHangBUS)
+    public String generateMaKH() {
+        // Giả sử danh sách khách hàng của bạn tên là listKH
+        if (listKH == null || listKH.isEmpty()) {
+            return "KH001";
+        }
+
+        int max = 0;
+
+        for (DTO.KhachHangDTO kh : listKH) {
+            try {
+                // Cắt bỏ 2 chữ "KH" đầu tiên để lấy phần số
+                String blocks = kh.getMaKH().substring(2);
+                int currentID = Integer.parseInt(blocks);
+
+                if (currentID > max) {
+                    max = currentID;
+                }
+            } catch (Exception e) {
+                continue;
+            }
+        }
+
+        return String.format("KH%03d", max + 1);
+    }
 }
