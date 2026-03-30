@@ -20,7 +20,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-// GIẢI THÍCH: Nhúng thư viện JTableExporterPDF vào để sử dụng tính năng xuất file
 import utils.JTableExporterPDF;
 
 public class NhaCungCap extends JPanel {
