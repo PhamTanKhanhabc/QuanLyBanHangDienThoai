@@ -25,6 +25,9 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.sql.Timestamp;
 
+// THÊM THƯ VIỆN ĐỂ SỬ DỤNG HÀM XUẤT PDF
+import utils.JTableExporterPDF;
+
 public class PhieuNhap extends JPanel {
     private TablePanel tblPhieuNhap;
     private PhieuNhapBUS bus = new PhieuNhapBUS();
@@ -61,6 +64,8 @@ public class PhieuNhap extends JPanel {
         ButtonToolBar btnInfo   = new ButtonToolBar("Chi tiết","icon/info.svg",   80, 60, 14, "INFO_PHIEUNHAP");
         ButtonToolBar btnImport = new ButtonToolBar("Import",  "icon/import.svg", 80, 60, 14, "IMPORT_PHIEUNHAP");
         ButtonToolBar btnExport = new ButtonToolBar("Export",  "icon/export.svg", 80, 60, 14, "EXPORT_PHIEUNHAP");
+        // THÊM NÚT EXPORT PDF VÀO PANEL
+        ButtonToolBar btnThuocTinh = new ButtonToolBar("Export PDF", "icon/attribute.svg", 100, 60, 12, "EXPORT_PDF_PHIEUNHAP");
 
         btnThem.setBackground(Color.WHITE);
         btnSua.setBackground(Color.WHITE);
@@ -68,6 +73,7 @@ public class PhieuNhap extends JPanel {
         btnInfo.setBackground(Color.WHITE);
         btnImport.setBackground(Color.WHITE);
         btnExport.setBackground(Color.WHITE);
+        btnThuocTinh.setBackground(Color.WHITE);
 
         pnlTopBarLeftSub.add(btnThem);
         pnlTopBarLeftSub.add(btnSua);
@@ -75,6 +81,7 @@ public class PhieuNhap extends JPanel {
         pnlTopBarLeftSub.add(btnInfo);
         pnlTopBarLeftSub.add(btnImport);
         pnlTopBarLeftSub.add(btnExport);
+        pnlTopBarLeftSub.add(btnThuocTinh); // ADD VÀO TRÊN CÙNG
 
         // Phải: Thanh tìm kiếm dùng HeaderRightPanel
         headerRightPanel = new HeaderRightPanel();
@@ -402,6 +409,15 @@ public class PhieuNhap extends JPanel {
                     "Lỗi khi xuất file Excel: " + ex.getMessage(),
                     "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
+        });
+
+        // -------------------- XUẤT PDF (EXPORT PDF) --------------------
+        btnThuocTinh.addActionListener(e -> {
+            // Lấy JTable thực tế từ TablePanel
+            JTable tableToExport = tblPhieuNhap.getTable();
+            
+            // Gọi hàm export từ class JTableExporterPDF bạn đã cung cấp
+            JTableExporterPDF.exportJTableToPDF(tableToExport);
         });
 
         // ==================== TÌM KIẾM (SEARCH) VÀ LÀM MỚI (RELOAD) ====================
