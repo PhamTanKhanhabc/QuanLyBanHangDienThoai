@@ -135,6 +135,17 @@ public class KhachHangBUS {
 
         return true;
     }
+    public boolean checkDupSoDT(String soDT) {
+        if (listKH != null) {
+            for (DTO.KhachHangDTO kh : listKH) {
+                // Kiểm tra xem số điện thoại có khớp không (Bỏ qua các khoảng trắng thừa)
+                if (kh.getSoDT().trim().equals(soDT.trim())) {
+                    return false; // Trả về false nghĩa là Bị trùng
+                }
+            }
+        }
+        return true; // Hợp lệ (Không trùng)
+    }
 
     // Lấy tên khách hàng
     public String getTen(String maKH) {
