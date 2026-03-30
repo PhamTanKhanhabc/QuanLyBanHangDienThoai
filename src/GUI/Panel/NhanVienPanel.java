@@ -20,8 +20,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 import java.io.FileInputStream;
+
+// Bổ sung thư viện xử lý ngày tháng
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class NhanVienPanel extends JPanel {
 
@@ -45,7 +48,6 @@ public class NhanVienPanel extends JPanel {
         topPanel.setBackground(Color.WHITE);
 
         actionPanel = new ActionPanel();
-        // Cập nhật để hiển thị đủ 6 nút giống VaiTroPanel
         actionPanel.configButtons(new String[] { "add", "update", "delete", "info", "import", "export" });
 
         headerRightPanel = new HeaderRightPanel();
@@ -61,11 +63,17 @@ public class NhanVienPanel extends JPanel {
 
     private void loadDataToTable(ArrayList<NhanVienDTO> list) {
         Object[][] data = new Object[list.size()][7];
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
         for (int i = 0; i < list.size(); i++) {
             data[i][0] = list.get(i).getMaNV();
             data[i][1] = list.get(i).getHo();
             data[i][2] = list.get(i).getTen();
-            data[i][3] = list.get(i).getNgaySinh();
+            
+            // Format LocalDate sang chuỗi để hiển thị lên bảng
+            LocalDate ns = list.get(i).getNgaySinh();
+            data[i][3] = (ns != null) ? ns.format(formatter) : "";
+            
             data[i][4] = list.get(i).getDiaChi();
             data[i][5] = list.get(i).getDienThoai();
             data[i][6] = list.get(i).getLuongThang();
@@ -135,7 +143,6 @@ public class NhanVienPanel extends JPanel {
                 dto.setMaNV(maNV);
                 if (nhanVienBUS.delete(dto)) {
                     JOptionPane.showMessageDialog(this, "Xoa thanh cong!");
-                    // Đã fix: Thêm dòng refresh để cập nhật lại bảng sau khi xóa
                     nhanVienBUS.refresh();
                     loadDataToTable(nhanVienBUS.getAll());
                 } else {
@@ -145,9 +152,6 @@ public class NhanVienPanel extends JPanel {
             }
         });
 
-        // ------------------ CÁC SỰ KIỆN MỚI BỔ SUNG ------------------
-
-        // Sự kiện nút INFO
         actionPanel.btnInfo.addActionListener(e -> {
             int row = tablePanel.getTable().getSelectedRow();
             if (row == -1) {
@@ -155,22 +159,18 @@ public class NhanVienPanel extends JPanel {
                 return;
             }
 
-            // Lấy mã nhân viên được chọn và tìm DTO tương ứng
             String maNV = tablePanel.getTable().getValueAt(row, 0).toString();
             NhanVienDTO dtoToView = nhanVienBUS.getAll().get(nhanVienBUS.getIndexById(maNV));
 
-            // Mở NhanVienDialog ở chế độ "Xem"
             JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
             NhanVienDialog dialog = new NhanVienDialog(parentFrame, true, "Xem", dtoToView);
             dialog.setVisible(true);
         });
 
-        // Sự kiện nút EXPORT (Sử dụng utils.JTableExporter)
         actionPanel.btnExport.addActionListener(e -> {
             utils.JTableExporter.exportJTableToExcel(tablePanel.getTable());
         });
 
-        // Sự kiện nút IMPORT (Đọc 7 cột từ Excel)
         actionPanel.btnImport.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Chon file Excel de Import Nhan Vien");
@@ -190,20 +190,13 @@ public class NhanVienPanel extends JPanel {
                     int successCount = 0;
                     int failCount = 0;
 
-                    // Duyệt từ dòng 1 (bỏ qua dòng 0 là Header)
                     for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                         Row row = sheet.getRow(i);
                         if (row != null) {
                             String ma = formatter.formatCellValue(row.getCell(0)).trim();
                             String ho = formatter.formatCellValue(row.getCell(1)).trim();
                             String ten = formatter.formatCellValue(row.getCell(2)).trim();
-                            String ngaySinhStr  = formatter.formatCellValue(row.getCell(3)).trim();
-                            LocalDate ngaySinh;
-                            if (ngaySinhStr.contains("/")) {
-                                ngaySinh = LocalDate.parse(ngaySinhStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                            } else {
-                                ngaySinh = LocalDate.parse(ngaySinhStr); // yyyy-MM-dd
-                            }
+                            String ngaySinhStr = formatter.formatCellValue(row.getCell(3)).trim();
                             String diaChi = formatter.formatCellValue(row.getCell(4)).trim();
                             String dienThoai = formatter.formatCellValue(row.getCell(5)).trim();
                             String luongStr = formatter.formatCellValue(row.getCell(6)).trim();
@@ -214,9 +207,31 @@ public class NhanVienPanel extends JPanel {
                                     if (!luongStr.isEmpty())
                                         luong = Double.parseDouble(luongStr);
                                 } catch (NumberFormatException ex) {
-                                    luong = 0; // Nếu nhập sai định dạng lương thì mặc định là 0
+                                    luong = 0; 
                                 }
 
+                                // --- XỬ LÝ PARSE LOCALDATE ---
+                                LocalDate ngaySinh = null;
+                                try {
+                                    if (!ngaySinhStr.isEmpty()) {
+                                        // Kiểm tra nếu chuỗi có dấu '/' thì parse theo dd/MM/yyyy
+                                        if (ngaySinhStr.contains("/")) {
+                                            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                                            ngaySinh = LocalDate.parse(ngaySinhStr, dtf);
+                                        } else {
+                                            // Ngược lại parse theo chuẩn mặc định yyyy-MM-dd
+                                            ngaySinh = LocalDate.parse(ngaySinhStr);
+                                        }
+                                    } else {
+                                        ngaySinh = LocalDate.now(); // Gán mặc định nếu để trống
+                                    }
+                                } catch (DateTimeParseException ex) {
+                                    System.err.println("Lỗi định dạng ngày sinh ở dòng " + i + ": " + ngaySinhStr);
+                                    failCount++;
+                                    continue; // Bỏ qua dòng này nếu parse ngày thất bại
+                                }
+
+                                // Cập nhật gọi Constructor 8 tham số
                                 NhanVienDTO dto = new NhanVienDTO(ma, ho, ten, ngaySinh, diaChi, dienThoai, luong, 1);
 
                                 if (nhanVienBUS.add(dto)) {
@@ -230,10 +245,9 @@ public class NhanVienPanel extends JPanel {
 
                     String message = "Import hoan tat!\n"
                             + "- Them thanh cong: " + successCount + " dong.\n"
-                            + "- That bai (trung ma hoac loi SQL): " + failCount + " dong.";
+                            + "- That bai (trung ma hoac loi DL): " + failCount + " dong.";
                     JOptionPane.showMessageDialog(this, message);
 
-                    // Làm mới dữ liệu
                     nhanVienBUS.refresh();
                     loadDataToTable(nhanVienBUS.getAll());
 
