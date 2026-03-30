@@ -25,6 +25,9 @@ import java.util.Set;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
+import utils.JTableExporterPDF;
+
+
 public class KhuyenMaiGUI extends JPanel {
     private final ChuongTrinhKhuyenMaiBUS kmBUS = new ChuongTrinhKhuyenMaiBUS();
     private List<ChuongTrinhKhuyenMaiDTO> dsKM = new ArrayList<>();
@@ -52,6 +55,7 @@ public class KhuyenMaiGUI extends JPanel {
         headerRightPanel.getCboxSearch().setModel(
                 new DefaultComboBoxModel<>(new String[]{"Tất cả", "Mã", "Tên", "Loại", "Trạng thái"})
         );
+        btnThuocTinh.setBackground(Color.WHITE);
 
         JPanel top = new JPanel(new BorderLayout());
         top.setBackground(Color.WHITE);
@@ -68,6 +72,7 @@ public class KhuyenMaiGUI extends JPanel {
         leftBox.add(filterLoai);
         leftBox.add(Box.createVerticalStrut(12));
         leftBox.add(filterTrangThai);
+        leftBox.add(btnThuocTinh);
 
         JPanel left = new JPanel(new BorderLayout());
         left.setBackground(Color.WHITE);
@@ -138,7 +143,10 @@ public class KhuyenMaiGUI extends JPanel {
 
         actionPanel.btnImport.addActionListener(e -> importCSV());
         actionPanel.btnExport.addActionListener(e -> exportCSV());
-
+        btnThuocTinh.addActionListener(e -> {
+            JTable tableToExport = tblNhaCungCap.getTable();
+            JTableExporterPDF.exportJTableToPDF(tableToExport);
+        });
         headerRightPanel.getTxtSearch().addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
