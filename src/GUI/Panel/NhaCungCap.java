@@ -54,7 +54,6 @@ public class NhaCungCap extends JPanel {
         ButtonToolBar btnImport = new ButtonToolBar("Nhập file", "icon/import.svg", 80, 60, 14, "IMPORT_NHACUNGCAP");
         ButtonToolBar btnExport = new ButtonToolBar("Xuất file", "icon/export.svg", 80, 60, 14, "EXPORT_NHACUNGCAP");
         
-        // GIẢI THÍCH: Khởi tạo nút Xuất PDF với icon attribute.svg giống cấu hình bạn đưa
         ButtonToolBar btnThuocTinh = new ButtonToolBar("Xuất PDF", "icon/attribute.svg", 100, 60, 12, "EXPORT_PDF_NHACUNGCAP");
         
         btnThem.setBackground(Color.WHITE);
@@ -291,9 +290,6 @@ public class NhaCungCap extends JPanel {
             }
         });
 
-        // --- Xuất PDF (Export PDF) ---
-        // GIẢI THÍCH: Gắn sự kiện cho nút Xuất PDF mới thêm.
-        // Lấy JTable hiện tại và đẩy sang hàm exportJTableToPDF của class tiện ích JTableExporterPDF.
         btnThuocTinh.addActionListener(e -> {
             JTable tableToExport = tblNhaCungCap.getTable();
             JTableExporterPDF.exportJTableToPDF(tableToExport);
