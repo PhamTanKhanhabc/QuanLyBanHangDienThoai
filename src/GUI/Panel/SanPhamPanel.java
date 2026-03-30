@@ -46,6 +46,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import utils.JTableExporter;
+import utils.JTableExporterPDF;
 /**
  *
  * @author user
@@ -91,7 +92,7 @@ public class SanPhamPanel extends JPanel{
         headerPanel = new JPanel();
         headerRightPanel = new HeaderRightPanel();
         actionPanel = new ActionPanel();
-        actionPanel.configButtons(new String[]{ "add", "update", "delete", "info", "import", "export" });
+        actionPanel.configButtons(new String[]{ "add", "update", "delete", "info", "import", "export", "attribute"});
         tablePanel = new TablePanel(
             "Danh sách thông tin sản phẩm",
             new String[]{
@@ -371,7 +372,7 @@ public class SanPhamPanel extends JPanel{
         dialog.setVisible(true);
     }
     private void btnThuocTinhActionPerformed(java.awt.event.ActionEvent evt) {
-        JOptionPane.showMessageDialog(this, "Chưa tạo trang Thuộc tính!");
+        JTableExporterPDF.exportJTableToPDF(table);
     }
     public void importExcel() {
         JFileChooser jf = new JFileChooser();
