@@ -49,12 +49,14 @@ public class KhuyenMaiGUI extends JPanel {
         setBackground(new Color(230, 245, 245));
 
         actionPanel = new ActionPanel();
+        actionPanel = new ActionPanel();
         actionPanel.configButtons(new String[]{ "add", "update", "delete", "info", "import", "export", "attribute"});
-        
+
         headerRightPanel = new HeaderRightPanel();
         headerRightPanel.getCboxSearch().setModel(
                 new DefaultComboBoxModel<>(new String[]{"Tất cả", "Mã", "Tên", "Loại", "Trạng thái"})
         );
+    
 
         JPanel top = new JPanel(new BorderLayout());
         top.setBackground(Color.WHITE);
@@ -71,6 +73,7 @@ public class KhuyenMaiGUI extends JPanel {
         leftBox.add(filterLoai);
         leftBox.add(Box.createVerticalStrut(12));
         leftBox.add(filterTrangThai);
+     
 
         JPanel left = new JPanel(new BorderLayout());
         left.setBackground(Color.WHITE);
@@ -141,13 +144,10 @@ public class KhuyenMaiGUI extends JPanel {
 
         actionPanel.btnImport.addActionListener(e -> importCSV());
         actionPanel.btnExport.addActionListener(e -> exportCSV());
-        btnThuocTinh.addActionListener(e -> {
-            JTable tableToExport = tblNhaCungCap.getTable();
-            JTableExporterPDF.exportJTableToPDF(tableToExport);
-        });
         actionPanel.btnThuocTinh.addActionListener(e -> {
         JTableExporterPDF.exportJTableToPDF(table);
         });
+
         headerRightPanel.getTxtSearch().addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
