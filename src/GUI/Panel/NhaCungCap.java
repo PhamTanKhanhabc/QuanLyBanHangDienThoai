@@ -20,6 +20,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+// GIẢI THÍCH: Nhúng thư viện JTableExporterPDF vào để sử dụng tính năng xuất file
+import utils.JTableExporterPDF;
+
 public class NhaCungCap extends JPanel {
     private NhaCungCapBUS bus = new NhaCungCapBUS();
     private TablePanel tblNhaCungCap;
@@ -52,12 +55,16 @@ public class NhaCungCap extends JPanel {
         ButtonToolBar btnImport = new ButtonToolBar("Nhập file", "icon/import.svg", 80, 60, 14, "IMPORT_NHACUNGCAP");
         ButtonToolBar btnExport = new ButtonToolBar("Xuất file", "icon/export.svg", 80, 60, 14, "EXPORT_NHACUNGCAP");
         
+        // GIẢI THÍCH: Khởi tạo nút Xuất PDF với icon attribute.svg giống cấu hình bạn đưa
+        ButtonToolBar btnThuocTinh = new ButtonToolBar("Xuất PDF", "icon/attribute.svg", 100, 60, 12, "EXPORT_PDF_NHACUNGCAP");
+        
         btnThem.setBackground(Color.WHITE);
         btnSua.setBackground(Color.WHITE);
         btnXoa.setBackground(Color.WHITE);
         btnInfo.setBackground(Color.WHITE);
         btnImport.setBackground(Color.WHITE);
         btnExport.setBackground(Color.WHITE);
+        btnThuocTinh.setBackground(Color.WHITE); // Cấp màu nền cho nút mới
         
         pnlTopBarLeftSub.add(btnThem);
         pnlTopBarLeftSub.add(btnSua);
@@ -65,6 +72,7 @@ public class NhaCungCap extends JPanel {
         pnlTopBarLeftSub.add(btnInfo);
         pnlTopBarLeftSub.add(btnImport);
         pnlTopBarLeftSub.add(btnExport);
+        pnlTopBarLeftSub.add(btnThuocTinh); // Đưa nút Xuất PDF vào thanh công cụ
         
         headerRightPanel = new HeaderRightPanel();
         
@@ -282,6 +290,14 @@ public class NhaCungCap extends JPanel {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Lỗi khi xuất file Excel: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
+        });
+
+        // --- Xuất PDF (Export PDF) ---
+        // GIẢI THÍCH: Gắn sự kiện cho nút Xuất PDF mới thêm.
+        // Lấy JTable hiện tại và đẩy sang hàm exportJTableToPDF của class tiện ích JTableExporterPDF.
+        btnThuocTinh.addActionListener(e -> {
+            JTable tableToExport = tblNhaCungCap.getTable();
+            JTableExporterPDF.exportJTableToPDF(tableToExport);
         });
 
         // ======================== TÌM KIẾM & LÀM MỚI ========================
