@@ -5,6 +5,7 @@ import DTO.NhanVienDTO;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import javax.swing.*;
 
 public class NhanVienDialog extends JDialog {
@@ -14,6 +15,9 @@ public class NhanVienDialog extends JDialog {
     private JButton btnSave, btnCancel;
     private String type; 
     private boolean isSuccess = false;
+    
+    // Khai báo formatter để tái sử dụng
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public NhanVienDialog(Frame parent, boolean modal, String type, NhanVienDTO dto) {
         super(parent, modal);
@@ -25,7 +29,12 @@ public class NhanVienDialog extends JDialog {
             txtMa.setText(dto.getMaNV());
             txtHo.setText(dto.getHo());
             txtTen.setText(dto.getTen());
-            txtNgaySinh.setText(dto.getNgaySinh().toString());
+            
+            // Format LocalDate sang chuỗi dd/MM/yyyy để hiển thị
+            if (dto.getNgaySinh() != null) {
+                txtNgaySinh.setText(dto.getNgaySinh().format(formatter));
+            }
+            
             txtDiaChi.setText(dto.getDiaChi());
             txtDienThoai.setText(dto.getDienThoai());
             txtLuong.setText(String.valueOf(dto.getLuongThang()));
@@ -79,18 +88,28 @@ public class NhanVienDialog extends JDialog {
                 String ma = txtMa.getText().trim();
                 String ho = txtHo.getText().trim();
                 String ten = txtTen.getText().trim();
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                LocalDate ngaySinh = LocalDate.parse(txtNgaySinh.getText().trim(), formatter);
+                String nsStr = txtNgaySinh.getText().trim();
                 String dc = txtDiaChi.getText().trim();
                 String sdt = txtDienThoai.getText().trim();
                 double luong = Double.parseDouble(txtLuong.getText().trim());
 
-                if (ma.isEmpty() || ho.isEmpty() || ten.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Vui long nhap du thong tin co ban!");
+                if (ma.isEmpty() || ho.isEmpty() || ten.isEmpty() || nsStr.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Vui long nhap du thong tin co ban (Ma, Ho, Ten, Ngay Sinh)!");
                     return;
                 }
 
-                NhanVienDTO newDto = new NhanVienDTO(ma, ho, ten, ngaySinh, dc, sdt, luong, 1);
+                // Parse chuỗi ngày sinh sang LocalDate
+                LocalDate ns = null;
+                try {
+                    ns = LocalDate.parse(nsStr, formatter);
+                } catch (DateTimeParseException ex) {
+                    JOptionPane.showMessageDialog(this, "Ngay sinh khong hop le! Vui long nhap dung dinh dang dd/MM/yyyy.");
+                    return;
+                }
+
+                // Cập nhật dùng constructor 8 tham số (truyền LocalDate ns và int trangThai = 1)
+                NhanVienDTO newDto = new NhanVienDTO(ma, ho, ten, ns, dc, sdt, luong, 1);
+                
                 if (type.equals("Them")) {
                     if (nhanVienBUS.add(newDto)) {
                         JOptionPane.showMessageDialog(this, "Them thanh cong!");
