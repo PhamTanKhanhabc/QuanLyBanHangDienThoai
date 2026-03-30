@@ -92,18 +92,40 @@ public class CreateKhachHangDialog extends JDialog {
     txtMaKH.setEditable(false); 
 }
 
-    private void btnAddActionPerformed() {
+   private void btnAddActionPerformed() {
         String maKH = txtMaKH.getText().trim();
         String ho = txtHo.getText().trim();
         String ten = txtTen.getText().trim();
         String diaChi = txtDiaChi.getText().trim();
         String sdt = txtSDT.getText().trim(); 
 
+        // ================== BẮT ĐẦU KIỂM TRA LỖI ==================
+        if (sdt.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Số điện thoại không được để trống!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            txtSDT.requestFocus();
+            return; // Dừng lại, không chạy xuống dưới
+        }
+
+        // Gọi hàm checkDupSoDT từ KhachHangBUS (Nhớ đảm bảo bạn đã copy hàm này vào BUS nhé)
+        if (!khBUS.checkDupSoDT(sdt)) {
+            JOptionPane.showMessageDialog(this, "Số điện thoại này đã tồn tại trong hệ thống!\nVui lòng nhập số khác.", "Lỗi trùng lặp", JOptionPane.ERROR_MESSAGE);
+            txtSDT.selectAll(); // Bôi đen số cũ bị trùng để nhập lại cho nhanh
+            txtSDT.requestFocus();
+            return; // Dừng lại, không chạy xuống dưới
+        }
+        // ================== KẾT THÚC KIỂM TRA =====================
+
+        // Nếu vượt qua được các vòng kiểm tra trên, tiến hành lưu bình thường:
         KhachHangDTO kh = new KhachHangDTO(maKH, ho, ten, diaChi, 1, sdt);
         String ketQua = khBUS.add(kh);
+        
         if (ketQua.contains("thành công")) {
             JOptionPane.showMessageDialog(this, ketQua, "Thành công", JOptionPane.INFORMATION_MESSAGE);
+            
+            // Mẹo nhỏ: Nên ép khởi tạo lại BUS ở đây để chắc chắn loadTable lấy đúng data mới nhất từ Database
+            khBUS = new KhachHangBUS(); 
             parentPanel.loadTable(khBUS.getAll()); 
+            
             dispose();
         } else {
             JOptionPane.showMessageDialog(this, ketQua, "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
